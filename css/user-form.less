@@ -1,0 +1,96 @@
+@import "variables";
+
+.site-links {
+  display: none;
+}
+
+//----
+
+.container {
+  padding-top: 62px;
+}
+
+//----
+
+.form-container {
+  width: 270px;
+  margin: 0 auto;
+  padding: 60px 0 30px;
+
+  .form-field {
+    width: 100%;
+  }
+
+  .field-label {
+    font-weight: 600;
+  }
+}
+
+.sign-up-link {
+  margin-top: 15px;
+}
+
+.login-link,
+.login-link:hover {
+  color: white;
+}
+
+.sign-up {
+  color: white;
+
+  background-color: @primary;
+
+  .main-header {
+    background-color: @primary
+  }
+
+  .header-logo,
+  .site-links a {
+    color: white;
+  }
+
+  .logo-pic .bar {
+    background-color: white;
+  }
+
+  .form-field {
+    color: @primary;
+
+    border-color: white;
+  }
+
+  .form-field:hover {
+    border-width: 2px;
+    padding: 6px;
+  }
+
+  .form-field:focus {
+    background-color: white;
+  }
+
+  .form-field.visited {
+    background-color: white;
+  }
+
+  .submit-btn {
+    margin-top: 10px;
+    //width: 100%;
+  }
+
+}
+
+.login-form {
+  input {
+    transition: 0.2s linear all;
+  }
+
+  input:hover {
+    background-color: lighten(@primary, 45%);
+    border-color: @primary;
+  }
+
+  input:focus {
+    background-color: white;
+    border-color: @primary;
+  }
+}

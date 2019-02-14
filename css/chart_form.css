@@ -1,0 +1,367 @@
+main > .container {
+  display: flex;
+}
+.page-title {
+  margin-bottom: 30px;
+}
+.chart-form-container.col-left {
+  position: relative;
+  width: 450px;
+  min-height: 100%;
+  flex-basis: 405px;
+  flex-shrink: 0;
+  margin: 0;
+  padding-top: 62px;
+  padding-right: 20px;
+  background-color: #f5f5f5db;
+}
+.chart-form-container.col-left::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  height: 100%;
+  width: 3000px;
+  background-color: inherit;
+  z-index: -1;
+}
+.col-right {
+  padding: 62px 0 15px 40px;
+  overflow-x: hidden;
+}
+.col-right .chart-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 0;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  margin-bottom: 50px;
+}
+.col-right .canvas-wrapper {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.form-section-title {
+  margin-bottom: 18px;
+  font-size: 18px;
+}
+.fieldset-title {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.form-section {
+  padding: 15px 0;
+  border: none;
+  border-bottom: 1px solid lightgrey;
+}
+.form-section:last-of-type {
+  border-bottom: 0;
+}
+.options-list {
+  display: flex;
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.options-list li {
+  margin-right: 20px;
+}
+.chart-form fieldset {
+  margin-bottom: 10px;
+  padding-bottom: 0;
+  padding-top: 0;
+  padding-left: 0;
+  border: none;
+}
+.chart-form label {
+  position: relative;
+  margin-right: 10px;
+}
+.chart-form .input-option-label {
+  padding-left: 22px;
+}
+.chart-form input {
+  min-width: auto;
+}
+.chart-form .checkbox-field-wrapper {
+  margin-top: 15px;
+}
+.chart-form .smaller-input {
+  width: 100px;
+}
+.chart-form .medium-input {
+  max-width: 155px;
+  min-width: 0;
+  width: auto;
+}
+.chart-form input[type=radio] {
+  margin-right: 5px;
+}
+.chart-form p {
+  margin-bottom: 7px;
+}
+.chart-form .horizontal-controls-wrapper {
+  display: flex;
+  flex-grow: 1;
+}
+.chart-form select {
+  box-sizing: border-box;
+  padding: 7px 7px 6px;
+  font-size: 16px;
+  background-color: #edeffa;
+  border: 1px solid #ccd2f2;
+  border-radius: 4px;
+  transition: 0.14s linear all;
+}
+.chart-form select:hover {
+  background-color: #f5f6fd;
+  cursor: pointer;
+}
+.chart-form select:active {
+  box-shadow: none;
+  border: 1px solid #4158D0;
+}
+.chart-form select:focus {
+  background-color: white;
+  box-shadow: none;
+  outline: none;
+  border: 1px solid #4158D0;
+}
+.chart-form input[type=text],
+.chart-form input[type=number] {
+  transition: 0.12s linear all;
+}
+.chart-form input[type=text]:hover,
+.chart-form input[type=number]:hover {
+  background-color: #f9fafe;
+  border-color: #455cd1;
+}
+.chart-form input[type=text]:focus,
+.chart-form input[type=number]:focus {
+  border-color: #455cd1;
+  background-color: white;
+}
+.chart-form input[type="radio"] + .radio-indicator,
+.chart-form input[type="checkbox"] + .checkbox-indicator {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+}
+.chart-form input[type="checkbox"] + .checkbox-indicator {
+  border-radius: 2px;
+}
+.chart-form input[type="checkbox"]:checked + .checkbox-indicator {
+  border: 1px solid #4158D0;
+  outline: none;
+}
+.chart-form .checkbox-indicator::after,
+.chart-form .checkbox-indicator::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: none;
+  width: 8px;
+  height: 2px;
+  margin: auto;
+  background-color: #4158D0;
+}
+.chart-form .checkbox-indicator::after {
+  transform: rotate(90deg);
+}
+.chart-form input[type="checkbox"]:checked + .checkbox-indicator::after,
+.chart-form input[type="checkbox"]:checked + .checkbox-indicator::before {
+  display: block;
+}
+.chart-form input[type="checkbox"]:not(:checked) + .checkbox-indicator {
+  border: 1px solid lightgrey;
+}
+.chart-form input[type="radio"] + .radio-indicator {
+  border-radius: 50%;
+}
+.chart-form .radio-indicator::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: none;
+  width: 6px;
+  height: 6px;
+  margin: auto;
+  background-color: #4158D0;
+  border-radius: 50%;
+}
+.chart-form input[type="radio"]:checked + .radio-indicator {
+  border: 1px solid #4158D0;
+}
+.chart-form input[type="radio"]:checked + .radio-indicator::after {
+  display: block;
+}
+.chart-form input[type="radio"]:not(:checked) + .radio-indicator {
+  border: 1px solid lightgrey;
+}
+.chart-canvas-wrapper {
+  height: 500px;
+  margin-left: 25px;
+  z-index: 5;
+}
+.axis-label {
+  position: absolute;
+  display: inline-block;
+  font-size: 12px;
+  color: dimgrey;
+}
+.vertical-axis-labels-container {
+  position: absolute;
+  min-width: 25px;
+  height: 500px;
+  overflow: hidden;
+  border-right: 1px solid lightgrey;
+  z-index: 10;
+}
+.vertical-axis-labels-container .vertical-axis-label {
+  right: 0;
+  margin-right: 7px;
+  margin-bottom: -9px;
+}
+.vertical-axis-labels-container .vertical-axis-label::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -7px;
+  display: block;
+  width: 4px;
+  height: 1px;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-color: #bababa;
+}
+.timeflow-axis-labels-container {
+  position: relative;
+  width: 1400px;
+  height: 20px;
+  margin-left: 24px;
+  border-top: 1px solid lightgrey;
+}
+.timeflow-axis-labels-container .timeflow-axis-label {
+  top: 0;
+  width: 26px;
+  margin-top: 4px;
+  margin-left: -1px;
+  text-align: center;
+}
+.timeflow-axis-labels-container .timeflow-axis-label::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  display: block;
+  width: 1px;
+  height: 4px;
+  margin: 0 auto;
+  background-color: #bababa;
+}
+.timeflow-gridlines-labels-container {
+  position: absolute;
+  top: 0;
+  left: 25px;
+}
+.timeflow-gridlines-labels-container .month-label {
+  position: absolute;
+  top: 10px;
+  width: 26px;
+  margin-left: -13px;
+  font-size: 11px;
+  color: grey;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.chart-data-input {
+  display: flex;
+  padding-left: 20px;
+}
+.manual-data-input {
+  position: relative;
+  margin-right: 60px;
+}
+.manual-data-input::after {
+  content: "or";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -37px;
+  display: inline-block;
+  margin: auto 0;
+  color: #bababa;
+}
+.chart-data-form {
+  padding: 20px 15px 25px 25px;
+}
+.data-input-table {
+  margin-bottom: 10px;
+}
+.data-input-table thead td {
+  padding-left: 5px;
+}
+.data-input-table td {
+  border: 1px solid lightgrey;
+}
+.data-input-table td input {
+  border: none;
+  padding: 2px 3px;
+}
+.chart-data-upload-form {
+  display: flex;
+}
+.chart-data-upload-form .file-upload-input {
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.chart-data-upload-form .btn-upload {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+body.theme-dark {
+  background-color: #000717;
+  color: white;
+}
+body.theme-dark .logo {
+  color: #e6e6e6;
+}
+body.theme-dark .col-left {
+  background-color: #000717;
+}
+body.theme-dark .col-left::after {
+  background-color: #000717;
+}
+body.theme-dark input:not(.btn) {
+  color: #e6e6e6;
+}
+body.theme-dark input[type=text]:hover,
+body.theme-dark select:hover {
+  background-color: transparent;
+  border-color: #51ffac;
+}
+body.theme-dark .btn {
+  background-image: linear-gradient(15deg, rgba(8, 174, 234, 0) 0%, rgba(42, 245, 152, 0) 100%);
+  transition: 0.4s linear background-image, 0s linear border-color;
+}
+body.theme-dark .btn:hover {
+  color: #000717;
+  background-color: #08AEEA;
+  background-image: linear-gradient(15deg, #08aeea 0%, #2af598 100%);
+  border-color: transparent;
+}
