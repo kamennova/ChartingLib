@@ -1,64 +1,36 @@
-// $('.carousel[data-type="multi"] .item').each(function () {
-//     var next = $(this).next();
-//     if (!next.length) {
-//         next = $(this).siblings(':first');
-//     }
-//     next.children(':first-child').clone().appendTo($(this));
-//
-//     for (var i = 0; i < 2; i++) {
-//         next = next.next();
-//         if (!next.length) {
-//             next = $(this).siblings(':first');
-//         }
-//
-//         next.children(':first-child').clone().appendTo($(this));
-//     }
-// });
+let collapsibles = document.getElementsByClassName('collapsible');
+for(let i =0; i<collapsibles.length; i++){
+    collapsibles[i].insertAdjacentHTML("afterbegin", '<span class="collapse-btn"><span class="plus-bar"></span></span>');
+}
 
-// var canvas = document.getElementById('example-canvas');
-// if (canvas.getContext) {
-//
-//     var ctx = canvas.getContext('2d');
-//
-//
-// ctx.beginPath();ctx.moveTo(30, 100);
-// ctx.moveTo(30,90);
-// ctx.moveTo(30, 10);
-// ctx.moveTo(30, 200 - 150);
-// ctx.moveTo(30, 200 - 30);ctx.moveTo(30, 200 - 30);ctx.moveTo(30, 200 - 90);ctx.stroke();}
+let hide_btns = document.getElementsByClassName('collapse-btn');
+for (let i = 0; i < hide_btns.length; i++) {
+    hide_btns[i].addEventListener('click', function () {
 
+        if (this.parentNode.classList.contains('collapsed')) {
+            this.parentNode.style.height = null;
+            this.parentNode.classList.remove('collapsed');
+            this.classList.remove('plus');
 
-// var canvas = document.getElementById('line-chart-canvas-style-2');
-//
-//
-// var canvas_height = 200;
-// var canvas_width = 500;
-//
-// var chart_left_padding = 30;
-// var chart_col_width = 45;
-// var chart_col_dist = 15;
-// var chart_sizing = 30;
-// var chart_point_dist = chart_col_dist + chart_col_width;
-//
-// if (canvas && canvas.getContext) {
-//     var ctx = canvas.getContext('2d');
-//
-//     var tea_cups =  [4, 5, 1, 1, 4, 2, 2];
-//
-//     ctx.beginPath();
-//
-//     ctx.lineWidth = 2;
-//     ctx.strokeStyle = '#4158D0';
-//     ctx.shadowColor = 'rgba(65, 88, 208, 0.7)';
-//     ctx.shadowBlur = 7;
-//     ctx.shadowOffsetX = 0;
-//     ctx.shadowOffsetY = 0;
-//
-//     ctx.moveTo(chart_left_padding, canvas_height - 90);
-//     tea_cups.forEach(function(item, i, arr){
-//         ctx.lineTo(chart_point_dist * ++i, canvas_height - chart_sizing * item);
-//     });
-//     ctx.stroke();
-// } else {
-//     // canvas-unsupported code here
-// }
+        } else {
+
+            let new_height = 20;
+            let children = this.parentNode.children;
+
+            for (let a = 0; a < children.length; a++) {
+                if (children[a].classList.contains('collapsible-title')) {
+                    new_height = children[a].offsetHeight;
+                    break;
+                }
+            }
+
+            let container_padding_top = window.getComputedStyle(this.parentNode, null).getPropertyValue("padding-top");
+            let container_padding_bottom = window.getComputedStyle(this.parentNode, null).getPropertyValue("padding-bottom");
+            let padding = Number(container_padding_top.substring(0, container_padding_top.length - 2)) + Number(container_padding_bottom.substring(0, container_padding_bottom.length - 2));
+
+            this.parentNode.style.height = new_height + padding + 'px';
+            this.parentNode.classList.add('collapsed');
+            this.classList.add("plus");
+        }
+    });
+}

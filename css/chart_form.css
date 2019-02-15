@@ -52,6 +52,9 @@ main > .container {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+.plane-chart-fields {
+  border-bottom: 1px solid lightgrey;
+}
 .form-section {
   padding: 15px 0;
   border: none;
@@ -209,8 +212,14 @@ main > .container {
 .chart-form input[type="radio"]:not(:checked) + .radio-indicator {
   border: 1px solid lightgrey;
 }
+.colorpicker-input-container {
+  display: flex;
+  align-items: center;
+}
+.colorpicker-input-container label {
+  margin-bottom: 0;
+}
 .chart-canvas-wrapper {
-  height: 500px;
   margin-left: 25px;
   z-index: 5;
 }
@@ -223,7 +232,6 @@ main > .container {
 .vertical-axis-labels-container {
   position: absolute;
   min-width: 25px;
-  height: 500px;
   overflow: hidden;
   border-right: 1px solid lightgrey;
   z-index: 10;

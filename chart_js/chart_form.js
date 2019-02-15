@@ -142,6 +142,35 @@ chart_type_input.addEventListener('change', function () {
 });
 
 
+// colorpicker
+$.minicolors.defaults = $.extend($.minicolors.defaults, {
+    defaultValue: '#4158D0',
+    control: 'wheel',
+    animationSpeed: 200,
+    // changeDelay: 200,
+    theme: 'bootstrap',
+    format: 'rgb',
+    opacity: true,
+});
+
+$('#line-colour-input.minicolors-input').minicolors({
+    change: function(value, opacity) {
+        Configurable.config.line_colour = value;
+        Configurable.draw_chart();
+    }
+});
+
+$('#fill-colour-input.minicolors-input').minicolors({
+    change: function(value, opacity) {
+        Configurable.config.fill_colour = value;
+        Configurable.draw_chart();
+    }
+});
+
+
+
+
+
 /*
 * 1) getting default value(max/min value) for config Obj: form / js default
 * 2) global vars reducing amount of search requests for elem

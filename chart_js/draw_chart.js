@@ -25,6 +25,8 @@ function draw_bar_chart(obj, ctx, days_diff) {
     ctx.shadowColor = 'rgba(0, 0, 0, 0)';
     let bar_chart_left_padding = obj.config.chart_left_padding - obj.config.chart_col_width / 2;
 
+    console.log(obj.config.chart_point_dist);
+
     ctx.moveTo(bar_chart_left_padding + obj.config.chart_point_dist * days_diff, obj.config.canvas_height);
     obj.config.chart_data.forEach(function (item, i, arr) {
         ctx.moveTo(obj.config.chart_point_dist * (i + days_diff) + bar_chart_left_padding, obj.config.canvas_height);
@@ -76,6 +78,14 @@ function draw_curve_chart(obj, ctx, days_diff, k = 2 /* curve coefficient */) {
     ctx.fill();
 
     // redrawing the first line
+    ctx.strokeStyle = 'white';
+    ctx.beginPath();
+    ctx.moveTo(obj.config.chart_left_padding + obj.config.chart_point_dist * days_diff, obj.config.canvas_height);
+    ctx.lineTo(obj.config.chart_left_padding + obj.config.chart_point_dist * days_diff, obj.config.canvas_height - obj.config.chart_data[0] * obj.config.chart_sizing);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.strokeStyle = obj.config.fill_colour;
     ctx.beginPath();
     ctx.moveTo(obj.config.chart_left_padding + obj.config.chart_point_dist * days_diff, obj.config.canvas_height);
     ctx.lineTo(obj.config.chart_left_padding + obj.config.chart_point_dist * days_diff, obj.config.canvas_height - obj.config.chart_data[0] * obj.config.chart_sizing);

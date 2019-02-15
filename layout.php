@@ -9,6 +9,8 @@
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="plugins/jquery-minicolors/jquery.minicolors.css">
     <?= isset($stylesheets) ? $stylesheets : null ?>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -20,6 +22,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+    <script src="plugins/jquery-minicolors/jquery.minicolors.min.js"></script>
 </head>
 <body <?= isset($body_class_list) ? "class='$body_class_list'" : null ?>>
 <div class="site-wrapper">

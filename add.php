@@ -111,8 +111,8 @@ $content .= <<<EOD
                 </table>
             </section>
             <section class="plane-chart-fields" id="plane-chart-fields">
-                <section class="form-section vertical-axis-fields">
-                    <h2 class="form-section-title">Vertical axis</h2>
+                <section class="collapsible form-section vertical-axis-fields">
+                    <h2 class="collapsible-title form-section-title">Vertical axis</h2>
                     <p>
                         <label for="chart_measure_id">Measure unit</label>
                         <select name="chart_measure_id" id="chart_measure_id">
@@ -130,9 +130,8 @@ $content .= <<<EOD
                         <input type="number" name="vertical-axis-labels-step" size="10" class="smaller-input" id="vertical-axis-labels-step" value="2">
                     </p>
                 </section>
-                <section class="form-section timeflow-axis-fields">
-                    <h2 class="form-section-title">Horizontal axis</h2>
-                    
+                <section class="collapsible form-section timeflow-axis-fields">
+                    <h2 class="collapsible-title form-section-title">Horizontal axis</h2>
                     <section class="horizontal_axis_options_fields" id="category_axis_options_fields">
                     category axis fields coming soon...
                         <!--<select name="chart_type_id" id="chart_type_id">-->
@@ -177,6 +176,18 @@ $content .= <<<EOD
                         <!--</fieldset>-->
                 </section>
              </section>
+             </section>
+             <section class="form-section collapsible">
+                <h2 class="form-section-title collapsible-title">Style</h2>
+                <p class="colorpicker-input-container">
+                   <label for="line-colour"> Line colour </label>
+                   <input type="text" class="minicolors-input" id="line-colour-input" />                   
+                </p>
+                <p class="colorpicker-input-container"> 
+                   <label for="fill-colour"> Fill colour </label>
+                   <input type="text" class="minicolors-input" id="fill-colour-input" />   
+                </p> 
+             </section>
             <a class="btn" href="add.php">Reset to default</a>
         </form>
     </div>
@@ -184,7 +195,7 @@ $content .= <<<EOD
         <div class="chart-wrapper">
             <div id="vertical-axis-labels-container" class="vertical-axis-labels-container"></div>
             <div class="chart-canvas-wrapper">
-                <canvas id="chart-canvas" height="500px" width="1400px"></canvas>
+                <canvas id="chart-canvas" height="400px" width="1400px"></canvas>
             </div>
             <div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container"></div>
             <div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>
@@ -250,6 +261,7 @@ $debug_info
  </section>
     </div>
    </div>
+
 <script src="chart_js/functions.js"></script>
 <script src="chart_js/chart_object.js"></script>
 <script src="chart_js/configurable.js"></script>

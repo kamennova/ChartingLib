@@ -60,8 +60,8 @@ a {
   transition: 0.2s linear all;
 }
 
-a.btn{
-  color:black;
+a.btn {
+  color: black;
 }
 
 .btn {
@@ -122,6 +122,51 @@ a.btn{
 
 .btn-add::after {
   transform: rotate(90deg);
+}
+
+.collapse-btn {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+
+  display: block;
+  width: 11px;
+  height: 3px;
+
+  background-color: @primary;
+  border-radius: 2px;
+
+  cursor: pointer;
+}
+
+.collapse-btn.plus::after{
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  display: block;
+  width: 3px;
+  height: 11px;
+  margin: auto;
+
+  background-color: inherit;
+  border-radius: inherit;
+}
+
+//----------CONTAINERS---------
+
+.collapsible {
+  position: relative;
+
+  transition: height 10s linear;
+}
+
+.collapsed{
+  overflow-y: hidden;
 }
 
 .site-wrapper {
@@ -206,6 +251,15 @@ form input {
   border-radius: 3px;
   box-shadow: none;
   outline: none;
+}
+
+input.colorpicker{
+  width: 25px;
+  height: 25px;
+  margin-left: 15px;
+  padding: 0;
+
+  //border-radius: 50%;
 }
 
 .hint {
@@ -648,11 +702,6 @@ label.label-add {
 }
 
 //----------
-
-#example-canvas {
-  //border: 1px solid red;
-  /*background-color: red;*/
-}
 
 /*----------------------*/
 

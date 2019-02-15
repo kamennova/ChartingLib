@@ -1,5 +1,7 @@
 
 let Configurable = new Chart(document.getElementById(this.canvas_id), {
+    configurable: true,
+
     // default data array
     chart_data: [2, 5, 3, 9, 6, 2, 9],
 
@@ -42,7 +44,7 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
     chart_col_dist: 15,
     // chart_point_dist: this.chart_col_dist + this.chart_col_width,
 
-    canvas_height: 500,
+    canvas_height: 400,
     chart_left_padding: 30,
 
     // chart styles and colours

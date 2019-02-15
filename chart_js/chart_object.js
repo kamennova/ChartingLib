@@ -18,7 +18,7 @@ class Chart {
 
         // getting timeflow labels measure
 
-        if(this.config.timeflow_axis_labels_measure_input_id){
+        if (this.config.timeflow_axis_labels_measure_input_id) {
             let measure_input = document.querySelector('#' + this.config.timeflow_axis_labels_measure_input_id);
             labels_measure = measure_input.options[measure_input.selectedIndex].id;
         } else {
@@ -92,7 +92,7 @@ class Chart {
     }
 
     draw_chart() {
-        let canvas = document.getElementById('chart-canvas');
+        let canvas = document.getElementById(this.config.canvas_id);
 
         if (canvas && canvas.getContext && this.config.chart_data) {
             let ctx = canvas.getContext('2d');
@@ -109,7 +109,14 @@ class Chart {
             ctx.shadowOffsetY = 0;
 
             let labels_start_point = new Date(this.config.timeflow_start_point);
-            let value_start_point = new Date(document.getElementById('timeflow-chart-breakpoint[0]').value);
+
+            let value_start_point;
+            if (this.config.configurable) {
+                value_start_point = new Date(document.getElementById('timeflow-chart-breakpoint[0]').value);
+            } else {
+                value_start_point = new Date();
+            }
+
             let days_diff = Math.floor((value_start_point - labels_start_point) / (1000 * 60 * 60 * 24));
 
             ctx.beginPath();
@@ -201,12 +208,8 @@ let chart1 = new Chart(document.getElementById(this.canvas_id), {
     timeflow_measure: 'day',
 
     timeflow_axis_labels_step: 1,
-    // timeflow_axis_labels_step_input_selector: 'timeflow-axis-labels-step',
 
     timeflow_axis_labels_measure: 'day',
-    // timeflow_axis_labels_measure_input_id: 'timeflow-axis-labels-measure-id',
-
-    // timeflow_step_input: document.getElementById()
     // timeflow_start_point: document.getElementById('timeflow-start-point').value,
 
     // chart display parameters
