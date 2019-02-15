@@ -41,11 +41,12 @@ function generate_options_from_arr($arr, $option_id = false)
     return $options_list;
 }
 
-function generate_default_data_table_rows(){
+function generate_default_data_table_rows()
+{
     $default_data_table_rows = '';
     $default_data = [2, 5, 3, 9, 6, 2, 9];
 
-    for($i = 0; $i < 7; $i++){
+    for ($i = 0; $i < 7; $i++) {
         $default_data_table_rows .= "<tr>" .
             "<td><input class='table-input' type='date' id='timeflow-chart-breakpoint[$i]' name='timeflow_chart_breakpoint[$i]'></td>" .
             "<td><input class='table-input' type='number' value='$default_data[$i]' id='timeflow-chart-value[$i]' name='timeflow_chart_value[$i]'></td>" .
@@ -65,7 +66,7 @@ $content .= <<<EOD
     <div class="container">
     <div class='chart-form-container col-left'>
         <h1 class="page-title">Chart configuration</h1>
-        <form class="chart-form" method="post" onchange="draw_chart()">
+        <form class="chart-form" method="post" onchange="Configurable.draw_chart()">
         <section class="form-section main-info-fields">
             <p>
                 <label for="chart_name">Name</label>
@@ -251,9 +252,11 @@ $debug_info
    </div>
 <script src="chart_js/functions.js"></script>
 <script src="chart_js/chart_object.js"></script>
+<script src="chart_js/configurable.js"></script>
 <script src="chart_js/chart_form.js"></script>
 <script src="chart_js/chart_data.js"></script>
 <script src="chart_js/draw_chart.js"></script>
+<script src="chart_js/add.js"></script>
 
 EOD;
 

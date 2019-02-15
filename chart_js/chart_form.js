@@ -5,14 +5,15 @@
 
 let pie_chart_fields = document.getElementById('pie-chart-fields');
 let plane_chart_fields = document.getElementById('plane-chart-fields');
-let chart_type_input = document.getElementById(Config.chart_type_input_selector);
+let chart_type_input = document.getElementById(Configurable.config.chart_type_input_selector);
 
 // default chart type is 'plane'
 hide(pie_chart_fields);
 
 // displaying chart fields according to the chart type selected
 chart_type_input.onchange = function () {
-    let selected_chart_type_id = Config.chart_type_input[Config.chart_type_input.selectedIndex].id;
+    // let chart_type_input = document.getElementById(Configurable.config.chart_type_input_selector);
+    let selected_chart_type_id = chart_type_input[chart_type_input.selectedIndex].id;
     if (selected_chart_type_id === 'pie_chart') {
         show(pie_chart_fields);
         hide(plane_chart_fields);
@@ -31,7 +32,7 @@ hide(category_axis_fields);
 
 function bind_type_change(selected) {
     return function () {
-        Config.horizontal_axis_type = 'timeflow';
+        Configurable.config.horizontal_axis_type = 'timeflow';
         if (selected === 'timeflow') {
             show(timeflow_axis_fields);
             hide(category_axis_fields);
@@ -47,15 +48,15 @@ for (let i = 0; i < horizontal_axis_types.length; i++) {
 }
 
 // displaying timeflow fields according to options chosen
-if (Config.horizontal_axis_type === 'timeflow') {
+if (Configurable.config.horizontal_axis_type === 'timeflow') {
     let timeflow_measure_select = document.getElementById('timeflow_measure_id');
 
     // let timeflow_measure_display = document.getElementById('timeflow-measure-display');
-    // timeflow_measure_display.innerText = Config.timeflow_measure;
+    // timeflow_measure_display.innerText = Configurable.config.timeflow_measure;
 
     // timeflow_measure_select.onchange = function () {
-    //     Config.timeflow_measure = timeflow_measure_select[timeflow_measure_select.selectedIndex].id;
-    //     timeflow_measure_display.innerText = Config.timeflow_measure;
+    //     Configurable.config.timeflow_measure = timeflow_measure_select[timeflow_measure_select.selectedIndex].id;
+    //     timeflow_measure_display.innerText = Configurable.config.timeflow_measure;
     // }
 }
 
@@ -63,18 +64,18 @@ if (Config.horizontal_axis_type === 'timeflow') {
 function monitor_measure_value(input_id) {
     let value_input = document.getElementById('measure-value-step');
     value_input.addEventListener('change', function () {
-        Config.measure_value_step = value_input.value;
+        Configurable.config.measure_value_step = value_input.value;
 
-        let data_rows_count = document.querySelectorAll('#' + Config.data_table_id + ' tr').length;
+        let data_rows_count = document.querySelectorAll('#' + Configurable.config.data_table_id + ' tr').length;
 
         for (let i = 0; i < data_rows_count; i++) {
-            if (Config.chart_data[i] < Config.measure_value_step) {
-                Config.chart_data[i] = Config.measure_value_step;
-                document.getElementById('timeflow-chart-value[' + i + ']').value = Config.measure_value_step;
-            } else if ((Config.chart_data[i] % Config.measure_value_step) !== 0) {
-                Config.chart_data[i] = parseInt(Config.chart_data[i]);
-                Config.chart_data[i] += parseInt(Config.measure_value_step - Config.chart_data[i] % Config.measure_value_step);
-                document.getElementById('timeflow-chart-value[' + i + ']').value = Config.chart_data[i];
+            if (Configurable.config.chart_data[i] < Configurable.config.measure_value_step) {
+                Configurable.config.chart_data[i] = Configurable.config.measure_value_step;
+                document.getElementById('timeflow-chart-value[' + i + ']').value = Configurable.config.measure_value_step;
+            } else if ((Configurable.config.chart_data[i] % Configurable.config.measure_value_step) !== 0) {
+                Configurable.config.chart_data[i] = parseInt(Configurable.config.chart_data[i]);
+                Configurable.config.chart_data[i] += parseInt(Configurable.config.measure_value_step - Configurable.config.chart_data[i] % Configurable.config.measure_value_step);
+                document.getElementById('timeflow-chart-value[' + i + ']').value = Configurable.config.chart_data[i];
             }
         }
     })
@@ -119,24 +120,25 @@ function monitor_input_field(param) {
     }
 
     param_input.addEventListener('change', function () {
-        Config[param_name] = param_input.value;
+        Configurable.config[param_name] = param_input.value;
         if (destroy_old_labels(axis_type)) {
             if (axis_type === 'timeflow') {
-                display_timeflow_axis()
+                Configurable.display_timeflow_axis()
             } else {
-                display_vertical_axis();
+                Configurable.display_vertical_axis();
             }
         }
     });
 }
 
-for (let i = 0; i < Config.inputs_to_monitor.length; i++) {
-    monitor_input_field(Config.inputs_to_monitor[i]);
+for (let i = 0; i < Configurable.config.inputs_to_monitor.length; i++) {
+    monitor_input_field(Configurable.config.inputs_to_monitor[i]);
 }
 
 chart_type_input.addEventListener('change', function () {
-    Config.chart_type = Config.chart_type_input[Config.chart_type_input.selectedIndex].id;
-    draw_chart();
+    // let chart_type_input =
+    Configurable.config.chart_type = chart_type_input[chart_type_input.selectedIndex].id;
+    Configurable.draw_chart();
 });
 
 
