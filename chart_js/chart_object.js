@@ -106,7 +106,6 @@ class Chart {
     }
 
     draw_chart() {
-        okk();
         let canvas = document.getElementById(this.config.canvas_selector);
 
         if (canvas && canvas.getContext && this.config.chart_data) {

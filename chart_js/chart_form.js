@@ -128,6 +128,9 @@ function monitor_input_field(param) {
                 Configurable.display_vertical_axis();
             }
         }
+        if(param_name === 'timeflow_start_point'){
+            Configurable.draw_chart();
+        }
     });
 }
 
