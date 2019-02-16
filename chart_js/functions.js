@@ -23,6 +23,10 @@ function ok() {
     alert('ok');
 }
 
+function okk(){
+    console.log('ok');
+}
+
 function get_parent_by_level(elem, level) {
     let parent = elem;
     for (let i = 1; i <= level; i++) {

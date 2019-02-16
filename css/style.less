@@ -126,20 +126,21 @@ a.btn {
 
 .collapse-btn {
   position: absolute;
-  top: 20px;
+  top: 15px;
   right: 10px;
 
   display: block;
-  width: 11px;
-  height: 3px;
+  width: 21px;
+  height: 21px;
 
-  background-color: @primary;
-  border-radius: 2px;
+  background-color: white;
+  border-radius: 50%;
 
   cursor: pointer;
 }
 
-.collapse-btn.plus::after{
+.collapse-btn::before,
+.collapsed > .collapse-btn:after {
   content: "";
 
   position: absolute;
@@ -149,12 +150,16 @@ a.btn {
   bottom: 0;
 
   display: block;
-  width: 3px;
-  height: 11px;
+  width: 11px;
+  height: 3px;
   margin: auto;
 
-  background-color: inherit;
-  border-radius: inherit;
+  background-color: @primary;
+  border-radius: 2px;
+}
+
+.collapsed > .collapse-btn::after {
+  transform: rotate(90deg);
 }
 
 //----------CONTAINERS---------
@@ -165,7 +170,7 @@ a.btn {
   transition: height 10s linear;
 }
 
-.collapsed{
+.collapsed {
   overflow-y: hidden;
 }
 
@@ -253,7 +258,7 @@ form input {
   outline: none;
 }
 
-input.colorpicker{
+input.colorpicker {
   width: 25px;
   height: 25px;
   margin-left: 15px;

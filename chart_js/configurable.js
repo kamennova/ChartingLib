@@ -35,28 +35,25 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
     timeflow_start_point: document.getElementById('timeflow-start-point').value,
 
     // chart display parameters
-    canvas_id: 'chart-canvas',
-    canvas: document.getElementById(this.canvas_id),
+    canvas_selector: 'chart-canvas',
+    canvas_width: 1400,
+    canvas_height: 400,
+    padding_left: 30,
 
     chart_sizing: 30,
-    canvas_width: 1400,
-    chart_col_width: 45,
-    chart_col_dist: 15,
-    // chart_point_dist: this.chart_col_dist + this.chart_col_width,
+    point_dist: 60,
+    line_width: 2,
 
-    canvas_height: 400,
-    chart_left_padding: 30,
+    // bar chart
+    bar_width: 44,
+    bar_border_radius: 5,
 
-    // chart styles and colours
+    // curve chart
+    smoothing: 2,
+
+    // colours
     line_colour: '#4158D0',
     fill_colour: '#e2e6f9',
 
     inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-axis-labels-measure-id', 'timeflow-axis-labels-step']
-});
-
-
-Object.defineProperty(Configurable.config, 'chart_point_dist', {
-    value: Configurable.config.chart_col_width + Configurable.config.chart_col_dist,
-    enumerable: true,
-    configurable: true
 });

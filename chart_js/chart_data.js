@@ -43,8 +43,6 @@ function prepare_default_chart_data() {
     }
 }
 
-prepare_default_chart_data();
-
 // adding onchange event to data row to track the change of data row value nad update the chart_data[]
 function monitor_data_row_input(row_pos) {
     let data_input_row = document.getElementById('timeflow-chart-value[' + row_pos + ']');

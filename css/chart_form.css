@@ -322,9 +322,10 @@ main > .container {
 }
 .data-input-table thead td {
   padding-left: 5px;
+  border-top: 0;
 }
 .data-input-table td {
-  border: 1px solid lightgrey;
+  border-top: 1px solid lightgrey;
 }
 .data-input-table td input {
   border: none;

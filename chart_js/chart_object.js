@@ -1,4 +1,4 @@
-/*==========================
+/**==========================
        Chart model
 ==========================*/
 
@@ -8,11 +8,25 @@ class Chart {
         this.config = config;
     }
 
+    // destroying old labels, if they exist
+    destroy_old_labels(axis_type) {
+        let old_labels = document.getElementsByClassName(axis_type + '-axis-label');
+
+        if (old_labels) {
+            let old_labels_count = old_labels.length;
+
+            for (let i = 0; i < old_labels_count; i++) {
+                if (!old_labels[0].parentNode.removeChild(old_labels[0])) return false;
+            }
+        }
+
+        return true;
+    }
+
     display_timeflow_axis() {
         let timeflow_axis_labels_container = document.getElementById('timeflow-axis-labels-container');
         let timeflow_axis_labels = '';
         let start_point = new Date(this.config.timeflow_start_point);
-
 
         let labels_measure;
 
@@ -30,7 +44,7 @@ class Chart {
         if (labels_measure === 'day' || labels_measure === 'week') {
             // display dates axises
             let step = this.config.timeflow_axis_labels_step;
-            let steps_count = this.config.canvas_width / (this.config.timeflow_axis_labels_step * this.config.chart_point_dist);
+            let steps_count = this.config.canvas_width / (this.config.timeflow_axis_labels_step * this.config.point_dist);
 
             if (labels_measure === 'week') {
                 steps_count /= translate_measure(labels_measure);
@@ -42,7 +56,7 @@ class Chart {
             steps_count = Math.floor(steps_count);
 
             for (let i = 0; i <= steps_count; i++) {
-                let left_pos = this.config.chart_point_dist * index * (i * step) + this.config.chart_left_padding - 12;
+                let left_pos = this.config.point_dist * index * (i * step) + this.config.padding_left - 12;
                 let full_date = new Date(start_point.getFullYear(), start_point.getMonth(), start_point.getDate() + step * (i));
 
                 let date_ending = 'th';
@@ -92,7 +106,8 @@ class Chart {
     }
 
     draw_chart() {
-        let canvas = document.getElementById(this.config.canvas_id);
+        okk();
+        let canvas = document.getElementById(this.config.canvas_selector);
 
         if (canvas && canvas.getContext && this.config.chart_data) {
             let ctx = canvas.getContext('2d');
@@ -100,7 +115,7 @@ class Chart {
 
             this.draw_timeflow_gridlines(ctx);
 
-            ctx.lineWidth = 2;
+            ctx.lineWidth = this.config.line_width;
             ctx.strokeStyle = this.config.line_colour;
             ctx.fillStyle = this.config.fill_colour;
             ctx.shadowColor = 'rgba(65, 88, 208, 0.6)';
@@ -110,11 +125,9 @@ class Chart {
 
             let labels_start_point = new Date(this.config.timeflow_start_point);
 
-            let value_start_point;
+            let value_start_point = new Date;
             if (this.config.configurable) {
                 value_start_point = new Date(document.getElementById('timeflow-chart-breakpoint[0]').value);
-            } else {
-                value_start_point = new Date();
             }
 
             let days_diff = Math.floor((value_start_point - labels_start_point) / (1000 * 60 * 60 * 24));
@@ -123,13 +136,13 @@ class Chart {
 
             switch (this.config.chart_type) {
                 case 'line_chart':
-                    draw_curve_chart(this, ctx, days_diff, this.config.chart_point_dist / 2);
+                    draw_curve_chart(this, ctx, days_diff, this.config.point_dist / 2);
                     break;
                 case 'bar_chart':
                     draw_bar_chart(this, ctx, days_diff);
                     break;
                 case 'curve_chart':
-                    draw_curve_chart(this, ctx, days_diff);
+                    draw_curve_chart(this, ctx, days_diff, this.config.smoothing);
                     break;
                 case 'point_chart':
                     draw_point_chart(this, ctx, days_diff);
@@ -149,7 +162,7 @@ class Chart {
             }
         }
 
-        let steps_count = Math.floor(this.config.canvas_width / this.config.chart_point_dist);
+        let steps_count = Math.floor(this.config.canvas_width / this.config.point_dist);
         let start_point = new Date(this.config.timeflow_start_point);
 
         if (this.config.timeflow_axis_labels_measure !== 0) {
@@ -162,15 +175,15 @@ class Chart {
                     ctx.lineWidth = 1;
                     ctx.strokeStyle = '#e0e0e0';
                     ctx.beginPath();
-                    ctx.moveTo(this.config.chart_point_dist * i + this.config.chart_left_padding, this.config.canvas_height);
-                    ctx.lineTo(this.config.chart_point_dist * i + this.config.chart_left_padding, 30);
+                    ctx.moveTo(this.config.point_dist * i + this.config.padding_left, this.config.canvas_height);
+                    ctx.lineTo(this.config.point_dist * i + this.config.padding_left, 30);
                     ctx.stroke();
                     ctx.closePath();
 
                     // add month label
                     let labels_container = document.getElementById('timeflow-gridlines-labels-container');
                     let month_name = short_month_names[full_date.getMonth()];
-                    let pos = this.config.chart_point_dist * i + this.config.chart_left_padding;
+                    let pos = this.config.point_dist * i + this.config.padding_left;
                     labels_container.insertAdjacentHTML('beforeend', "<span class='timeflow-gridline-label month-label' style='left:" + pos + "px'>" + month_name + "</span>")
                 }
             }
@@ -220,10 +233,10 @@ let chart1 = new Chart(document.getElementById(this.canvas_id), {
     canvas_width: 1400,
     chart_col_width: 45,
     chart_col_dist: 15,
-    // chart_point_dist: this.chart_col_dist + this.chart_col_width,
+    // point_dist: this.chart_col_dist + this.chart_col_width,
 
     canvas_height: 500,
-    chart_left_padding: 30,
+    padding_left: 30,
 
     // chart styles and colours
     line_colour: '#4158D0',

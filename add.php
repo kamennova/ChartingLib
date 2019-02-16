@@ -61,12 +61,15 @@ $timeflow_start_point = date('Y-m-d', strtotime('-1 week'));
 ?>
 
 <?php
+
+//$body_class_list .= 'theme-dark';
+
 $content .= <<<EOD
     <link rel="stylesheet" href="css/chart_form.css" type="text/css">
     <div class="container">
     <div class='chart-form-container col-left'>
         <h1 class="page-title">Chart configuration</h1>
-        <form class="chart-form" method="post" onchange="Configurable.draw_chart()">
+        <form class="chart-form" method="post">
         <section class="form-section main-info-fields">
             <p>
                 <label for="chart_name">Name</label>
@@ -111,7 +114,7 @@ $content .= <<<EOD
                 </table>
             </section>
             <section class="plane-chart-fields" id="plane-chart-fields">
-                <section class="collapsible form-section vertical-axis-fields">
+                <section class="collapsible collapsed form-section vertical-axis-fields">
                     <h2 class="collapsible-title form-section-title">Vertical axis</h2>
                     <p>
                         <label for="chart_measure_id">Measure unit</label>
@@ -123,14 +126,14 @@ $content .= <<<EOD
                     </p>
                     <p>
                         <label for="measure-value-step">Value step</label>
-                        <input type="number" name="measure-value-step" size="10" class="smaller-input" id="measure-value-step" value="1">
+                        <input type="number" name="measure-value-step" size="10" min="1" class="smaller-input" id="measure-value-step" value="1">
                     </p>
                     <p>
                         <label for="vertical-axis-labels-step">Axis labels step</label>
-                        <input type="number" name="vertical-axis-labels-step" size="10" class="smaller-input" id="vertical-axis-labels-step" value="2">
+                        <input type="number" name="vertical-axis-labels-step" size="10" min="1" class="smaller-input" id="vertical-axis-labels-step" value="2">
                     </p>
                 </section>
-                <section class="collapsible form-section timeflow-axis-fields">
+                <section class="collapsible collapsed form-section timeflow-axis-fields">
                     <h2 class="collapsible-title form-section-title">Horizontal axis</h2>
                     <section class="horizontal_axis_options_fields" id="category_axis_options_fields">
                     category axis fields coming soon...
@@ -144,7 +147,7 @@ $content .= <<<EOD
                     <fieldset class="measure-fields-wrapper">
                             <!--<label for="timeflow_measure_id">Timeflow measure</label>-->
                             <label for="timeflow-step">Value step</label>    
-                            <input class="smaller-input" type="number" value="1" placeholder="1" size='10' id="timeflow-step" name="timeflow_step">
+                            <input class="smaller-input" type="number" value="1" min="1" size='10' id="timeflow-step" name="timeflow_step">
                             <select name="timeflow_measure_id" id="timeflow-measure-id">
 EOD;
 $content .= generate_options_list($pdo, 'timeflow_measure', 'measure_name', 'day', 'measure_name');
@@ -154,7 +157,7 @@ $content .= <<<EOD
                     
                         <fieldset class="measure-fields-wrapper">
                             <label for="timeflow-axis-labels-step">Axis labels step</label>
-                            <input type="number" name="timeflow_axis_labels_step" size="10" class="smaller-input" id="timeflow-axis-labels-step" value="1">
+                            <input type="number" name="timeflow_axis_labels_step" min="1" size="10" class="smaller-input" id="timeflow-axis-labels-step" value="1">
                             <select name="timeflow_axis_labels_measure_id" id="timeflow-axis-labels-measure-id">
 EOD;
 $content .= generate_options_list($pdo, 'timeflow_measure', 'measure_name', 'day', 'measure_name');
@@ -179,6 +182,14 @@ $content .= <<<EOD
              </section>
              <section class="form-section collapsible">
                 <h2 class="form-section-title collapsible-title">Style</h2>
+                <p>
+                    <label>Line sickness</label>
+                    <input type="number" class="line-width-input smaller-input" id="line-width-input" value="2" min="1" />
+                </p>
+                <p>
+                    <label>Points distance</label>
+                    <input type="number" class="points-dist-input smaller-input" id="points-dist-input" value="60" min="0" />
+                </p>
                 <p class="colorpicker-input-container">
                    <label for="line-colour"> Line colour </label>
                    <input type="text" class="minicolors-input" id="line-colour-input" />                   
@@ -186,7 +197,24 @@ $content .= <<<EOD
                 <p class="colorpicker-input-container"> 
                    <label for="fill-colour"> Fill colour </label>
                    <input type="text" class="minicolors-input" id="fill-colour-input" />   
-                </p> 
+                </p>
+                <section class="bar-chart-fields">
+                    <p>
+                        <label>Bar width</label>
+                        <input type="number" class="bar-width-input smaller-input" id="bar-width-input" min="1" value="45" />
+                    </p>
+                    <p>
+                        <label>Bar border radius</label>
+                        <input type="number" class="bar-border-radius-input smaller-input" id="bar-border-radius-input" min="0" value="5" />
+                    </p>                    
+                </section> 
+                <section class="curve-chart-fields">
+                    <p>
+                        <label>Smoothing</label>
+                        <input type="number" class="smoothing-input smaller-input" id="smoothing-input" min="1" value="2" />
+                    </p>                    
+                </section> 
+                
              </section>
             <a class="btn" href="add.php">Reset to default</a>
         </form>

@@ -10,6 +10,11 @@ let chart_type_input = document.getElementById(Configurable.config.chart_type_in
 // default chart type is 'plane'
 hide(pie_chart_fields);
 
+let bar_chart_fields = document.getElementsByClassName('bar-chart-fields');
+for (let a = 0; a < bar_chart_fields.length; a++) {
+    hide(bar_chart_fields[a]);
+}
+
 // displaying chart fields according to the chart type selected
 chart_type_input.onchange = function () {
     // let chart_type_input = document.getElementById(Configurable.config.chart_type_input_selector);
@@ -27,8 +32,6 @@ chart_type_input.onchange = function () {
 let horizontal_axis_types = document.getElementsByName('horizontal_axis_type'); // array of axis type
 let category_axis_fields = document.getElementById('category_axis_options_fields');
 let timeflow_axis_fields = document.getElementById('timeflow_axis_options_fields');
-
-hide(category_axis_fields);
 
 function bind_type_change(selected) {
     return function () {
@@ -60,7 +63,6 @@ if (Configurable.config.horizontal_axis_type === 'timeflow') {
     // }
 }
 
-
 function monitor_measure_value(input_id) {
     let value_input = document.getElementById('measure-value-step');
     value_input.addEventListener('change', function () {
@@ -80,8 +82,6 @@ function monitor_measure_value(input_id) {
         }
     })
 }
-
-monitor_measure_value();
 
 /* ============================================
    Updating chart, the axises and gridlines
@@ -136,8 +136,24 @@ for (let i = 0; i < Configurable.config.inputs_to_monitor.length; i++) {
 }
 
 chart_type_input.addEventListener('change', function () {
-    // let chart_type_input =
-    Configurable.config.chart_type = chart_type_input[chart_type_input.selectedIndex].id;
+    // hiding previous chart type fields
+    let fields_to_hide_classname = (Configurable.config.chart_type + '_fields').replace(/_/g, '-').replace(/ /, '-');
+    let fields_to_hide = document.getElementsByClassName(fields_to_hide_classname);
+
+    for (let a = 0; a < fields_to_hide.length; a++) {
+        hide(fields_to_hide[a]);
+    }
+
+    Configurable.config.chart_type = this[this.selectedIndex].id;
+
+    // showing new chart type fields
+    let fields_to_show_classname = (Configurable.config.chart_type + '_fields').replace(/_/g, '-').replace(/ /, '-');
+    let fields_to_show = document.getElementsByClassName(fields_to_show_classname);
+
+    for (let a = 0; a < fields_to_show.length; a++) {
+        show(fields_to_show[a]);
+    }
+
     Configurable.draw_chart();
 });
 
@@ -145,7 +161,7 @@ chart_type_input.addEventListener('change', function () {
 // colorpicker
 $.minicolors.defaults = $.extend($.minicolors.defaults, {
     defaultValue: '#4158D0',
-    control: 'wheel',
+    // control: 'wheel',
     animationSpeed: 200,
     // changeDelay: 200,
     theme: 'bootstrap',
@@ -154,22 +170,69 @@ $.minicolors.defaults = $.extend($.minicolors.defaults, {
 });
 
 $('#line-colour-input.minicolors-input').minicolors({
-    change: function(value, opacity) {
+    change: function (value, opacity) {
         Configurable.config.line_colour = value;
         Configurable.draw_chart();
     }
 });
 
 $('#fill-colour-input.minicolors-input').minicolors({
-    change: function(value, opacity) {
+    change: function (value, opacity) {
         Configurable.config.fill_colour = value;
         Configurable.draw_chart();
     }
 });
 
+// Style onchange
+
+document.getElementById('bar-width-input').addEventListener('change', function () {
+    Configurable.config.bar_width = Number(this.value);
+    set_bar_border_radius();
+
+    console.log("border radius " + Configurable.config.bar_border_radius + "; bar width " + Configurable.config.bar_width);
 
 
+    Configurable.draw_chart();
+});
 
+document.getElementById('points-dist-input').addEventListener('change', function () {
+    Configurable.config.point_dist = Number(this.value);
+    Configurable.draw_chart();
+    Configurable.destroy_old_labels('timeflow');
+    Configurable.display_timeflow_axis();
+});
+
+// ----
+
+let bar_border_radius_input = document.getElementById('bar-border-radius-input');
+set_bar_border_radius();
+
+function set_bar_border_radius() {
+    let max_radius = Math.floor(Configurable.config.bar_width / 2);
+
+    if (Configurable.config.bar_border_radius > max_radius) {
+        bar_border_radius_input.value = max_radius;
+        Configurable.config.bar_border_radius = max_radius;
+    }
+
+    bar_border_radius_input.max = max_radius;
+}
+
+bar_border_radius_input.addEventListener('change', function () {
+    Configurable.config.bar_border_radius = Number(this.value);
+    Configurable.draw_chart();
+});
+
+document.getElementById('line-width-input').addEventListener('change', function () {
+    Configurable.config.line_width = Number(this.value);
+    Configurable.draw_chart();
+});
+
+document.getElementById('smoothing-input').addEventListener('change', function(){
+    console.log(Configurable.config.smoothing);
+    Configurable.config.smoothing = Number(this.value);
+    Configurable.draw_chart();
+});
 
 /*
 * 1) getting default value(max/min value) for config Obj: form / js default

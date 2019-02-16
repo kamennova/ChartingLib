@@ -93,16 +93,17 @@ a.btn {
 }
 .collapse-btn {
   position: absolute;
-  top: 20px;
+  top: 15px;
   right: 10px;
   display: block;
-  width: 11px;
-  height: 3px;
-  background-color: #4158D0;
-  border-radius: 2px;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  border-radius: 50%;
   cursor: pointer;
 }
-.collapse-btn.plus::after {
+.collapse-btn::before,
+.collapsed > .collapse-btn:after {
   content: "";
   position: absolute;
   left: 0;
@@ -110,11 +111,14 @@ a.btn {
   top: 0;
   bottom: 0;
   display: block;
-  width: 3px;
-  height: 11px;
+  width: 11px;
+  height: 3px;
   margin: auto;
-  background-color: inherit;
-  border-radius: inherit;
+  background-color: #4158D0;
+  border-radius: 2px;
+}
+.collapsed > .collapse-btn::after {
+  transform: rotate(90deg);
 }
 .collapsible {
   position: relative;
