@@ -254,6 +254,12 @@ main > .container {
   margin-bottom: auto;
   background-color: #bababa;
 }
+.axis-labels-container.no-line {
+  border: 0;
+}
+.axis-labels-container.no-ticks .axis-label::after {
+  display: none;
+}
 .timeflow-axis-labels-container {
   position: relative;
   width: 1400px;

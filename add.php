@@ -44,9 +44,10 @@ function generate_options_from_arr($arr, $option_id = false)
 function generate_default_data_table_rows()
 {
     $default_data_table_rows = '';
-    $default_data = [2, 5, 3, 9, 6, 2, 9];
+    $default_data = [0, 5, 3, 9, 6, 2, 9, 4, 0];
+    $points_num = count($default_data);
 
-    for ($i = 0; $i < 7; $i++) {
+    for ($i = 0; $i < $points_num; $i++) {
         $default_data_table_rows .= "<tr>" .
             "<td><input class='table-input' type='date' id='timeflow-chart-breakpoint[$i]' name='timeflow_chart_breakpoint[$i]'></td>" .
             "<td><input class='table-input' type='number' value='$default_data[$i]' id='timeflow-chart-value[$i]' name='timeflow_chart_value[$i]'></td>" .
@@ -69,7 +70,7 @@ $content .= <<<EOD
     <div class="container">
     <div class='chart-form-container col-left'>
         <h1 class="page-title">Chart configuration</h1>
-        <form class="chart-form" method="post">
+        <form class="chart-form" method="post" action="add_action.php">
         <section class="form-section main-info-fields">
             <p>
                 <label for="chart_name">Name</label>
@@ -90,7 +91,7 @@ $content .= <<<EOD
             </fieldset>
             <p>
                 <label for="chart-type-id">Visual representation</label>
-                <select name="chart-type-id" id="chart-type-id">
+                <select name="chart_type_id" id="chart-type-id">
 EOD;
 $content .= generate_options_list($pdo, 'chart_type', 'type_name', 'curve_chart', 'type_name');
 $content .= <<<EOD
@@ -126,11 +127,11 @@ $content .= <<<EOD
                     </p>
                     <p>
                         <label for="measure-value-step">Value step</label>
-                        <input type="number" name="measure-value-step" size="10" min="1" class="smaller-input" id="measure-value-step" value="1">
+                        <input type="number" name="measure_value_step" size="10" min="1" class="smaller-input" id="measure-value-step" value="1">
                     </p>
                     <p>
                         <label for="vertical-axis-labels-step">Axis labels step</label>
-                        <input type="number" name="vertical-axis-labels-step" size="10" min="1" class="smaller-input" id="vertical-axis-labels-step" value="2">
+                        <input type="number" name="vertical_axis_labels_step" size="10" min="1" class="smaller-input" id="vertical-axis-labels-step" value="3">
                     </p>
                 </section>
                 <section class="collapsible collapsed form-section timeflow-axis-fields">
@@ -147,7 +148,7 @@ $content .= <<<EOD
                     <fieldset class="measure-fields-wrapper">
                             <!--<label for="timeflow_measure_id">Timeflow measure</label>-->
                             <label for="timeflow-step">Value step</label>    
-                            <input class="smaller-input" type="number" value="1" min="1" size='10' id="timeflow-step" name="timeflow_step">
+                            <input class="smaller-input" type="number" value="1" min="1" size='10' id="timeflow-step" name="timeflow_value_step">
                             <select name="timeflow_measure_id" id="timeflow-measure-id">
 EOD;
 $content .= generate_options_list($pdo, 'timeflow_measure', 'measure_name', 'day', 'measure_name');
@@ -198,6 +199,22 @@ $content .= <<<EOD
                    <label for="fill-colour"> Fill colour </label>
                    <input type="text" class="minicolors-input" id="fill-colour-input" />   
                 </p>
+                <section class="points-fields">
+                    <p class="show-points-input">
+                        <label class="input-option-label" id="show-breakpoints-label">
+                        <input class="visually-hidden" id="show-breakpoints" type="checkbox" checked>
+                        <span class="checkbox-indicator"></span>
+                        Show points 
+                        </label>               
+                    </p>
+                    <p class="point-radius">
+                        <label>Point radius</label>
+                        <input type="number" class="point-radius-input smaller-input" id="point-radius-input" min="1" value="3" />
+                    </p>
+                    <!--<p class="point-border-">-->
+                        <!--<input type="number" class="point-border-radius-input smaller-input" id="point-border-radius-input" min="0" value="5" />-->
+                    <!--</p>-->
+                </section>
                 <section class="bar-chart-fields">
                     <p>
                         <label>Bar width</label>
@@ -216,16 +233,27 @@ $content .= <<<EOD
                 </section> 
                 
              </section>
-            <a class="btn" href="add.php">Reset to default</a>
+            <button class="btn btn-save         
+EOD;
+    session_start();
+    if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true){
+
+    } else {
+        $content .= 'disabled';
+    }
+
+    $content .= <<<EOD
+                " type="submit">Save</button>
+            <a class="btn" href="add.php">Reset</a>
         </form>
     </div>
     <div class="col-right">
         <div class="chart-wrapper">
-            <div id="vertical-axis-labels-container" class="vertical-axis-labels-container"></div>
+            <div id="vertical-axis-labels-container" class="vertical-axis-labels-container axis-labels-container"></div>
             <div class="chart-canvas-wrapper">
                 <canvas id="chart-canvas" height="400px" width="1400px"></canvas>
             </div>
-            <div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container"></div>
+            <div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container axis-labels-container"></div>
             <div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>
         </div>
         <section class="chart-data-input">

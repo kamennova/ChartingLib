@@ -1,9 +1,8 @@
-
 let Configurable = new Chart(document.getElementById(this.canvas_id), {
     configurable: true,
 
     // default data array
-    chart_data: [2, 5, 3, 9, 6, 2, 9],
+    chart_data: [0, 5, 3, 9, 6, 2, 9, 4, 0],
 
     data_table_id: 'timeflow-chart-data-input-tbody',
 
@@ -16,7 +15,7 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
     measure_value_step: 1,
     measure_value_step_input_selector: 'measure-value-step',
 
-    vertical_axis_labels_step: 2,
+    vertical_axis_labels_step: 3,
     vertical_axis_labels_step_input_selector: 'vertical-axis-labels-step',
 
     // horizontal axis parameters
@@ -34,7 +33,12 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
     // timeflow_step_input: document.getElementById()
     timeflow_start_point: document.getElementById('timeflow-start-point').value,
 
-    // chart display parameters
+    inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-axis-labels-measure-id', 'timeflow-axis-labels-step'],
+
+    /* ====================
+        Style parameters
+    ===================== */
+
     canvas_selector: 'chart-canvas',
     canvas_width: 1400,
     canvas_height: 400,
@@ -43,6 +47,22 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
     chart_sizing: 30,
     point_dist: 60,
     line_width: 2,
+    shadow_colour: 'rgba(0, 0, 0, 0)',
+    shadow_blur: 7,
+    shadow_offset_x: 0,
+    shadow_offset_y: 0,
+
+    // axises & labels
+    vertical_axis_show_ticks: false,
+    vertical_axis_show_line: false,
+    horizontal_axis_show_ticks: false,
+    horizontal_axis_show_line: true,
+    grid_colour: '#e0e0e0',
+
+    draw_points: true,
+    point_radius: 3,
+    point_border_colour: '#4158D0',
+    point_fill_colour: '#4158D0',
 
     // bar chart
     bar_width: 44,
@@ -53,7 +73,5 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
 
     // colours
     line_colour: '#4158D0',
-    fill_colour: '#e2e6f9',
-
-    inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-axis-labels-measure-id', 'timeflow-axis-labels-step']
+    fill_colour: 'rgba(0, 0, 0, 0)',
 });

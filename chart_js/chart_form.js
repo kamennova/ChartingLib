@@ -128,7 +128,7 @@ function monitor_input_field(param) {
                 Configurable.display_vertical_axis();
             }
         }
-        if(param_name === 'timeflow_start_point'){
+        if(param_name === 'timeflow_start_point' || param_name === 'vertical_axis_labels_step'){
             Configurable.draw_chart();
         }
     });
@@ -203,6 +203,8 @@ document.getElementById('points-dist-input').addEventListener('change', function
     Configurable.draw_chart();
     Configurable.destroy_old_labels('timeflow');
     Configurable.display_timeflow_axis();
+
+    get_points_num();
 });
 
 // ----

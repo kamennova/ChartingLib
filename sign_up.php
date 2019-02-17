@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // password validation
     if (empty(trim($_POST['user_password']))) {
-        $user_password_err = 'Please enter password';
+        $user_password_err = 'Please enter a password';
     } elseif (strlen(trim($_POST['user_password'])) < 3) {
         $user_password_err = 'Password should container at least 3 characters';
     } else {
@@ -116,7 +116,6 @@ $content .= <<<EOD
           <input class='form-field' type="password" id="confirm-password" name="confirm_password" />
           <p class="error">
 EOD;
-
 $content .= ($user_email_err == '') ? $confirm_password_err : null;
 $content .= <<<EOD
             </p>
@@ -130,5 +129,6 @@ EOD;
 
 include_once 'layout.php';
 
+$pdo = null;
 
 //??? connection try config.php

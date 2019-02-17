@@ -27,9 +27,11 @@ function draw_bar_chart(obj, ctx, days_diff) {
 
     ctx.moveTo(bar_padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height);
 
+    let x0 = obj.config.point_dist * (days_diff -1) + bar_padding_left;
+    let y0 = obj.config.canvas_height;
+
     obj.config.chart_data.forEach(function (item, i, arr) {
-        let x0 = obj.config.point_dist * (i + days_diff) + bar_padding_left;
-        let y0 = obj.config.canvas_height;
+        x0 += obj.config.point_dist;
 
         ctx.beginPath();
 
@@ -48,10 +50,14 @@ function draw_bar_chart(obj, ctx, days_diff) {
 function draw_line_chart(obj, ctx, days_diff) {
     ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_sizing * obj.config.chart_data[0]);
 
+    let x0 = obj.config.point_dist * (days_diff -1) + obj.config.padding_left;
+    let y0 = obj.config.canvas_height;
+
     obj.config.chart_data.forEach(function (item, i, arr) {
-        ctx.lineTo(obj.config.point_dist * (i + days_diff) + obj.config.padding_left, obj.config.canvas_height - obj.config.chart_sizing * item);
+        x0 += obj.config.point_dist;
+        ctx.lineTo(x0, y0 - obj.config.chart_sizing * item);
     });
-    // ctx.fill();
+    ctx.fill();
     ctx.stroke();
 }
 

@@ -1,6 +1,6 @@
 /**==========================
-       Chart model
-==========================*/
+ Chart model
+ ==========================*/
 
 class Chart {
     constructor(element, config) {
@@ -113,14 +113,15 @@ class Chart {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             this.draw_timeflow_gridlines(ctx);
+            this.draw_horizontal_grid(ctx);
 
             ctx.lineWidth = this.config.line_width;
             ctx.strokeStyle = this.config.line_colour;
             ctx.fillStyle = this.config.fill_colour;
-            ctx.shadowColor = 'rgba(65, 88, 208, 0.6)';
-            ctx.shadowBlur = 7;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
+            ctx.shadowColor = this.config.shadow_colour;
+            ctx.shadowBlur = this.config.shadow_blur;
+            ctx.shadowOffsetX = this.config.shadow_offset_x;
+            ctx.shadowOffsetY = this.config.shadow_offset_y;
 
             let labels_start_point = new Date(this.config.timeflow_start_point);
 
@@ -153,7 +154,6 @@ class Chart {
     draw_timeflow_gridlines(ctx) {
         // destroying old labels, if they exist
         let old_gridline_labels = document.getElementsByClassName('timeflow-gridline-label');
-
         if (old_gridline_labels) {
             let old_gridline_labels_count = old_gridline_labels.length;
             for (let i = 0; i < old_gridline_labels_count; i++) {
@@ -164,28 +164,45 @@ class Chart {
         let steps_count = Math.floor(this.config.canvas_width / this.config.point_dist);
         let start_point = new Date(this.config.timeflow_start_point);
 
-        if (this.config.timeflow_axis_labels_measure !== 0) {
-            for (let i = 0; i <= steps_count; i++) {
-                let full_date = new Date(start_point.getFullYear(), start_point.getMonth(), start_point.getDate() + i);
-                let date = full_date.getDate();
+        for (let i = 0; i <= steps_count; i++) {
+            let full_date = new Date(start_point.getFullYear(), start_point.getMonth(), start_point.getDate() + i);
+            let date = full_date.getDate();
 
-                if (date === 1) {
-                    // draw month start gridline
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = '#e0e0e0';
-                    ctx.beginPath();
-                    ctx.moveTo(this.config.point_dist * i + this.config.padding_left, this.config.canvas_height);
-                    ctx.lineTo(this.config.point_dist * i + this.config.padding_left, 30);
-                    ctx.stroke();
-                    ctx.closePath();
+            if (date === 1) {
+                // draw month start gridline
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = this.config.grid_colour;
+                ctx.beginPath();
+                ctx.moveTo(this.config.point_dist * i + this.config.padding_left, this.config.canvas_height);
+                ctx.lineTo(this.config.point_dist * i + this.config.padding_left, 30);
+                ctx.stroke();
+                ctx.closePath();
 
-                    // add month label
-                    let labels_container = document.getElementById('timeflow-gridlines-labels-container');
-                    let month_name = short_month_names[full_date.getMonth()];
-                    let pos = this.config.point_dist * i + this.config.padding_left;
-                    labels_container.insertAdjacentHTML('beforeend', "<span class='timeflow-gridline-label month-label' style='left:" + pos + "px'>" + month_name + "</span>")
-                }
+                // add month label
+                let labels_container = document.getElementById('timeflow-gridlines-labels-container');
+                let month_name = short_month_names[full_date.getMonth()];
+                let pos = this.config.point_dist * i + this.config.padding_left;
+                labels_container.insertAdjacentHTML('beforeend', "<span class='timeflow-gridline-label month-label' style='left:" + pos + "px'>" + month_name + "</span>")
             }
+        }
+    }
+
+    draw_horizontal_grid(ctx) {
+        let gridlines_count = Math.floor(this.config.canvas_height / (this.config.vertical_axis_labels_step * this.config.chart_sizing));
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = this.config.grid_colour;
+
+        let y0 = this.config.canvas_height;
+
+        for (let i = 0; i < gridlines_count; i++) {
+            y0 -= this.config.chart_sizing * this.config.vertical_axis_labels_step;
+
+            ctx.beginPath();
+            ctx.moveTo(0, y0);
+            ctx.lineTo(this.config.canvas_width, y0);
+            ctx.stroke();
+            ctx.closePath();
         }
     }
 
@@ -243,3 +260,13 @@ let chart1 = new Chart(document.getElementById(this.canvas_id), {
 
     // inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-axis-labels-measure-id', 'timeflow-axis-labels-step']
 });
+
+function get_points_num(obj) {
+    // let canvas_width = Configurable.config.canvas_width;
+    // let dist = Configurable.config.point_dist;
+
+    // let num = Math.floor(canvas_width / dist);
+    // num++; //
+
+    // return num;
+}

@@ -80,15 +80,21 @@ a.btn {
   border-radius: 3px;
 }
 
-.btn:hover {
+.btn:not(.disabled):hover {
   color: @primary;
 
   border-color: @primary;
 }
 
+.btn.disabled:hover{
+  cursor: default;
+}
+
 .wider-btn {
   min-width: 100px;
 }
+
+//----
 
 .btn-add {
   padding-left: 35px;
@@ -116,13 +122,58 @@ a.btn {
   z-index: 20;
 }
 
-.site-links .login-link {
-  color: @primary
-}
-
 .btn-add::after {
   transform: rotate(90deg);
 }
+
+//----
+
+.btn-save {
+  position: relative;
+  padding-left: 35px;
+
+  z-index: 10;
+}
+
+.btn-save::before,
+.btn-save::after {
+  content: "";
+
+  position: absolute;
+  left: 17px;
+  top: 0;
+  bottom: 0;
+
+  display: block;
+  width: 3px;
+  height: 11px;
+  margin: auto 0;
+
+  background-color: @primary;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+
+  z-index: 20;
+}
+
+.btn-save.disabled::before,
+.btn-save.disabled::after{
+  background-color: grey;
+}
+
+.btn-save::before{
+  height: 6px;
+
+  transform: rotate(-50deg);
+}
+
+.btn-save::after {
+  left: 22px;
+
+  transform: rotate(45deg);
+}
+
+//----
 
 .collapse-btn {
   position: absolute;
@@ -427,6 +478,10 @@ input.colorpicker {
 
 .site-links .help-link {
   color: #9f9fa1;
+}
+
+.site-links .login-link {
+  color: @primary
 }
 
 .site-nav li,
