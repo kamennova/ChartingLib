@@ -73,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $param_email = $user_email;
             $param_password = password_hash($user_password, PASSWORD_DEFAULT);
 
-
             if ($stmt->execute()) {
                 header("location: login.php");
                 exit;
@@ -128,7 +127,5 @@ $content .= <<<EOD
 EOD;
 
 include_once 'layout.php';
-
-$pdo = null;
 
 //??? connection try config.php
