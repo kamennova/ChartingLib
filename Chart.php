@@ -4,6 +4,8 @@ class Chart
 {
     private $id;
 
+    public $default_data;
+
     public $owner_id = 'hi';
     public $name; // e.g. Tea cups daily
     public $data_type; // timeflow / category
@@ -57,5 +59,4 @@ class Chart
     // colours
     public $line_colour;
     public $fill_colour;
-
 }

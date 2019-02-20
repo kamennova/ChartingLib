@@ -1,3 +1,19 @@
+<?php if (isset($body_class_list)) {
+    $body_classes = '';
+    foreach ($body_class_list as $body_class) {
+
+        if(strpos($body_class, 'theme') !== false){
+            // theme name is 'theme-xyz'
+            $theme_name = substr($body_class, 6);
+            $theme_stylesheets = "<link rel='stylesheet' href='css/themes/$theme_name.css' />";
+        }
+
+        $body_classes .= $body_class . ' ';
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,14 +24,25 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/style.css">
 
     <link rel="stylesheet" href="plugins/jquery-minicolors/jquery.minicolors.css">
-    <?= isset($stylesheets) ? $stylesheets : null ?>
+    <link rel="stylesheet" href="css/style.css">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
+    <?= isset($stylesheets) ? $stylesheets : null ?>
+    <?= $theme_stylesheets ?>
+
+<!--    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
+<!--            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
+<!--            crossorigin="anonymous"></script>-->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+
+<!--    <script src="//code.jquery.com/jquery-1.10.2.js"></script>-->
+<!--    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
@@ -24,7 +51,8 @@
             crossorigin="anonymous"></script>
     <script src="plugins/jquery-minicolors/jquery.minicolors.min.js"></script>
 </head>
-<body <?= isset($body_class_list) ? "class='$body_class_list'" : null ?>>
+
+<body class='<?= $body_classes ?>'>
 <div class="site-wrapper">
     <header class="main-header">
         <div class="container">
@@ -44,6 +72,7 @@
                 My stats
             </a>
             <ul class="site-links">
+                <li><a class="dashboard-link" href="dashboard.php">Dashboard</a></li>
                 <li><a class="theme-settings-link" href="#">Theme</a></li>
 
                 <?php session_start();
@@ -62,17 +91,7 @@
         <?= $content ?>
     </main>
 
-    <footer class="main-footer">
-        <!--        <ul class="footer-nav">-->
-        <!--            <li><a href="wishlist.php">Wishlist</a></li>-->
-        <!--            <li><a href="#">TODO</a></li>-->
-        <!--            <li><a href="#">Customize</a></li>-->
-        <!--            <li><a href="#">Invite</a></li>-->
-        <!--        </ul>-->
-    </footer>
-
     <script src="js/script.js"></script>
-
 </div>
 </body>
 

@@ -129,7 +129,11 @@
   border-radius: 15px;
 }
 .charts-list {
+  display: flex;
   list-style: none;
+}
+.charts-list .chart {
+  margin-right: 50px;
 }
 .charts-list .chart-name a {
   font-size: 14px;

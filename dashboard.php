@@ -18,6 +18,21 @@ try {
     die("ERROR: Could not connect. " . $e->getMessage());
 }
 
+$stylesheets .= '<link rel="stylesheet" href="css/chart.css" type="text/css">';
+//-----
+
+function get_num_value($pdo, $table_name, $value_name, $id)
+{
+    $query = $pdo->query("SELECT {$value_name} FROM {$table_name} WHERE id = {$id}");
+
+    $chart_value = '';
+    while ($chart_value_row = $query->fetch(PDO::FETCH_NUM)) {
+        $chart_value = $chart_value_row[0];
+    }
+
+    return preg_replace('/\s+/', '_', $chart_value);
+}
+
 $owner_id = $_SESSION['id'];
 
 $result = $pdo->query("SELECT * FROM chart WHERE owner_id = {$owner_id}");
@@ -31,19 +46,27 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 
     $data_type = $row['data_type'];
 
-    $chart_names_list .= '<li><span class="list-style"></span><a href="#">' . $row['name'] . '</a></li>';
+    $chart_names_list .= '<li><span class="list-style"></span><a href="#">' . $row['chart_name'] . '</a></li>';
 
-    $chart_item = "<li class='chart' id='chart-$i'>";
-    $chart_item .= "<h2 class='section-title chart-name'><a href='#'>" . $row['name'] . "</a></h2>";
-    $chart_item .= '<div id="vertical-axis-labels-container" class="vertical-axis-labels-container"></div>' .
-        '<div class="chart-canvas-wrapper">' .
-        "<canvas class='chart-canvas' id='chart-canvas-$i' height='300px' width='400px'></canvas>" .
-        '</div>';
+//    ----
+
+    $index_num = $i + 1;
+
+    $chart_item = <<<EOD
+    <li class='chart' id='chart-$index_num'>
+        <h2 class='section-title chart-name'><a href='#'> {$row['chart_name']} </a></h2>
+        <div class="chart-wrapper" id="chart-wrapper-$index_num">
+            <div class="vertical-axis-labels-container axis-labels-container"></div>
+            <div class="chart-canvas-wrapper">
+                <canvas class='chart-canvas' id='chart-canvas-$index_num' height='300px' width='400px'></canvas>
+            </div>
+EOD;
+
     $chart_item .= ($data_type == 'timeflow') ?
-        '<div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container"></div>' .
-        '<div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>' :
-        '\'<div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container"></div>';
-    $chart_item .= '</li>';
+        '<div class="horizontal-axis-labels-container timeflow-axis-labels-container axis-labels-container"></div>' .
+        '<div class="timeflow-gridlines-labels-container"></div>' :
+        '<div class="category-axis-labels-container"></div>';
+    $chart_item .= '</div></li>';
 
     // getting chart data
     $chart_data = [];
@@ -52,33 +75,56 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $chart_data [] = $data_row['value'];
     }
 
-    $chart_type_query = $pdo->query("SELECT type_name FROM chart_type WHERE id = {$row['chart_type_id']}");
-    while ($chart_type_row = $chart_type_query->fetch(PDO::FETCH_NUM)) {
-        $chart_type = $chart_type_row[0];
-    }
+    $chart_type = get_num_value($pdo, 'chart_type', 'type_name', $row['chart_type_id']);
 
-    $chart_type = preg_replace('/\s+/', '_', $chart_type);
+    $vertical_axis_labels_step = get_num_value($pdo, 'chart', 'vertical_axis_labels_step', $row['id']);
 
+    $timeflow_step = get_num_value($pdo, 'chart', 'timeflow_step', $row['id']);
+    $timeflow_measure = get_num_value($pdo, 'timeflow_measure', 'measure_name', $row['timeflow_measure_id']);
+
+    $timeflow_axis_labels_step = get_num_value($pdo, 'chart', 'timeflow_labels_step', $row['id']);
+    $timeflow_axis_labels_measure = get_num_value($pdo, 'timeflow_measure', 'measure_name', $row['timeflow_labels_measure_id']);
 
     $chart_config = json_encode(array(
-        "canvas_id" => 'chart-canvas-' . $i,
+        "chart_wrapper_selector" => '#chart-wrapper-' . $index_num,
+
         "chart_data" => $chart_data,
-        "timeflow_start_point" => '2019-02-15',
+
         "chart_type" => $chart_type,
+
+        //"measure_value_step" => $measure_value_step,
+        "vertical_axis_labels_step" => $vertical_axis_labels_step,
+
+        "timeflow_step" => $timeflow_step,
+        "timeflow_measure" => $timeflow_measure,
+        "timeflow_axis_labels_step" => $timeflow_axis_labels_step,
+        "timeflow_axis_labels_measure" => $timeflow_axis_labels_measure,
+        "timeflow_start_point" => '2019-02-15',
+
+//        styles
+
+        "chart_sizing" => 30,
+        "canvas_selector" => '#chart-canvas-' . $index_num,
+        "canvas_width" => 400,
+        "canvas_height" => 300,
+        "bar_width" => 45,
+        "point_dist" => 60,
+        "padding_left" => 30,
+
         "line_colour" => '#4158D0',
         "fill_colour" => '#e2e6f9',
-        "chart_sizing" => 30,
-        "canvas_width" => 400,
-        "chart_col_width" => 45,
-        "chart_col_dist" => 15,
-         "chart_point_dist" => 60,
-        "canvas_height" => 300,
-        "chart_left_padding" => 30,
+        "line_width" => '1',
+
+        "vertical_axis_show_ticks" => false,
+        "vertical_axis_show_line" => false,
+        "horizontal_axis_show_ticks" => false,
+        "horizontal_axis_show_line" => true,
     ));
 
-    $js .= "new Chart(undefined, $chart_config).draw_chart();";
+    $js .= "new Chart(undefined, $chart_config).draw_all();";
 
     $i++;
+
     $charts_list .= $chart_item;
 }
 
@@ -97,6 +143,7 @@ EOD;
 if ($chart_names_list) {
     $content .= '<ul class="user-charts-nav">' . $chart_names_list . '</ul>';
 }
+
 $content .= <<<EOD
         </li>
     </ul>
@@ -105,7 +152,7 @@ $content .= <<<EOD
   <section class="dashboard">
 EOD;
 if ($charts_list) {
-    $content .= "<ul class=\"charts-list\">" . $charts_list . '</ul>';
+    $content .= "<ul class='charts-list'>" . $charts_list . '</ul>';
 } else {
     $content .= '<p class="nothing-found-message">No charts to show yet :/ </p>';
 }

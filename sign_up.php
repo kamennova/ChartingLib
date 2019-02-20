@@ -127,5 +127,3 @@ $content .= <<<EOD
 EOD;
 
 include_once 'layout.php';
-
-//??? connection try config.php

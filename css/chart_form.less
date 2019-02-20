@@ -1,6 +1,8 @@
 @import 'variables';
 
 @padding-top: 15;
+@col-left-padding-right: 20;
+@accent: @primary;
 
 main > .container {
   display: flex;
@@ -8,7 +10,9 @@ main > .container {
 }
 
 .page-title {
-  margin-bottom: 30px;
+  margin-bottom: 35px;
+
+  font-size: 27px;
 }
 
 .chart-form-container.col-left {
@@ -19,11 +23,10 @@ main > .container {
   flex-basis: 405px;
   flex-shrink: 0;
   margin: 0;
-  padding-top: @header_height;
-  padding-right: 20px;
+  padding: @header_height 0 25px 0;
 
-  //background-color: @lightblue;
-  background-color: #f5f5f5db;
+  background-color: @lightblue;
+  //background-color: #f5f5f5db;
 }
 
 .chart-form-container.col-left::after {
@@ -35,7 +38,7 @@ main > .container {
 
   display: block;
   height: 100%;
-  width: 3000px;
+  width: 1000px;
 
   background-color: inherit;
   z-index: -1;
@@ -62,35 +65,81 @@ main > .container {
   }
 }
 
-//----FORM-----
+/* ==================
+        FORM
+================== */
 
 .form-section-title {
   margin-bottom: 18px;
 
-  font-size: 18px;
+  font-size: 16px;
+  letter-spacing: 0.03em;
 }
 
-.fieldset-title {
-  font-size: 12px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-//-------
-
-.plane-chart-fields {
-  border-bottom: 1px solid @grey;
+.collapsible > .collapsible-header .form-section-title {
+  margin-bottom: 0;
 }
 
 .form-section {
-  padding: 15px 0;
+  position: relative;
+
+  padding: 0 0 15px;
 
   border: none;
-  border-bottom: 1px solid @grey;
+}
+
+.form-section.collapsible {
+  .form-section-content,
+  .form-section-title {
+    padding-right: @col-left-padding-right * 1px;
+  }
+
+  .form-section-content{
+    padding: 15px 0;
+  }
+
+  .collapse-btn {
+    right: (@col-left-padding-right +  10) * 1px;
+  }
+}
+
+.form-section.collapsed {
+  padding-bottom: 0;
+}
+
+.form-section,
+.plane-chart-fields {
+  //border-bottom: 1px solid @grey;
+}
+
+.plane-chart-fields::after,
+.form-section::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  bottom: 0;
+
+  display: block;
+  width: 80%;
+  height: 1px;
+
+  /*
+  background-image: linear-gradient(to right, white 33%, rgba(255,255,255,0) 0%);
+  background-position: bottom;
+  background-size: 6px 4px;
+  background-repeat: repeat-x;
+  */
+
+  //border-top: 1px dotted @grey;
 }
 
 .form-section:last-of-type {
   border-bottom: 0;
+}
+
+.style-fields {
+  margin-bottom: 20px;
 }
 
 .options-list {
@@ -106,6 +155,7 @@ main > .container {
 }
 
 .chart-form {
+  z-index: 5;
 
   fieldset {
     margin-bottom: 10px;
@@ -117,10 +167,43 @@ main > .container {
     //border-bottom: 1px solid @grey;
   }
 
-  label {
+  .chart-type-fieldset {
+    display: flex;
+    flex-shrink: 1;
+    flex-grow: 0;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin: 20px 0 15px;
+    padding-right: 0;
+
+    .fieldset-title {
+      width: auto;
+      flex-grow: 0;
+      margin-right: 25px;
+    }
+
+    .options-list {
+      //width: 50%;
+      flex-grow: 0;
+      flex-shrink: 1;
+
+      li {
+        flex-grow: 0;
+      }
+
+      li:last-of-type {
+        margin-right: 0;
+      }
+    }
+  }
+
+  label,
+  .fieldset-title {
     position: relative;
 
     margin-right: 10px;
+
+    font-size: 15px;
   }
 
   .input-option-label {
@@ -156,11 +239,6 @@ main > .container {
   .horizontal-controls-wrapper {
     display: flex;
     flex-grow: 1;
-
-    //.options-list, legend, .options-list li{
-    //  min-width: 0;
-    //  flex-basis: 0;
-    //}
   }
 
   select {
@@ -184,14 +262,14 @@ main > .container {
 
   select:active {
     box-shadow: none;
-    border: 1px solid @primary;
+    border: 1px solid @accent;
   }
 
   select:focus {
     background-color: white;
     box-shadow: none;
     outline: none;
-    border: 1px solid @primary
+    border: 1px solid @accent;
   }
 
   //----
@@ -229,7 +307,7 @@ main > .container {
   }
 
   input[type="checkbox"]:checked + .checkbox-indicator {
-    border: 1px solid @primary;
+    border: 1px solid @accent;
     outline: none;
   }
 
@@ -284,12 +362,12 @@ main > .container {
     height: 6px;
     margin: auto;
 
-    background-color: @primary;
+    background-color: @accent;
     border-radius: 50%;
   }
 
   input[type="radio"]:checked + .radio-indicator {
-    border: 1px solid @primary;
+    border: 1px solid @accent;
   }
 
   input[type="radio"]:checked + .radio-indicator::after {
@@ -299,79 +377,23 @@ main > .container {
   input[type="radio"]:not(:checked) + .radio-indicator {
     border: 1px solid @grey;
   }
+
+  .btn-save {
+    //width: 200px;
+    margin-right: 7px;
+  }
 }
 
 .colorpicker-input-container {
   display: flex;
   align-items: center;
 
-  label{
+  label {
     margin-bottom: 0;
   }
 }
 
 //--------
-
-.chart-canvas-wrapper {
-  margin-left: 25px;
-
-  z-index: 5;
-}
-
-.axis-label {
-  position: absolute;
-
-  display: inline-block;
-
-  font-size: 12px;
-  color: dimgrey;
-}
-
-.vertical-axis-labels-container {
-  position: absolute;
-
-  min-width: 25px;
-
-  overflow: hidden;
-  //overflow-y: hidden;
-  //overflow-x: auto;
-
-  border-right: 1px solid @grey;
-
-  z-index: 10;
-
-  .vertical-axis-label {
-    right: 0;
-
-    margin-right: 7px;
-    margin-bottom: -9px;
-  }
-
-  .vertical-axis-label::after {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: -7px;
-
-    display: block;
-    width: 4px;
-    height: 1px;
-    margin-top: auto;
-    margin-bottom: auto;
-
-    background-color: darken(@grey, 10%);
-  }
-}
-
-.axis-labels-container.no-line{
-  border: 0;
-}
-
-.axis-labels-container.no-ticks .axis-label::after{
-  display: none;
-}
 
 //.vertical-axis-labels-container::after,
 //.vertical-axis-labels-container::before{
@@ -397,63 +419,9 @@ main > .container {
 //  right: -5px;
 //}
 
-.timeflow-axis-labels-container {
-  position: relative;
-
-  width: 1400px;
-  height: 20px;
-  margin-left: 24px;
-
-  border-top: 1px solid @grey;
-
-  .timeflow-axis-label {
-    top: 0;
-
-    width: 26px;
-    margin-top: 4px;
-    margin-left: -1px;
-
-    text-align: center;
-  }
-
-  .timeflow-axis-label::after {
-    content: "";
-
-    position: absolute;
-    top: -4px;
-    left: 0;
-    right: 0;
-
-    display: block;
-    width: 1px;
-    height: 4px;
-    margin: 0 auto;
-
-    background-color: darken(@grey, 10%);
-  }
-}
-
-.timeflow-gridlines-labels-container {
-  position: absolute;
-  top: 0;
-  left: 25px;
-
-  .month-label {
-    position: absolute;
-    top: 10px;
-
-    width: 26px;
-    margin-left: -13px;
-
-    font-size: 11px;
-    color: grey;
-    letter-spacing: 0.03em;
-    text-align: center;
-    text-transform: uppercase;
-  }
-}
-
-//------Chart data input---------
+/*=======================
+    Chart data input
+=======================*/
 
 .chart-data-input {
   display: flex;
@@ -519,45 +487,5 @@ main > .container {
   .btn-upload {
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
-  }
-}
-
-body.theme-dark {
-  background-color: @dark-bg;
-  color: white;
-
-  .logo {
-    color: @lightgrey;
-  }
-
-  .col-left {
-    background-color: @dark-bg;
-  }
-
-  .col-left::after {
-    background-color: @dark-bg;
-  }
-
-  input:not(.btn) {
-    color: @lightgrey;
-  }
-
-  input[type=text]:hover,
-  select:hover {
-    background-color: transparent;
-    border-color: @dark-primary;
-  }
-
-  .btn {
-    background-image: linear-gradient(15deg, rgba(8, 174, 234, 0) 0%, rgba(42, 245, 152, 0) 100%);
-    transition: 0.4s linear background-image, 0s linear border-color;
-  }
-
-  .btn:hover {
-    color: @dark-bg;
-
-    background-color: #08AEEA;
-    background-image: linear-gradient(15deg, rgba(8, 174, 234, 1) 0%, rgba(42, 245, 152, 1) 100%);
-    border-color: transparent;
   }
 }

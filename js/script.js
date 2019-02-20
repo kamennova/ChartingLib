@@ -24,35 +24,17 @@ for (let i = 0; i < collapse_btns.length; i++) {
 }
 
 function get_collapsed_height(container) {
-    let new_height = 20,
-        children = container.children,
-        title_margin_bottom,
-        offset_bottom;
+    let new_height = 20;
 
-    for (let a = 0; a < children.length; a++) {
-        if (children[a].classList.contains('collapsible-title')) {
-            new_height = children[a].offsetHeight;
-            title_margin_bottom = window.getComputedStyle(children[a]);
-            break;
-        }
+    if (container.querySelector('.collapsible-header')) {
+        new_height = container.querySelector('.collapsible-header').offsetHeight;
     }
 
-    let container_padding_top = window.getComputedStyle(container, null).getPropertyValue("padding-top");
-    let container_padding_bottom = window.getComputedStyle(container, null).getPropertyValue("padding-bottom");
-
-    if (title_margin_bottom < container_padding_bottom) {
-        offset_bottom = title_margin_bottom;
-    } else {
-        offset_bottom = container_padding_bottom;
-    }
-
-    let padding = Number(container_padding_top.substring(0, container_padding_top.length - 2)) + Number(container_padding_bottom.substring(0, container_padding_bottom.length - 2));
-
-    return new_height + padding + 'px';
+    return new_height + 'px';
 }
 
-function get_css_num(str){
-    if(str.includes('px')){
+function get_css_num(str) {
+    if (str.includes('px')) {
         return str.substring(0, str.length - 2);
     }
 }

@@ -1,0 +1,135 @@
+@import "variables";
+
+//----CHART DRAWING-----
+
+.chart-canvas-wrapper {
+  margin-left: 25px;
+
+  z-index: 5;
+}
+
+.axis-label {
+  position: absolute;
+
+  display: inline-block;
+
+  font-size: 12px;
+  color: dimgrey;
+}
+
+/* ===================
+    Vertical axis
+==================== */
+
+.vertical-axis-labels-container {
+  position: absolute;
+
+  min-width: 25px;
+
+  overflow: hidden;
+  //overflow-y: hidden;
+  //overflow-x: auto;
+
+  border-right: 1px solid @grey;
+
+  z-index: 10;
+
+  .vertical-axis-label {
+    right: 0;
+
+    margin-right: 7px;
+    margin-bottom: -9px;
+  }
+
+  .vertical-axis-label::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -7px;
+
+    display: block;
+    width: 4px;
+    height: 1px;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    background-color: darken(@grey, 10%);
+  }
+}
+
+/* ===================
+    Horizontal axis
+==================== */
+
+.timeflow-axis-labels-container {
+  position: relative;
+
+  height: 20px;
+  margin-left: 24px;
+
+  border-top: 1px solid @grey;
+
+  .timeflow-axis-label {
+    top: 0;
+
+    width: 26px;
+    margin-top: 4px;
+    margin-left: -1px;
+
+    text-align: center;
+  }
+
+  .timeflow-axis-label::after {
+    content: "";
+
+    position: absolute;
+    top: -4px;
+    left: 0;
+    right: 0;
+
+    display: block;
+    width: 1px;
+    height: 4px;
+    margin: 0 auto;
+
+    background-color: darken(@grey, 10%);
+  }
+}
+
+/* ===================
+       Gridlines
+==================== */
+
+.timeflow-gridlines-labels-container {
+  position: absolute;
+  top: 0;
+  left: 25px;
+
+  .month-label {
+    position: absolute;
+    top: 10px;
+
+    width: 26px;
+    margin-left: -13px;
+
+    font-size: 11px;
+    color: grey;
+    letter-spacing: 0.03em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}
+
+/* ====================
+ Axises modifications
+==================== */
+
+.axis-labels-container.no-line{
+  border: 0;
+}
+
+.axis-labels-container.no-ticks .axis-label::after{
+  display: none;
+}

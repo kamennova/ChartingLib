@@ -24,14 +24,13 @@ class Chart {
     }
 
     display_timeflow_axis() {
-        let timeflow_axis_labels_container = document.getElementById('timeflow-axis-labels-container');
+        let timeflow_axis_labels_container = document.querySelector(this.config.chart_wrapper_selector + ' .timeflow-axis-labels-container');
         let timeflow_axis_labels = '';
-        let start_point = new Date(this.config.timeflow_start_point);
+        let start_point = this.get_timeflow_start_point();
 
         let labels_measure;
 
         // getting timeflow labels measure
-
         if (this.config.timeflow_axis_labels_measure_input_id) {
             let measure_input = document.querySelector('#' + this.config.timeflow_axis_labels_measure_input_id);
             labels_measure = measure_input.options[measure_input.selectedIndex].id;
@@ -45,6 +44,8 @@ class Chart {
             // display dates axises
             let step = this.config.timeflow_axis_labels_step;
             let steps_count = this.config.canvas_width / (this.config.timeflow_axis_labels_step * this.config.point_dist);
+
+            // console.log(steps_count);
 
             if (labels_measure === 'week') {
                 steps_count /= translate_measure(labels_measure);
@@ -89,12 +90,21 @@ class Chart {
         // }
 
         timeflow_axis_labels_container.insertAdjacentHTML('afterbegin', timeflow_axis_labels);
+
+        if (!this.config.horizontal_axis_show_line) {
+            timeflow_axis_labels_container.classList.add('no-line');
+        }
+
+        if (!this.config.horizontal_axis_show_ticks) {
+            timeflow_axis_labels_container.classList.add('no-ticks');
+        }
+
     }
 
     display_vertical_axis() {
         // TODO scale labels axis
         let steps_count = Math.ceil((this.config.canvas_height / this.config.chart_sizing) / this.config.vertical_axis_labels_step);
-        let vertical_axis_labels_container = document.getElementById('vertical-axis-labels-container');
+        let vertical_axis_labels_container = document.querySelector(this.config.chart_wrapper_selector + ' .vertical-axis-labels-container');
         let vertical_axis_labels = '';
 
         for (let i = 1; i <= steps_count; i++) {
@@ -103,10 +113,20 @@ class Chart {
             vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px'>" + this.config.vertical_axis_labels_step * (i) + "</span>";
         }
         vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
+
+        if (!this.config.vertical_axis_show_line) {
+            vertical_axis_labels_container.classList.add('no-line');
+        }
+
+        if (!this.config.vertical_axis_show_ticks) {
+            vertical_axis_labels_container.classList.add('no-ticks');
+        }
     }
 
     draw_chart() {
-        let canvas = document.getElementById(this.config.canvas_selector);
+        let canvas = document.querySelector(this.config.canvas_selector);
+
+        console.log(canvas);
 
         if (canvas && canvas.getContext && this.config.chart_data) {
             let ctx = canvas.getContext('2d');
@@ -115,15 +135,17 @@ class Chart {
             this.draw_timeflow_gridlines(ctx);
             this.draw_horizontal_grid(ctx);
 
-            ctx.lineWidth = this.config.line_width;
-            ctx.strokeStyle = this.config.line_colour;
-            ctx.fillStyle = this.config.fill_colour;
-            ctx.shadowColor = this.config.shadow_colour;
-            ctx.shadowBlur = this.config.shadow_blur;
-            ctx.shadowOffsetX = this.config.shadow_offset_x;
-            ctx.shadowOffsetY = this.config.shadow_offset_y;
+            ctx.lineWidth = this.config.line_width || 1;
+            ctx.strokeStyle = this.config.line_colour || 'black';
+            ctx.fillStyle = this.config.fill_colour || "blue";
+            ctx.shadowColor = this.config.shadow_colour || "rgba(0, 0, 0, 0)";
+            ctx.shadowBlur = this.config.shadow_blur || 0;
+            ctx.shadowOffsetX = this.config.shadow_offset_x || 0;
+            ctx.shadowOffsetY = this.config.shadow_offset_y || 0;
 
-            let labels_start_point = new Date(this.config.timeflow_start_point);
+            let labels_start_point = this.get_timeflow_start_point();
+
+            // console.log(labels_start_point);
 
             let value_start_point = new Date;
             if (this.config.configurable) {
@@ -162,7 +184,7 @@ class Chart {
         }
 
         let steps_count = Math.floor(this.config.canvas_width / this.config.point_dist);
-        let start_point = new Date(this.config.timeflow_start_point);
+        let start_point = this.get_timeflow_start_point();
 
         for (let i = 0; i <= steps_count; i++) {
             let full_date = new Date(start_point.getFullYear(), start_point.getMonth(), start_point.getDate() + i);
@@ -206,60 +228,19 @@ class Chart {
         }
     }
 
-    draw() {
-        console.log('my config:', this.config);
+    get_timeflow_start_point() {
+        let today = new Date;
+        let start_point = new Date(today.getFullYear(), today.getMonth(), today.getDate() - this.config.timeflow_start_point);
+
+        return start_point;
+    }
+
+    draw_all() {
+        this.display_timeflow_axis();
+        this.display_vertical_axis();
+        this.draw_chart();
     }
 }
-
-let chart1 = new Chart(document.getElementById(this.canvas_id), {
-
-    // default data array
-    chart_data: [2, 5, 3, 9, 6, 2, 9],
-
-    data_table_id: 'timeflow-chart-data-input-tbody',
-
-    // default values
-    chart_type: 'curve_chart',
-    // chart_type_input_selector: 'chart-type-id',
-
-    // vertical axis parameters
-    // ??? measure_value_step: document.getElementById('measure-value-step').value,
-    measure_value_step: 1,
-    // measure_value_step_input_selector: 'measure-value-step',
-
-    vertical_axis_labels_step: 2,
-    // vertical_axis_labels_step_input_selector: 'vertical-axis-labels-step',
-
-    // horizontal axis parameters
-    horizontal_axis_type: 'timeflow',
-
-    timeflow_step: 1,
-    timeflow_measure: 'day',
-
-    timeflow_axis_labels_step: 1,
-
-    timeflow_axis_labels_measure: 'day',
-    // timeflow_start_point: document.getElementById('timeflow-start-point').value,
-
-    // chart display parameters
-    canvas_id: 'chart-canvas',
-    canvas: document.getElementById(this.canvas_id),
-
-    chart_sizing: 30,
-    canvas_width: 1400,
-    chart_col_width: 45,
-    chart_col_dist: 15,
-    // point_dist: this.chart_col_dist + this.chart_col_width,
-
-    canvas_height: 500,
-    padding_left: 30,
-
-    // chart styles and colours
-    line_colour: '#4158D0',
-    fill_colour: '#e2e6f9',
-
-    // inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-axis-labels-measure-id', 'timeflow-axis-labels-step']
-});
 
 function get_points_num(obj) {
     // let canvas_width = Configurable.config.canvas_width;

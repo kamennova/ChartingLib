@@ -205,16 +205,22 @@
   border-radius: 15px;
 }
 
-.charts-list{
+.charts-list {
+  display: flex;
+
   list-style: none;
 
-  .chart-name a{
+  .chart{
+    margin-right: 50px;
+  }
+
+  .chart-name a {
     font-size: 14px;
     color: black;
     letter-spacing: 0.04em;
   }
 
-  .chart-name a:hover{
+  .chart-name a:hover {
     color: @primary;
     text-decoration: none;
   }

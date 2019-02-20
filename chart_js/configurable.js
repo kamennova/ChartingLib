@@ -1,10 +1,13 @@
-let Configurable = new Chart(document.getElementById(this.canvas_id), {
+let Configurable = new Chart(1, {
     configurable: true,
+
+    chart_name: "My super chart",
 
     // default data array
     chart_data: [0, 5, 3, 9, 6, 2, 9, 4, 0],
-
     data_table_id: 'timeflow-chart-data-input-tbody',
+
+    chart_wrapper_selector: '.chart-wrapper',
 
     // default values
     chart_type: 'curve_chart',
@@ -12,8 +15,8 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
 
     // vertical axis parameters
     // ??? measure_value_step: document.getElementById('measure-value-step').value,
-    measure_value_step: 1,
-    measure_value_step_input_selector: 'measure-value-step',
+    vertical_axis_value_step: 1,
+    vertical_axis_value_step_input_selector: 'vertical-axis-value-step',
 
     vertical_axis_labels_step: 3,
     vertical_axis_labels_step_input_selector: 'vertical-axis-labels-step',
@@ -25,21 +28,21 @@ let Configurable = new Chart(document.getElementById(this.canvas_id), {
     timeflow_measure: 'day',
 
     timeflow_axis_labels_step: 1,
-    timeflow_axis_labels_step_input_selector: 'timeflow-axis-labels-step',
+    timeflow_axis_labels_step_input_selector: 'timeflow-labels-step',
 
     timeflow_axis_labels_measure: 'day',
-    timeflow_axis_labels_measure_input_id: 'timeflow-axis-labels-measure-id',
+    timeflow_axis_labels_measure_input_id: 'timeflow-labels-measure-id',
 
     // timeflow_step_input: document.getElementById()
     timeflow_start_point: document.getElementById('timeflow-start-point').value,
 
-    inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-axis-labels-measure-id', 'timeflow-axis-labels-step'],
+    inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-labels-measure-id', 'timeflow-labels-step'],
 
     /* ====================
         Style parameters
     ===================== */
 
-    canvas_selector: 'chart-canvas',
+    canvas_selector: '#chart-canvas',
     canvas_width: 1400,
     canvas_height: 400,
     padding_left: 30,

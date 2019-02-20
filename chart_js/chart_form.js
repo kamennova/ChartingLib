@@ -64,19 +64,19 @@ if (Configurable.config.horizontal_axis_type === 'timeflow') {
 }
 
 function monitor_measure_value(input_id) {
-    let value_input = document.getElementById('measure-value-step');
+    let value_input = document.getElementById('vertical-axis-value-step');
     value_input.addEventListener('change', function () {
-        Configurable.config.measure_value_step = value_input.value;
+        Configurable.config.vertical_axis_value_step = value_input.value;
 
         let data_rows_count = document.querySelectorAll('#' + Configurable.config.data_table_id + ' tr').length;
 
         for (let i = 0; i < data_rows_count; i++) {
-            if (Configurable.config.chart_data[i] < Configurable.config.measure_value_step) {
-                Configurable.config.chart_data[i] = Configurable.config.measure_value_step;
-                document.getElementById('timeflow-chart-value[' + i + ']').value = Configurable.config.measure_value_step;
-            } else if ((Configurable.config.chart_data[i] % Configurable.config.measure_value_step) !== 0) {
+            if (Configurable.config.chart_data[i] < Configurable.config.vertical_axis_value_step) {
+                Configurable.config.chart_data[i] = Configurable.config.vertical_axis_value_step;
+                document.getElementById('timeflow-chart-value[' + i + ']').value = Configurable.config.vertical_axis_value_step;
+            } else if ((Configurable.config.chart_data[i] % Configurable.config.vertical_axis_value_step) !== 0) {
                 Configurable.config.chart_data[i] = parseInt(Configurable.config.chart_data[i]);
-                Configurable.config.chart_data[i] += parseInt(Configurable.config.measure_value_step - Configurable.config.chart_data[i] % Configurable.config.measure_value_step);
+                Configurable.config.chart_data[i] += parseInt(Configurable.config.vertical_axis_value_step - Configurable.config.chart_data[i] % Configurable.config.vertical_axis_value_step);
                 document.getElementById('timeflow-chart-value[' + i + ']').value = Configurable.config.chart_data[i];
             }
         }
@@ -128,7 +128,8 @@ function monitor_input_field(param) {
                 Configurable.display_vertical_axis();
             }
         }
-        if(param_name === 'timeflow_start_point' || param_name === 'vertical_axis_labels_step'){
+
+        if(param_name === 'timeflow_start_point' || param_name === 'vertical_axis_labels_step' || param_name === 'vertical_axis_value_step'){
             Configurable.draw_chart();
         }
     });
@@ -191,10 +192,6 @@ $('#fill-colour-input.minicolors-input').minicolors({
 document.getElementById('bar-width-input').addEventListener('change', function () {
     Configurable.config.bar_width = Number(this.value);
     set_bar_border_radius();
-
-    console.log("border radius " + Configurable.config.bar_border_radius + "; bar width " + Configurable.config.bar_width);
-
-
     Configurable.draw_chart();
 });
 
@@ -234,20 +231,12 @@ document.getElementById('line-width-input').addEventListener('change', function 
 });
 
 document.getElementById('smoothing-input').addEventListener('change', function(){
-    console.log(Configurable.config.smoothing);
     Configurable.config.smoothing = Number(this.value);
     Configurable.draw_chart();
 });
 
-/*
-* 1) getting default value(max/min value) for config Obj: form / js default
-* 2) global vars reducing amount of search requests for elem
-* 3) get parent?? производительность
-* 4) object not getting input value ??? dynamic properties
-* 5) object array length???
-* 6) row count.length inside ()
-* 7) переопределение , напр. line to
-* 8) chart drawing 2 times??
-* 9) line chart as curve chart with k?????
-* 10) caching non-dynamic functions
-* */
+// ----
+
+let timeflow_measure_span = document.getElementsByClassName('timeflow-measure')[0];
+timeflow_measure_span.insertAdjacentText("afterbegin", Configurable.config.timeflow_measure);
+// TODO: event listener change timeflow_measure
