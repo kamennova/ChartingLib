@@ -4,13 +4,6 @@ require_once 'connection.php';
 require_once "Chart.php";
 require_once 'add_functions.php';
 
-try {
-    $pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("ERROR: Could not connect. " . $e->getMessage());
-}
-
 $add_chart = new Chart;
 
 $add_chart->default_data = [0, 5, 3, 9, 6, 2, 9, 4, 0];
@@ -19,8 +12,9 @@ $timeflow_start_point = date('Y-m-d', strtotime("-$chart_points_num days"));
 
 //----
 
-//$body_class_list .= 'theme-dark';
+//$body_class_list []= 'theme-classic';
 $body_class_list []= 'theme-bright';
+//$body_class_list .= 'theme-dark';
 
 $stylesheets .= '<link rel="stylesheet" href="css/chart.css" type="text/css">' .
     '<link rel="stylesheet" href="css/chart_form.css" type="text/css">';
@@ -36,7 +30,7 @@ $content .= <<<EOD
                 <input type="text" name="chart_name" id="chart_name" class="form-field" value="My super chart">
             </p>
             <section class="chart-type-fieldset">
-             <p class="fieldset-title">Data type</p>
+            <p class="fieldset-title">Data type</p>
             <ul class="axis-type-options options-list">
                         <li>
                         <label class="input-option-label"><input type="radio" class="visually-hidden" id="timeflow_axis" name="horizontal_axis_type" value="timeflow" checked>
@@ -50,7 +44,7 @@ $content .= <<<EOD
             </section>
             <p>
                 <label for="chart-type-id">Visual representation</label>
-                <select name="chart_type_id" id="chart-type-id">
+                <select class="form-field" name="chart_type_id" id="chart-type-id">
 EOD;
 $content .= generate_options_list($pdo, 'chart_type', 'type_name', 'curve_chart', 'type_name');
 $content .= <<<EOD
@@ -155,11 +149,11 @@ $content .= <<<EOD
                     <h2 class="form-section-title">Style</h2>
                 </div>
                 <div class="form-section-content">
-                <p>
-                    <label>Line sickness</label>
-                    <input type="number" class="form-field line-width-input smaller-input" id="line-width-input" value="2" min="1" max="20" />
-                    <div class="form-field-slider" id="line-sickness-slider"></div>
-                </p>
+                <section class="inline">
+                    <p class="fieldset-title">Line sickness</p>
+                    <input type="number" class="form-field line-width-input smaller-input visually-hidden" id="line-width-input" value="2" min="1" max="20" />
+                    <div class="form-field-slider medium-input" id="line-sickness-slider"></div>
+                </section>
                 <p>
                     <label>Points distance</label>
                     <input type="number" class="form-field points-dist-input smaller-input" id="points-dist-input" value="60" min="2" max="300" />

@@ -1,3 +1,23 @@
+.theme-bright {
+  --accent: white;
+}
+.theme-classic {
+  --accent: #4158D0;
+}
+.theme--white {
+  @extend .theme;
+  --base-1: #fff;
+  --base-2: #f2f2f2;
+  --base-3: #ccc;
+  --base-4: #333;
+}
+.theme--light {
+  @extend .theme;
+  --base-1: #f2f2f2;
+  --base-2: #dadada;
+  --base-3: #aaa;
+  --base-4: #000;
+}
 .site-links {
   display: none;
 }

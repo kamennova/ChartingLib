@@ -1,3 +1,23 @@
+.theme-bright {
+  --accent: white;
+}
+.theme-classic {
+  --accent: #4158D0;
+}
+.theme--white {
+  @extend .theme;
+  --base-1: #fff;
+  --base-2: #f2f2f2;
+  --base-3: #ccc;
+  --base-4: #333;
+}
+.theme--light {
+  @extend .theme;
+  --base-1: #f2f2f2;
+  --base-2: #dadada;
+  --base-3: #aaa;
+  --base-4: #000;
+}
 main > .container {
   display: flex;
 }
@@ -49,6 +69,7 @@ main > .container {
 .form-section-title {
   margin-bottom: 18px;
   font-size: 16px;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 .collapsible > .collapsible-header .form-section-title {
@@ -66,7 +87,7 @@ main > .container {
 .form-section.collapsible .form-section-content {
   padding: 15px 0;
 }
-.form-section.collapsible .collapse-btn {
+.form-section.collapsible .btn-collapse {
   right: 30px;
 }
 .form-section.collapsed {
@@ -113,12 +134,30 @@ main > .container {
   padding-left: 0;
   border: none;
 }
+.chart-form section.inline {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 0;
+  align-items: center;
+  margin: 20px 0 15px;
+  padding-right: 0;
+}
+.chart-form section.inline .fieldset-title {
+  width: auto;
+  flex-grow: 0;
+  margin-right: 25px;
+  margin-bottom: 0;
+}
+.chart-form section.inline .form-field-slider {
+  width: 155px;
+  flex-shrink: -1;
+}
 .chart-form .chart-type-fieldset {
   display: flex;
+  flex-direction: row;
   flex-shrink: 1;
   flex-grow: 0;
   flex-wrap: nowrap;
-  flex-direction: row;
   margin: 20px 0 15px;
   padding-right: 0;
 }
@@ -172,7 +211,7 @@ main > .container {
 }
 .chart-form select {
   box-sizing: border-box;
-  padding: 7px 7px 6px;
+  padding: 6px 7px 6px;
   font-size: 16px;
   background-color: #edeffa;
   border: 1px solid #ccd2f2;
@@ -185,13 +224,13 @@ main > .container {
 }
 .chart-form select:active {
   box-shadow: none;
-  border: 1px solid #4158D0;
+  border: 1px solid var(--accent);
 }
 .chart-form select:focus {
   background-color: white;
   box-shadow: none;
   outline: none;
-  border: 1px solid #4158D0;
+  border: 1px solid var(--accent);
 }
 .chart-form input[type=text],
 .chart-form input[type=number] {
@@ -214,13 +253,18 @@ main > .container {
   left: 0;
   width: 16px;
   height: 16px;
+  border: 1px solid lightgrey;
 }
 .chart-form input[type="checkbox"] + .checkbox-indicator {
   border-radius: 2px;
 }
 .chart-form input[type="checkbox"]:checked + .checkbox-indicator {
-  border: 1px solid #4158D0;
+  border: 1px solid var(--accent);
   outline: none;
+}
+.chart-form input[type="checkbox"]:checked + .checkbox-indicator::after,
+.chart-form input[type="checkbox"]:checked + .checkbox-indicator::before {
+  display: block;
 }
 .chart-form .checkbox-indicator::after,
 .chart-form .checkbox-indicator::before {
@@ -234,20 +278,19 @@ main > .container {
   width: 8px;
   height: 2px;
   margin: auto;
-  background-color: #4158D0;
+  background-color: var(--accent);
 }
 .chart-form .checkbox-indicator::after {
   transform: rotate(90deg);
 }
-.chart-form input[type="checkbox"]:checked + .checkbox-indicator::after,
-.chart-form input[type="checkbox"]:checked + .checkbox-indicator::before {
-  display: block;
-}
-.chart-form input[type="checkbox"]:not(:checked) + .checkbox-indicator {
-  border: 1px solid lightgrey;
-}
 .chart-form input[type="radio"] + .radio-indicator {
   border-radius: 50%;
+}
+.chart-form input[type="radio"]:checked + .radio-indicator {
+  border: 1px solid var(--accent);
+}
+.chart-form input[type="radio"]:checked + .radio-indicator::after {
+  display: block;
 }
 .chart-form .radio-indicator::after {
   content: "";
@@ -260,17 +303,8 @@ main > .container {
   width: 6px;
   height: 6px;
   margin: auto;
-  background-color: #4158D0;
+  background-color: var(--accent);
   border-radius: 50%;
-}
-.chart-form input[type="radio"]:checked + .radio-indicator {
-  border: 1px solid #4158D0;
-}
-.chart-form input[type="radio"]:checked + .radio-indicator::after {
-  display: block;
-}
-.chart-form input[type="radio"]:not(:checked) + .radio-indicator {
-  border: 1px solid lightgrey;
 }
 .chart-form .btn-save {
   margin-right: 7px;

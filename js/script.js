@@ -1,6 +1,6 @@
 let collapsibles = document.getElementsByClassName('collapsible');
 for (let i = 0; i < collapsibles.length; i++) {
-    collapsibles[i].insertAdjacentHTML("afterbegin", '<span class="collapse-btn"><span class="plus-bar"></span></span>');
+    collapsibles[i].insertAdjacentHTML("afterbegin", '<span class="btn-collapse"></span>');
 }
 
 let collapsed = document.getElementsByClassName('collapsed');
@@ -8,7 +8,7 @@ for (let i = 0; i < collapsed.length; i++) {
     collapsed[i].style.height = get_collapsed_height(collapsed[i]);
 }
 
-let collapse_btns = document.getElementsByClassName('collapse-btn');
+let collapse_btns = document.getElementsByClassName('btn-collapse');
 
 for (let i = 0; i < collapse_btns.length; i++) {
     collapse_btns[i].addEventListener('click', function () {

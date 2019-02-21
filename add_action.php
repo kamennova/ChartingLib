@@ -10,16 +10,6 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] === true) {
 
 //----
 
-require_once "connection.php";
-//require_once "Chart.php";
-
-try {
-    $pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die ("Error. Could not connect. " . $e->getMessage());
-}
-
 $owner_id = '';
 $name = '';
 $chart_type_id = '';

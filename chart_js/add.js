@@ -48,32 +48,39 @@ if(document.body.classList.contains('theme-bright')){
 //     );
 // }
 
-jQuery.document.ready(function($){
-    $('#line-sickness-slider').slider({
-        min: 0,
-        max: 24,
-    });
+$(document).ready(function($){
+    let input = $('#line-width-input');
+    let input_min = input.attr('min');
+    let max = input.attr('max');
+    console.log(max);
 
-    console.log($('#line-sickness-slider'));
+    $('#line-sickness-slider').slider({
+        min: input_min,
+        max: max,
+        value: 12,
+    });
 });
 
+/*
+var amountmonday = $('#amountmonday');
+var slidermonday = $('#slidermonday');
+var max = $('slidermonday').slider('values', 1);
+var min = $('slidermonday').slider('values', 0);
 
 
 
-/*    var amountmonday = $('#amountmonday');
-    var slidermonday = $('#slidermonday');
+$(function() {
     slidermonday.slider({
-        range: true,
+        range:true,
         min: 0,
         max: 24,
         values: [12, 18],
-        create: function() {
-            var max = $(this).slider('values', 1);
-            var min = $(this).slider('values', 0);
-            amountmonday.val(max - min);
-        },
-        slide: function Total(event, ui) {
+        slide: function Total (event, ui) {
             amountmonday.val(ui.values[1] - ui.values[0]);
-        }
 
-    }); */
+            $( "#amountmonday" ).val(  $( "#slidermonday" ).slider( "values", 1 ) - $( "#slidermonday" ).slider( "values", 0));
+        },
+
+    });
+});
+*/

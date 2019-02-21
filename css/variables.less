@@ -11,3 +11,35 @@
 // dark theme
 @dark-bg: #000717;
 @dark-primary: #51ffac;
+
+
+@accent: @primary;
+
+//.theme{
+//}
+
+.theme-bright{
+  //&:extend(.theme);
+
+  --accent: white;
+  @accent: 'white' !important;
+}
+
+.theme-classic{
+  --accent: @primary;
+}
+
+.theme--white {
+@extend .theme;
+  --base-1: #fff;
+  --base-2: #f2f2f2;
+  --base-3: #ccc;
+  --base-4: #333;
+}
+.theme--light {
+@extend .theme;
+  --base-1: #f2f2f2;
+  --base-2: #dadada;
+  --base-3: #aaa;
+  --base-4: #000;
+}

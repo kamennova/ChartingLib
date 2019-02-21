@@ -2,7 +2,8 @@
 
 @padding-top: 15;
 @col-left-padding-right: 20;
-@accent: @primary;
+
+@slider-width: 155;
 
 main > .container {
   display: flex;
@@ -27,21 +28,21 @@ main > .container {
 
   background-color: @lightblue;
   //background-color: #f5f5f5db;
-}
 
-.chart-form-container.col-left::after {
-  content: "";
+  &::after {
+    content: "";
 
-  position: absolute;
-  top: 0;
-  right: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
 
-  display: block;
-  height: 100%;
-  width: 1000px;
+    display: block;
+    height: 100%;
+    width: 1000px;
 
-  background-color: inherit;
-  z-index: -1;
+    background-color: inherit;
+    z-index: -1;
+  }
 }
 
 .col-right {
@@ -73,6 +74,7 @@ main > .container {
   margin-bottom: 18px;
 
   font-size: 16px;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 
@@ -94,11 +96,11 @@ main > .container {
     padding-right: @col-left-padding-right * 1px;
   }
 
-  .form-section-content{
+  .form-section-content {
     padding: 15px 0;
   }
 
-  .collapse-btn {
+  .btn-collapse {
     right: (@col-left-padding-right +  10) * 1px;
   }
 }
@@ -167,12 +169,33 @@ main > .container {
     //border-bottom: 1px solid @grey;
   }
 
+  section.inline {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 0;
+    align-items: center;
+    margin: 20px 0 15px;
+    padding-right: 0;
+
+    .fieldset-title {
+      width: auto;
+      flex-grow: 0;
+      margin-right: 25px;
+      margin-bottom: 0;
+    }
+
+    .form-field-slider {
+      width: @slider-width * 1px;
+      flex-shrink: -1;
+    }
+  }
+
   .chart-type-fieldset {
     display: flex;
+    flex-direction: row;
     flex-shrink: 1;
     flex-grow: 0;
     flex-wrap: nowrap;
-    flex-direction: row;
     margin: 20px 0 15px;
     padding-right: 0;
 
@@ -243,7 +266,7 @@ main > .container {
 
   select {
     box-sizing: border-box;
-    padding: 7px 7px 6px;
+    padding: 6px 7px 6px;
 
     font-size: 16px;
 
@@ -253,23 +276,24 @@ main > .container {
     border-radius: 4px;
 
     transition: 0.14s linear all;
-  }
 
-  select:hover {
-    background-color: lighten(@primary, 44%);
-    cursor: pointer;
-  }
+    &:hover {
+      background-color: lighten(@primary, 44%);
+      cursor: pointer;
+    }
 
-  select:active {
-    box-shadow: none;
-    border: 1px solid @accent;
-  }
+    &:active {
+      box-shadow: none;
+      border: 1px solid var(--accent);
+    }
 
-  select:focus {
-    background-color: white;
-    box-shadow: none;
-    outline: none;
-    border: 1px solid @accent;
+    &:focus {
+      background-color: white;
+      box-shadow: none;
+      outline: none;
+      border: 1px solid var(--accent);
+    }
+
   }
 
   //----
@@ -277,20 +301,20 @@ main > .container {
   input[type=text],
   input[type=number] {
     transition: 0.12s linear all;
+
+    &:hover {
+      background-color: lighten(@primary, 45%);
+      border-color: lighten(@primary, 1%);
+      //border-width: 2px;
+    }
+
+    &:focus {
+      border-color: lighten(@primary, 1%);
+      background-color: white;
+    }
   }
 
-  input[type=text]:hover,
-  input[type=number]:hover {
-    background-color: lighten(@primary, 45%);
-    border-color: lighten(@primary, 1%);
-    //border-width: 2px;
-  }
-
-  input[type=text]:focus,
-  input[type=number]:focus {
-    border-color: lighten(@primary, 1%);
-    background-color: white;
-  }
+  //-----
 
   input[type="radio"] + .radio-indicator,
   input[type="checkbox"] + .checkbox-indicator {
@@ -300,15 +324,23 @@ main > .container {
 
     width: 16px;
     height: 16px;
+
+    border: 1px solid @grey;
   }
 
-  input[type="checkbox"] + .checkbox-indicator {
-    border-radius: 2px;
-  }
+  input[type="checkbox"] {
+    & + .checkbox-indicator {
+      border-radius: 2px;
+    }
 
-  input[type="checkbox"]:checked + .checkbox-indicator {
-    border: 1px solid @accent;
-    outline: none;
+    &:checked + .checkbox-indicator {
+      border: 1px solid var(--accent);
+      outline: none;
+
+      &::after, &::before {
+        display: block;
+      }
+    }
   }
 
   .checkbox-indicator::after,
@@ -326,26 +358,27 @@ main > .container {
     height: 2px;
     margin: auto;
 
-    background-color: @primary;
+    background-color: var(--accent);
   }
 
   .checkbox-indicator::after {
     transform: rotate(90deg);
   }
 
-  input[type="checkbox"]:checked + .checkbox-indicator::after,
-  input[type="checkbox"]:checked + .checkbox-indicator::before {
-    display: block;
-  }
-
-  input[type="checkbox"]:not(:checked) + .checkbox-indicator {
-    border: 1px solid @grey;
-  }
-
   //----
 
-  input[type="radio"] + .radio-indicator {
-    border-radius: 50%;
+  input[type="radio"] {
+    & + .radio-indicator {
+      border-radius: 50%;
+    }
+
+    &:checked + .radio-indicator {
+      border: 1px solid var(--accent);
+    }
+
+    &:checked + .radio-indicator::after {
+      display: block;
+    }
   }
 
   .radio-indicator::after {
@@ -362,24 +395,13 @@ main > .container {
     height: 6px;
     margin: auto;
 
-    background-color: @accent;
+    background-color: var(--accent);
     border-radius: 50%;
   }
 
-  input[type="radio"]:checked + .radio-indicator {
-    border: 1px solid @accent;
-  }
-
-  input[type="radio"]:checked + .radio-indicator::after {
-    display: block;
-  }
-
-  input[type="radio"]:not(:checked) + .radio-indicator {
-    border: 1px solid @grey;
-  }
+  //-----
 
   .btn-save {
-    //width: 200px;
     margin-right: 7px;
   }
 }

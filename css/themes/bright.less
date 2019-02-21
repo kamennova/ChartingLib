@@ -2,12 +2,15 @@
 
 @padding-top: 15;
 @col-left-padding-right: 20px;
-@box-shadow:-2px 2px 2px 2px rgba(0, 0, 0, 0.15);
-//@accent: @primary;
+//@box-shadow:
+@accent: 'white';
 
 .theme-bright {
-  @accent: white;
+  //@accent: white;
 
+  .box-shadow() {
+    box-shadow+: -2px 2px 2px 1px rgba(0, 0, 0, 0.15);
+  }
 
   .col-left {
     color: white;
@@ -15,13 +18,14 @@
     background-color: @primary;
     //background-image: linear-gradient(155deg, #455cd1 0%, #8B45D1 100%);
 
-    .btn{
+    .btn {
       border-color: white;
     }
   }
 
-  .form-field.visited {
-    background-color: white;
+  .form-field.visited,
+  select.form-field{
+    background-color: var(--accent);
     border-color: white;
 
     box-shadow: -2px 2px 5px 1px rgba(0, 0, 0, 0.15);
@@ -31,8 +35,8 @@
     border-color: white
   }
 
-  .collapse-btn {
-    box-shadow: -2px 2px 2px 2px rgba(0, 0, 0, 0.15);
+  .btn-collapse {
+    .box-shadow();
   }
 
   //----
@@ -58,7 +62,7 @@
     overflow-x: visible;
   }
 
-    .form-section.collapsible:not(.collapsed) .form-section-content::before {
+  .form-section.collapsible:not(.collapsed) .form-section-content::before {
     content: " ";
 
     position: absolute;

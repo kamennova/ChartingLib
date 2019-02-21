@@ -1,3 +1,23 @@
+.theme-bright {
+  --accent: white;
+}
+.theme-classic {
+  --accent: #4158D0;
+}
+.theme--white {
+  @extend .theme;
+  --base-1: #fff;
+  --base-2: #f2f2f2;
+  --base-3: #ccc;
+  --base-4: #333;
+}
+.theme--light {
+  @extend .theme;
+  --base-1: #f2f2f2;
+  --base-2: #dadada;
+  --base-3: #aaa;
+  --base-4: #000;
+}
 html {
   box-sizing: border-box;
   padding: 0;
@@ -58,6 +78,7 @@ a.btn {
   background-color: white;
   border: 1px solid lightgray;
   border-radius: 3px;
+  z-index: 10;
 }
 .btn:not(.disabled):hover {
   color: #4158D0;
@@ -66,12 +87,11 @@ a.btn {
 .btn.disabled:hover {
   cursor: default;
 }
-.wider-btn {
+.wider-.btn {
   min-width: 100px;
 }
 .btn-add {
   padding-left: 35px;
-  z-index: 10;
 }
 .btn-add::before,
 .btn-add::after {
@@ -92,9 +112,7 @@ a.btn {
   transform: rotate(90deg);
 }
 .btn-save {
-  position: relative;
   padding-left: 35px;
-  z-index: 10;
 }
 .btn-save::before,
 .btn-save::after {
@@ -112,10 +130,6 @@ a.btn {
   border-top-right-radius: 3px;
   z-index: 20;
 }
-.btn-save.disabled::before,
-.btn-save.disabled::after {
-  background-color: grey;
-}
 .btn-save::before {
   height: 6px;
   transform: rotate(-50deg);
@@ -124,19 +138,23 @@ a.btn {
   left: 22px;
   transform: rotate(45deg);
 }
-.collapse-btn {
+.btn-save.disabled::before,
+.btn-save.disabled::after {
+  background-color: grey;
+}
+.btn-collapse {
   position: absolute;
-  top: 15px;
+  top: 13px;
   right: 10px;
   display: block;
-  width: 21px;
-  height: 21px;
+  width: 19px;
+  height: 19px;
   background-color: white;
   border-radius: 50%;
   cursor: pointer;
 }
-.collapse-btn::before,
-.collapsed > .collapse-btn:after {
+.btn-collapse::before,
+.btn-collapse::after {
   content: "";
   position: absolute;
   left: 0;
@@ -150,16 +168,12 @@ a.btn {
   background-color: #4158D0;
   border-radius: 2px;
 }
-.collapsed > .collapse-btn::after {
+.collapsed > .btn-collapse::after {
   transform: rotate(90deg);
 }
-.collapsible {
-  position: relative;
-  transition: height 10s linear;
-}
-.collapsed {
-  overflow-y: hidden;
-}
+/* =======================
+       CONTAINERS
+======================== */
 .site-wrapper {
   display: flex;
   flex-direction: column;
@@ -190,11 +204,20 @@ main {
   display: flex;
   flex-grow: 1;
 }
-.collapsible-header {
-  padding-top: 15px;
-  padding-bottom: 15px;
+.collapsible {
+  position: relative;
+  transition: height 10s linear;
 }
-/*----titles----*/
+.collapsed {
+  overflow-y: hidden;
+}
+.collapsible-header {
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+/* =======================
+         TITLES
+======================= */
 .section-title {
   position: relative;
   margin-bottom: 20px;
@@ -213,7 +236,9 @@ main {
   color: black;
   text-transform: uppercase;
 }
-/*----forms----*/
+/* =========================
+           FORMS
+=========================== */
 form input {
   padding: 6px 5px;
   font-family: "Lato", Arial, sans-serif;
@@ -235,7 +260,25 @@ input.colorpicker {
   color: #717171;
   letter-spacing: 0.02em;
 }
-/*--------*/
+.form-field-slider.ui-slider-horizontal {
+  height: 1px;
+  background-color: var(--accent);
+  border: none;
+}
+.form-field-slider.ui-slider-horizontal .ui-slider-handle {
+  top: 0;
+  bottom: 0;
+  width: 17px;
+  height: 17px;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-color: var(--accent);
+  background-image: none;
+  border-radius: 50%;
+}
+/* =====================
+        HEADER
+====================== */
 .main-header {
   position: absolute;
   width: 100%;
@@ -487,45 +530,6 @@ input.colorpicker {
   font-weight: 400;
   color: #9f9fa1;
   text-align: center;
-}
-.bar-chart.style-2 .chart-grading:first-of-type {
-  box-shadow: 0 0 15px -5px #f10000;
-}
-.bar-chart.style-2 .chart-column {
-  background-color: #FEE140;
-  background-image: linear-gradient(0deg, #4158D0 0px, #C850C0 60px, #FFCC70 120px);
-}
-.bar-chart.style-3 {
-  padding: 20px 30px;
-  color: #cbcbce;
-  border-radius: 10px;
-  background-color: #072539;
-}
-.bar-chart.style-3 .section-title {
-  color: white;
-}
-.bar-chart.style-3 .chart-container {
-  border-bottom: 1px solid #ed9725;
-}
-.bar-chart.style-3 .chart-grading {
-  border-color: #ed9725;
-  z-index: 1;
-  opacity: 0.2;
-}
-.bar-chart.style-3 .chart-grading:first-of-type {
-  box-shadow: 0 0 20px -2px #ed9725;
-}
-.bar-chart.style-3 .chart-column {
-  background-color: transparent;
-  border: 2px solid #ed9725;
-  border-bottom: none;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  box-shadow: 0 0 14px -3px #ed9725;
-  z-index: 2;
-}
-.bar-chart.style-3 .chart-label {
-  color: #cbcbce;
 }
 label.label-add {
   position: relative;
