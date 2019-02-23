@@ -1,26 +1,28 @@
 let collapsibles = document.getElementsByClassName('collapsible');
-for (let i = 0; i < collapsibles.length; i++) {
-    collapsibles[i].insertAdjacentHTML("afterbegin", '<span class="btn-collapse"></span>');
-}
+if(typeof (collapsibles) !== 'undefined') {
+    for (let i = 0; i < collapsibles.length; i++) {
+        collapsibles[i].insertAdjacentHTML("afterbegin", '<span class="btn-collapse"></span>');
+    }
 
-let collapsed = document.getElementsByClassName('collapsed');
-for (let i = 0; i < collapsed.length; i++) {
-    collapsed[i].style.height = get_collapsed_height(collapsed[i]);
-}
+    let collapsed = document.getElementsByClassName('collapsed');
+    for (let i = 0; i < collapsed.length; i++) {
+        collapsed[i].style.height = get_collapsed_height(collapsed[i]);
+    }
 
-let collapse_btns = document.getElementsByClassName('btn-collapse');
+    let collapse_btns = document.getElementsByClassName('btn-collapse');
 
-for (let i = 0; i < collapse_btns.length; i++) {
-    collapse_btns[i].addEventListener('click', function () {
+    for (let i = 0; i < collapse_btns.length; i++) {
+        collapse_btns[i].addEventListener('click', function () {
 
-        if (this.parentNode.classList.contains('collapsed')) {
-            this.parentNode.style.height = null;
-            this.parentNode.classList.remove('collapsed');
-        } else {
-            this.parentNode.style.height = get_collapsed_height(this.parentNode);
-            this.parentNode.classList.add('collapsed');
-        }
-    });
+            if (this.parentNode.classList.contains('collapsed')) {
+                this.parentNode.style.height = null;
+                this.parentNode.classList.remove('collapsed');
+            } else {
+                this.parentNode.style.height = get_collapsed_height(this.parentNode);
+                this.parentNode.classList.add('collapsed');
+            }
+        });
+    }
 }
 
 function get_collapsed_height(container) {

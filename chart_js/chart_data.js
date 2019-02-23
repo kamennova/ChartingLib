@@ -97,3 +97,11 @@ function delete_data_input_row(r) {
     delete Configurable.config.chart_data[i];
     Configurable.draw_chart();
 }
+
+function show_more_rows(){
+    let data_table = document.getElementById(Configurable.config.data_table_id);
+    let row_count = document.querySelectorAll('#' + Configurable.config.data_table_id + ' tr').length;
+
+    console.log(row_count);
+
+}

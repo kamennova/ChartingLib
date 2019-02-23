@@ -5,6 +5,7 @@
         if(strpos($body_class, 'theme') !== false){
             // theme name is 'theme-xyz'
             $theme_name = substr($body_class, 6);
+
             $theme_stylesheets = "<link rel='stylesheet' href='css/themes/$theme_name.css' />";
         }
 

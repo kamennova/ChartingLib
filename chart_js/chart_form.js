@@ -195,14 +195,10 @@ document.getElementById('bar-width-input').addEventListener('change', function (
     Configurable.draw_chart();
 });
 
-document.getElementById('points-dist-input').addEventListener('change', function () {
-    Configurable.config.point_dist = Number(this.value);
-    Configurable.draw_chart();
-    Configurable.destroy_old_labels('timeflow');
-    Configurable.display_timeflow_axis();
+// let points_dist_input = document.getElementById('points-dist-input');
+// points_dist_input.addEventListener('change', update_points_dist(points_dist_input));
 
-    get_points_num();
-});
+
 
 // ----
 

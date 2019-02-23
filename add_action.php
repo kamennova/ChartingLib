@@ -27,7 +27,9 @@ $timeflow_labels_step = '';
 
 $chart_fields = ['owner_id', 'chart_name', 'chart_type_id', 'data_type', 'vertical_axis_value_step',
     'vertical_axis_labels_step', 'vertical_axis_measure_id', 'timeflow_step', 'timeflow_labels_step',
-    'timeflow_measure_id', 'timeflow_labels_measure_id', 'created_at'];
+    'timeflow_measure_id', 'timeflow_labels_measure_id'
+    , 'created_at'
+];
 
 $chart_fields_params = array_map(function ($value) {
     return ':' . $value;
@@ -45,8 +47,6 @@ for ($i = 0; $i < $chart_fields_count; $i++) {
 $chart_fields_str = substr($chart_fields_str, 0, -2);
 $chart_fields_params_str = substr($chart_fields_params_str, 0, -2);
 
-//echo $chart_fields_str . "<br>";
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $owner_id = $_SESSION['id'];
     $chart_name = trim($_POST['chart_name']);
@@ -62,18 +62,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $timeflow_measure_id = trim($_POST['timeflow_measure_id']);
     $timeflow_labels_measure_id = trim($_POST['timeflow_labels_measure_id']);
 
-    $test_chart_name = 'new';
+    $created_at = date("Y-m-d H:i:s");
+//    $created_at = '2019-02-20 18:37:39';
 
-//    $created_at = time();
-    $created_at = '2019-02-20 18:37:39';
-
+//    echo $chart_fields_str . "<br>";
 //    echo $chart_fields_params_str . "<br>";
 
     if (empty($err)) {
         $sql = "INSERT INTO chart ({$chart_fields_str}) VALUES ({$chart_fields_params_str})";
 
         if ($stmt = $pdo->prepare($sql)) {
-
             $stmt->bindParam(':owner_id', $owner_id, PDO::PARAM_INT);
 
             $stmt->bindParam(':chart_name', $chart_name, PDO::PARAM_STR);
@@ -86,17 +84,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $stmt->bindParam(':timeflow_step', $timeflow_step, PDO::PARAM_INT);
             $stmt->bindParam(':timeflow_labels_step', $timeflow_labels_step, PDO::PARAM_INT);
-            $stmt->bindParam(':timeflow_value_measure_id', $timeflow_measure_id, PDO::PARAM_INT);
+            $stmt->bindParam(':timeflow_measure_id', $timeflow_measure_id, PDO::PARAM_INT);
             $stmt->bindParam(':timeflow_labels_measure_id', $timeflow_labels_measure_id, PDO::PARAM_INT);
 
-            $stmt->bindParam(':created_ad', $created_at, PDO::PARAM_INT);
+            $stmt->bindValue(':created_at', $created_at, PDO::PARAM_STR);
 
             for($i=0; $i < $chart_fields_count; $i++){
                 echo $i+1 . ') ' . $chart_fields[$i] . ": " .  ${$chart_fields[$i]} . "<br>";
             }
 
-            if ($stmt->execute()) {
+//            var_dump($stmt);
 
+
+            if ($stmt->execute()) {
                 /*$chart_id_query = "SELECT id FROM chart WHERE owner_id = {$owner_id} AND created_at = {$created_at} LIMIT 1";
                 $chart_id_result = $pdo->query($chart_id_query, MYSQLI_STORE_RESULT);
 
@@ -123,8 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("location: dashboard.php");
                 exit;
             } else {
+                echo $stmt->errorCode();
                 echo 'Error';
-                exit;
+//                exit;
             }
         }
 

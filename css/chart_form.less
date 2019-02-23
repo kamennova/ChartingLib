@@ -5,6 +5,10 @@
 
 @slider-width: 155;
 
+body {
+  background-color: var(--background);
+}
+
 main > .container {
   display: flex;
   //padding-top: @header_height;
@@ -26,7 +30,7 @@ main > .container {
   margin: 0;
   padding: @header_height 0 25px 0;
 
-  background-color: @lightblue;
+  background-color: var(--foreground);
   //background-color: #f5f5f5db;
 
   &::after {
@@ -85,7 +89,7 @@ main > .container {
 .form-section {
   position: relative;
 
-  padding: 0 0 15px;
+  padding: 0;
 
   border: none;
 }
@@ -97,7 +101,8 @@ main > .container {
   }
 
   .form-section-content {
-    padding: 15px 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 
   .btn-collapse {
@@ -288,7 +293,7 @@ main > .container {
     }
 
     &:focus {
-      background-color: white;
+      background-color: @accent;
       box-shadow: none;
       outline: none;
       border: 1px solid var(--accent);
@@ -401,6 +406,24 @@ main > .container {
 
   //-----
 
+  .minicolors-theme-bootstrap {
+
+    .minicolors-input.medium-input {
+      max-width: 190px;
+      padding-left: 37px;
+    }
+
+    .minicolors-swatch {
+      top: 0;
+      bottom: 0;
+
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
+
+  //-----
+
   .btn-save {
     margin-right: 7px;
   }
@@ -456,6 +479,15 @@ main > .container {
   position: relative;
 
   margin-right: 60px;
+
+
+  .chart-data-input-form .show-more-rows-link{
+    font-size: 14px;
+    color: @primary;
+    text-decoration: underline;
+
+    cursor: pointer;
+  }
 }
 
 .manual-data-input::after {
@@ -494,6 +526,7 @@ main > .container {
     }
   }
 }
+
 
 //--Data file upload section--
 

@@ -1,22 +1,20 @@
-.theme-bright {
-  --accent: white;
-}
 .theme-classic {
   --accent: #4158D0;
+  --background: white;
+  --foreground: #e6eaffe0;
 }
-.theme--white {
-  @extend .theme;
-  --base-1: #fff;
-  --base-2: #f2f2f2;
-  --base-3: #ccc;
-  --base-4: #333;
+.theme-bright {
+  --accent: white;
+  --background: white;
+  --foreground: #4158D0;
 }
-.theme--light {
-  @extend .theme;
-  --base-1: #f2f2f2;
-  --base-2: #dadada;
-  --base-3: #aaa;
-  --base-4: #000;
+.theme-dark {
+  --accent: #4158D0;
+  --background: #0f0830;
+  --foreground: #1d105b;
+}
+body {
+  background-color: var(--background);
 }
 main > .container {
   display: flex;
@@ -33,7 +31,7 @@ main > .container {
   flex-shrink: 0;
   margin: 0;
   padding: 62px 0 25px 0;
-  background-color: #e6eaffe0;
+  background-color: var(--foreground);
 }
 .chart-form-container.col-left::after {
   content: "";
@@ -77,7 +75,7 @@ main > .container {
 }
 .form-section {
   position: relative;
-  padding: 0 0 15px;
+  padding: 0;
   border: none;
 }
 .form-section.collapsible .form-section-content,
@@ -85,7 +83,8 @@ main > .container {
   padding-right: 20px;
 }
 .form-section.collapsible .form-section-content {
-  padding: 15px 0;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 .form-section.collapsible .btn-collapse {
   right: 30px;
@@ -227,7 +226,7 @@ main > .container {
   border: 1px solid var(--accent);
 }
 .chart-form select:focus {
-  background-color: white;
+  background-color: #4158D0;
   box-shadow: none;
   outline: none;
   border: 1px solid var(--accent);
@@ -306,6 +305,16 @@ main > .container {
   background-color: var(--accent);
   border-radius: 50%;
 }
+.chart-form .minicolors-theme-bootstrap .minicolors-input.medium-input {
+  max-width: 190px;
+  padding-left: 37px;
+}
+.chart-form .minicolors-theme-bootstrap .minicolors-swatch {
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+}
 .chart-form .btn-save {
   margin-right: 7px;
 }
@@ -326,6 +335,12 @@ main > .container {
 .manual-data-input {
   position: relative;
   margin-right: 60px;
+}
+.manual-data-input .chart-data-input-form .show-more-rows-link {
+  font-size: 14px;
+  color: #4158D0;
+  text-decoration: underline;
+  cursor: pointer;
 }
 .manual-data-input::after {
   content: "or";

@@ -1,22 +1,17 @@
-.theme-bright {
-  --accent: white;
-}
 .theme-classic {
   --accent: #4158D0;
+  --background: white;
+  --foreground: #e6eaffe0;
 }
-.theme--white {
-  @extend .theme;
-  --base-1: #fff;
-  --base-2: #f2f2f2;
-  --base-3: #ccc;
-  --base-4: #333;
+.theme-bright {
+  --accent: white;
+  --background: white;
+  --foreground: #4158D0;
 }
-.theme--light {
-  @extend .theme;
-  --base-1: #f2f2f2;
-  --base-2: #dadada;
-  --base-3: #aaa;
-  --base-4: #000;
+.theme-dark {
+  --accent: #4158D0;
+  --background: #0f0830;
+  --foreground: #1d105b;
 }
 html {
   box-sizing: border-box;
@@ -275,6 +270,26 @@ input.colorpicker {
   background-color: var(--accent);
   background-image: none;
   border-radius: 50%;
+}
+.form-field-slider.ui-slider-horizontal .ui-slider-handle::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  display: none;
+  width: 23px;
+  height: 23px;
+  margin: auto !important;
+  background-color: inherit;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+.form-field-slider.ui-slider-horizontal .ui-slider-handle:focus {
+  outline: none;
+}
+.form-field-slider.ui-slider-horizontal .ui-slider-handle:focus::after {
+  display: block;
 }
 /* =====================
         HEADER

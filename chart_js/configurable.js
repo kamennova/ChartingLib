@@ -5,6 +5,7 @@ let Configurable = new Chart(1, {
 
     // default data array
     chart_data: [0, 5, 3, 9, 6, 2, 9, 4, 0],
+    show_breakpoints: 7,
     data_table_id: 'timeflow-chart-data-input-tbody',
 
     chart_wrapper_selector: '.chart-wrapper',

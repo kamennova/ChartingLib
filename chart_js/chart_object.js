@@ -126,7 +126,7 @@ class Chart {
     draw_chart() {
         let canvas = document.querySelector(this.config.canvas_selector);
 
-        console.log(canvas);
+        // console.log(canvas);
 
         if (canvas && canvas.getContext && this.config.chart_data) {
             let ctx = canvas.getContext('2d');

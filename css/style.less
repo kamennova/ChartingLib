@@ -344,6 +344,35 @@ input.colorpicker {
     background-color: var(--accent);
     background-image: none;
     border-radius: 50%;
+
+    &::after {
+      content: "";
+
+      position: absolute;
+      //left: 0;
+      //right: 0;
+      left: -4px;
+      top: 0;
+      bottom: 0;
+
+      display: none;
+      width: 23px;
+      height: 23px;
+      margin: auto !important;
+
+      background-color: inherit;
+      border-radius: 50%;
+
+      opacity: 0.25;
+    }
+
+    &:focus {
+      outline: none;
+
+      &::after {
+        display: block;
+      }
+    }
   }
 
 }

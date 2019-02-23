@@ -13,8 +13,8 @@ $timeflow_start_point = date('Y-m-d', strtotime("-$chart_points_num days"));
 //----
 
 //$body_class_list []= 'theme-classic';
-$body_class_list []= 'theme-bright';
-//$body_class_list .= 'theme-dark';
+$body_class_list [] = 'theme-bright';
+//$body_class_list [] = 'theme-dark';
 
 $stylesheets .= '<link rel="stylesheet" href="css/chart.css" type="text/css">' .
     '<link rel="stylesheet" href="css/chart_form.css" type="text/css">';
@@ -151,20 +151,22 @@ $content .= <<<EOD
                 <div class="form-section-content">
                 <section class="inline">
                     <p class="fieldset-title">Line sickness</p>
-                    <input type="number" class="form-field line-width-input smaller-input visually-hidden" id="line-width-input" value="2" min="1" max="20" />
                     <div class="form-field-slider medium-input" id="line-sickness-slider"></div>
+                    <input type="number" class="form-field line-width-input smaller-input visually-hidden" id="line-width-input" value="2" min="1" max="20" />
+                    
                 </section>
-                <p>
-                    <label>Points distance</label>
-                    <input type="number" class="form-field points-dist-input smaller-input" id="points-dist-input" value="60" min="2" max="300" />
-                </p>
+                <section class="inline">
+                    <p class="fieldset-title">Breakpoints distance</p>
+                    <div class="form-field-slider medium-input" id="point-distance-slider"></div>
+                    <input type="number" class="form-field point-dist-input smaller-input visually-hidden" id="point-dist-input" value="60" min="2" max="300" />    
+                </section>
                 <p class="colorpicker-input-container">
                    <label for="line-colour"> Line colour </label>
-                   <input type="text" class="form-field minicolors-input" id="line-colour-input" />                   
+                   <input type="text" class="form-field minicolors-input medium-input" id="line-colour-input" />                   
                 </p>
                 <p class="colorpicker-input-container"> 
                    <label for="fill-colour"> Fill colour </label>
-                   <input type="text" class="form-field minicolors-input" id="fill-colour-input" />   
+                   <input type="text" class="form-field minicolors-input medium-input" id="fill-colour-input" />   
                 </p>
                 <section class="points-fields">
                     <p class="show-points-input">
@@ -174,29 +176,33 @@ $content .= <<<EOD
                         Show points 
                         </label>               
                     </p>
-                    <p class="point-radius">
-                        <label>Point radius</label>
-                        <input type="number" class="form-field point-radius-input smaller-input" id="point-radius-input" min="1" value="3" />
-                    </p>
+                    <section class="point-radius inline">
+                        <p class="fieldset-title">Point radius</p>
+                        <div class="form-field-slider medium-input" id="point-radius-slider"></div>
+                        <input type="number" class="form-field point-radius-input smaller-input visually-hidden" id="point-radius-input" min="1" value="3" />
+                    </section>
                     <!--<p class="point-border-">-->
                         <!--<input type="number" class="point-border-radius-input smaller-input" id="point-border-radius-input" min="0" value="5" />-->
                     <!--</p>-->
                 </section>
                 <section class="bar-chart-fields">
-                    <p>
-                        <label>Bar width</label>
-                        <input type="number" class="form-field bar-width-input smaller-input" id="bar-width-input" min="1" value="45" />
-                    </p>
-                    <p>
-                        <label>Bar border radius</label>
-                        <input type="number" class="form-field bar-border-radius-input smaller-input" id="bar-border-radius-input" min="0" value="5" />
-                    </p>                    
+                    <section class="inline">
+                        <h3 class="fieldset-title">Bar width</h3>
+                        <div class="form-field-slider medium-input" id="bar-width-slider-slider"></div>
+                        <input type="number" class="form-field bar-width-input smaller-input visually-hidden" id="bar-width-input" min="1" max="100" value="45" />
+                    </section>
+                    <section class="inline">
+                        <h3 class="fieldset-title">Bar border radius</h3>
+                        <div class="form-field-slider medium-input" id="bar-border-radius-slider"></div>
+                        <input type="number" class="form-field bar-border-radius-input smaller-input visually-hidden" id="bar-border-radius-input" min="0" value="5" />
+                    </section>                    
                 </section> 
                 <section class="curve-chart-fields">
-                    <p>
-                        <label>Smoothing</label>
-                        <input type="number" class="form-field smoothing-input smaller-input" id="smoothing-input" min="1" value="2" />
-                    </p>                    
+                    <section class="inline">
+                        <h3 class="fieldset-title">Smoothing</h3>
+                        <div class="form-field-slider medium-input" id="smoothing-slider"></div>
+                        <input type="number" class="form-field smoothing-input smaller-input visually-hidden" id="smoothing-input" min="1" max="30" value="2" />
+                    </section>                    
                 </section> 
                 </div>
              </section>
@@ -241,6 +247,7 @@ $content .= generate_default_data_table_rows($add_chart->default_data);
 $content .= <<<EOD
                     </tbody>
                     </table>
+                    <a class="show-more-rows-link" onclick="show_more_rows()">Show <span class="rows-to-show-count"></span>more breakpoints</a>
                     <button type="button" onclick="add_data_input_row(this)" class="btn add-data-row-btn btn-add" id="add-data-row-btn">Add point</button>
             </form>
 </section>
@@ -280,10 +287,10 @@ $content .= <<<EOD
 <section class="debug-info">
 $debug_info
 </section>
-    </section>            
- </section>
-    </div>
-   </div>
+</section>            
+</section>
+</div>
+</div>
 
 <script src="chart_js/functions.js"></script>
 <script src="chart_js/chart_object.js"></script>

@@ -1,23 +1,15 @@
 @import "../variables.less";
 
 .theme-dark {
-  background-color: @dark-bg;
-  color: white;
+  //background-color: @dark-bg;
+  color: fadeout(@lightgrey, 40%);
 
   .logo {
-    color: @lightgrey;
-  }
-
-  .col-left {
-    background-color: @dark-bg;
-  }
-
-  .col-left::after {
-    background-color: @dark-bg;
+    color: fadeout(@lightgrey, 10%);
   }
 
   input:not(.btn) {
-    color: @lightgrey;
+    color: fadeout(@lightgrey, 10%);
   }
 
   input[type=text]:hover,

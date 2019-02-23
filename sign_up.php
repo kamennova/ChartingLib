@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 //---
 
-$body_class_list .= 'sign-up';
+$body_class_list []= 'sign-up';
 $stylesheets .= "<link rel='stylesheet' href='css/user-form.css' />";
 
 $content .= <<<EOD

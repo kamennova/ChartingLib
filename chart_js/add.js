@@ -15,7 +15,7 @@ Configurable.draw_chart();
 
 monitor_measure_value();
 
-if(document.body.classList.contains('theme-bright')){
+if (document.body.classList.contains('theme-bright')) {
     let form_fields = document.querySelectorAll('.col-left input');
     let form_fields_number = form_fields.length;
 
@@ -35,52 +35,47 @@ if(document.body.classList.contains('theme-bright')){
         })
     }
 }
-//
-// let form_field_sliders = document.getElementsByClassName('form-field-slider');
-// for(let i =0, count = form_field_sliders.length; i < count; i++){
-//
-//     form_field_sliders[i].slider({
-//         min: 0,
-//         max: 24,
-//
-//
-//         }
-//     );
-// }
 
-$(document).ready(function($){
-    let input = $('#line-width-input');
-    let input_min = input.attr('min');
-    let max = input.attr('max');
-    console.log(max);
+$(document).ready(function ($) {
+    let slider_inputs = $(".form-field-slider");
+    $.each(slider_inputs, function (i, val) {
 
-    $('#line-sickness-slider').slider({
-        min: input_min,
-        max: max,
-        value: 12,
+        let input = $(val).next();
+        let input_min = input.attr('min') - 0;
+        let input_max = input.attr('max') - 0;
+        let input_value = input.val();
+
+        $(val).slider({
+            min: input_min,
+            max: input_max,
+            value: input_value,
+
+            slide: function Total(event, ui) {
+                input.val(ui.value);
+                update_val(input);
+            }
+        });
     });
 });
 
-/*
-var amountmonday = $('#amountmonday');
-var slidermonday = $('#slidermonday');
-var max = $('slidermonday').slider('values', 1);
-var min = $('slidermonday').slider('values', 0);
+function get_property_name (input){
+    let input_id = input.attr('id');
+    let prop_name = input_id.replace(/-/gi, '_');
 
+    if (prop_name.indexOf('_input') >= 0) {
+        prop_name = prop_name.substr(0, prop_name.length - 6);
+    }
 
+    return prop_name;
+}
 
-$(function() {
-    slidermonday.slider({
-        range:true,
-        min: 0,
-        max: 24,
-        values: [12, 18],
-        slide: function Total (event, ui) {
-            amountmonday.val(ui.values[1] - ui.values[0]);
+function update_val(input) {
+    let prop_name = get_property_name(input);
+    Configurable.config[prop_name] = Number(input.val());
 
-            $( "#amountmonday" ).val(  $( "#slidermonday" ).slider( "values", 1 ) - $( "#slidermonday" ).slider( "values", 0));
-        },
+    Configurable.draw_chart();
+    Configurable.destroy_old_labels('timeflow');
+    Configurable.display_timeflow_axis();
 
-    });
-});
-*/
+    // get_points_num();
+}
