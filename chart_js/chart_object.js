@@ -6,17 +6,16 @@ class Chart {
     constructor(element, config) {
         this.element = element;
         this.config = config;
+        // this.init = true;
     }
 
     // destroying old labels, if they exist
     destroy_old_labels(axis_type) {
-        let old_labels = document.getElementsByClassName(axis_type + '-axis-label');
+        let old_labels = document.querySelector(this.config.chart_wrapper_selector + ' .' + axis_type + '-axis-labels-container');
 
         if (old_labels) {
-            let old_labels_count = old_labels.length;
-
-            for (let i = 0; i < old_labels_count; i++) {
-                if (!old_labels[0].parentNode.removeChild(old_labels[0])) return false;
+            while (old_labels.firstChild) {
+                old_labels.removeChild(old_labels.firstChild);
             }
         }
 
@@ -24,20 +23,12 @@ class Chart {
     }
 
     display_timeflow_axis() {
-        let timeflow_axis_labels_container = document.querySelector(this.config.chart_wrapper_selector + ' .timeflow-axis-labels-container');
-        let timeflow_axis_labels = '';
+        this.destroy_old_labels('timeflow');
+
+        let timeflow_axis_labels_container = document.querySelectorAll(this.config.chart_wrapper_selector + ' .timeflow-axis-labels-container')[0];
         let start_point = this.get_timeflow_start_point();
 
-        let labels_measure;
-
-        // getting timeflow labels measure
-        if (this.config.timeflow_axis_labels_measure_input_id) {
-            let measure_input = document.querySelector('#' + this.config.timeflow_axis_labels_measure_input_id);
-            labels_measure = measure_input.options[measure_input.selectedIndex].id;
-        } else {
-            labels_measure = this.config.timeflow_axis_labels_measure;
-        }
-
+        let labels_measure = this.config.timeflow_axis_labels_measure;
         let value_measure = this.config.timeflow_measure;
 
         if (labels_measure === 'day' || labels_measure === 'week') {
@@ -45,7 +36,7 @@ class Chart {
             let step = this.config.timeflow_axis_labels_step;
             let steps_count = this.config.canvas_width / (this.config.timeflow_axis_labels_step * this.config.point_dist);
 
-            // console.log(steps_count);
+            console.log(steps_count);
 
             if (labels_measure === 'week') {
                 steps_count /= translate_measure(labels_measure);
@@ -76,8 +67,12 @@ class Chart {
                 }
 
                 let date = full_date.getDate() + date_ending;
+                let label = document.createElement('span');
+                label.classList.add('axis-label', 'timeflow-axis-label');
+                label.style.left = left_pos + 'px';
+                label.innerText = date;
 
-                timeflow_axis_labels += "<span class='axis-label timeflow-axis-label' style='left: " + left_pos + "px'>" + date + "</span>";
+                timeflow_axis_labels_container.appendChild(label);
             }
 
         } else if (labels_measure === 'month') {
@@ -89,7 +84,6 @@ class Chart {
         }
         // }
 
-        timeflow_axis_labels_container.insertAdjacentHTML('afterbegin', timeflow_axis_labels);
 
         if (!this.config.horizontal_axis_show_line) {
             timeflow_axis_labels_container.classList.add('no-line');
@@ -98,7 +92,6 @@ class Chart {
         if (!this.config.horizontal_axis_show_ticks) {
             timeflow_axis_labels_container.classList.add('no-ticks');
         }
-
     }
 
     display_vertical_axis() {

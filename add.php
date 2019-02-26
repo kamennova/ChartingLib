@@ -12,6 +12,13 @@ $timeflow_start_point = date('Y-m-d', strtotime("-$chart_points_num days"));
 
 //----
 
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    $is_disabled = 'disabled';
+}
+
+//----
+
 //$body_class_list []= 'theme-classic';
 $body_class_list [] = 'theme-bright';
 //$body_class_list [] = 'theme-dark';
@@ -23,7 +30,7 @@ $content .= <<<EOD
     <div class="container">
     <div class='chart-form-container col-left'>
         <h1 class="page-title">Chart configuration</h1>
-        <form class="chart-form" method="post" action="add_action.php">
+        <form class="chart-form" id="config-form" method="post" action="add_action.php">
         <section class="form-section main-info-fields">
             <p>
                 <label for="chart_name">Name</label>
@@ -144,7 +151,7 @@ $content .= <<<EOD
                     </div>
              </section>
              </section>
-             <section class="form-section style-fields collapsible">
+             <section class="form-section style-fields collapsed collapsible">
                 <div class="collapsible-header form-section-header">
                     <h2 class="form-section-title">Style</h2>
                 </div>
@@ -206,17 +213,7 @@ $content .= <<<EOD
                 </section> 
                 </div>
              </section>
-            <button class="btn btn-save         
-EOD;
-session_start();
-if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-
-} else {
-    $content .= 'disabled';
-}
-
-$content .= <<<EOD
-                " type="submit">Save</button>
+            <button class="btn btn-save $is_disabled" type="submit" id="submit-btn">Save</button>
             <a class="btn" href="add.php">Reset</a>
         </form>
     </div>
@@ -231,7 +228,7 @@ $content .= <<<EOD
         </div>
         <section class="chart-data-input">
            <section class="manual-data-input">
-             <form class="chart-data-input-form" method="post">        
+             <form class="chart-data-input-form" id="data-form" method="post">        
                     <h2 class="form-section-title">Enter some data</h2>
                     <table class="plane-chart-data-input data-input-table" id="timeflow-chart-data-input">
                     <thead>

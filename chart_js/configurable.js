@@ -26,6 +26,9 @@ let Configurable = new Chart(1, {
     horizontal_axis_type: 'timeflow',
 
     timeflow_step: 1,
+    // timeflow_step_config: {
+    //   // axis
+    // },
     timeflow_measure: 'day',
 
     timeflow_axis_labels_step: 1,
@@ -37,7 +40,7 @@ let Configurable = new Chart(1, {
     // timeflow_step_input: document.getElementById()
     timeflow_start_point: document.getElementById('timeflow-start-point').value,
 
-    inputs_to_monitor: ['vertical-axis-labels-step', 'timeflow-start-point', 'timeflow-labels-measure-id', 'timeflow-labels-step'],
+    inputs_to_monitor: ['vertical_axis_labels_step', 'timeflow_labels_measure', 'timeflow_axis_labels_step'],
 
     /* ====================
         Style parameters

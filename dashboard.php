@@ -10,7 +10,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 require_once 'connection.php';
 
 //----
-
 $stylesheets .= '<link rel="stylesheet" href="css/chart.css" type="text/css">';
 //-----
 
@@ -47,7 +46,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 
     $chart_item = <<<EOD
     <li class='chart' id='chart-$index_num'>
-        <h2 class='section-title chart-name'><a href='#'> {$row['chart_name']} </a></h2>
+        <h2 class='chart-name'><a href='#'> {$row['chart_name']} </a></h2>
         <div class="chart-wrapper" id="chart-wrapper-$index_num">
             <div class="vertical-axis-labels-container axis-labels-container"></div>
             <div class="chart-canvas-wrapper">
@@ -106,6 +105,7 @@ EOD;
 
         "line_colour" => '#4158D0',
         "fill_colour" => '#e2e6f9',
+        'grid_colour' => '#e0e0e0',
         "line_width" => '1',
 
         "vertical_axis_show_ticks" => false,
@@ -121,7 +121,8 @@ EOD;
     $charts_list .= $chart_item;
 }
 
-$body_class_list = 'dashboard-page';
+$body_class_list []= 'dashboard-page';
+$body_class_list []= 'theme-bright';
 $stylesheets .= '<link href="css/dashboard.css" rel="stylesheet" />';
 
 $content .= <<<EOD

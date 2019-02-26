@@ -1,4 +1,3 @@
-
 /*==========================
      Displaying form
 ==========================*/
@@ -102,34 +101,55 @@ function destroy_old_labels(axis_type) {
     return true;
 }
 
+
+// ----
+
 function monitor_input_field(param) {
-    let param_input = document.getElementById(param);
-    let param_name = param.replace(/-/g, '_').replace(/ /g, '_');
+    let param_name = param;
+    let param_selector = param.replace(/_/g, '-').replace(/ /g, '-');
+
+    if (typeof Configurable.config[param_selector + '_input_selector'] !== undefined) {
+        param_selector = param_selector + '_input_selector';
+    } else if(document.getElementById(param)) {
+        let param_selector = '#' + param_name;
+    }
+
+    let param_input = document.querySelector(param_selector);
     let second_level_parent = get_parent_by_level(param_input, 2);
 
     let axis_type = '';
 
-    // TODO: replace timeflow -> horizontal
-    if (second_level_parent.className && second_level_parent.className.includes('-axis-fields')) {
-        // param_axis_type = second_level_parent.className;
-        axis_type = second_level_parent.className.includes('timeflow') ? 'timeflow' : 'vertical';
+    if (param_name.includes('timeflow') || param_name.includes('category')) {
+        axis_type = 'horizontal';
+    } else if (param_name.includes('vertical_axis')) {
+        axis_type = 'vertical';
+    } else {
 
-    } else if (second_level_parent.parentNode.className && second_level_parent.parentNode.className.includes('-axis-fields')) {
-        // param_axis_type = second_level_parent.parentNode.className
-        axis_type = second_level_parent.parentNode.className.includes('timeflow') ? 'timeflow' : 'vertical';
+        // TODO: replace timeflow -> horizontal
+        let grandparent_class;
+        if (grandparent_class = second_level_parent.className && grandparent_class.includes('-axis-fields')) {
+            if (grandparent_class.includes('timeflow') || grandparent_class.includes('category')) {
+                axis_type = 'horizontal';
+            } else {
+                axis_type = 'vertical';
+            }
+        } else if (second_level_parent.parentNode.className && second_level_parent.parentNode.className.includes('-axis-fields')) {
+            // param_axis_type = second_level_parent.parentNode.className
+            axis_type = second_level_parent.parentNode.className.includes('timeflow') ? 'horizontal' : 'vertical';
+        }
     }
 
     param_input.addEventListener('change', function () {
         Configurable.config[param_name] = param_input.value;
         if (destroy_old_labels(axis_type)) {
-            if (axis_type === 'timeflow') {
+            if (axis_type === 'horizontal') {
                 Configurable.display_timeflow_axis()
             } else {
                 Configurable.display_vertical_axis();
             }
         }
 
-        if(param_name === 'timeflow_start_point' || param_name === 'vertical_axis_labels_step' || param_name === 'vertical_axis_value_step'){
+        if (param_name === 'timeflow_start_point' || param_name === 'vertical_axis_labels_step' || param_name === 'vertical_axis_value_step') {
             Configurable.draw_chart();
         }
     });
@@ -138,6 +158,9 @@ function monitor_input_field(param) {
 for (let i = 0; i < Configurable.config.inputs_to_monitor.length; i++) {
     monitor_input_field(Configurable.config.inputs_to_monitor[i]);
 }
+
+
+// ----
 
 chart_type_input.addEventListener('change', function () {
     // hiding previous chart type fields
@@ -199,7 +222,6 @@ document.getElementById('bar-width-input').addEventListener('change', function (
 // points_dist_input.addEventListener('change', update_points_dist(points_dist_input));
 
 
-
 // ----
 
 let bar_border_radius_input = document.getElementById('bar-border-radius-input');
@@ -226,7 +248,7 @@ document.getElementById('line-width-input').addEventListener('change', function 
     Configurable.draw_chart();
 });
 
-document.getElementById('smoothing-input').addEventListener('change', function(){
+document.getElementById('smoothing-input').addEventListener('change', function () {
     Configurable.config.smoothing = Number(this.value);
     Configurable.draw_chart();
 });

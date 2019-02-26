@@ -10,7 +10,9 @@
   min-width: 240px;
   padding: 120px 20px 20px 0;
 
-  background-color: @lightblue;
+  color: var(--accent);
+
+  background-color: @primary;
 }
 
 .sidebar::after {
@@ -21,7 +23,7 @@
   top: 0;
 
   display: block;
-  height: 100vh;
+  height: 100%;
   width: 2000px;
 
   background-color: inherit;
@@ -45,7 +47,8 @@
     margin-bottom: 7px;
 
     font-size: 16px;
-    color: darken(@primary, 5%);
+    color: var(--accent);
+    //color: darken(@primary, 5%);
     font-weight: 600;
   }
 
@@ -170,9 +173,9 @@
 
 .dashboard-page {
   .header-logo {
-    left: 55px;
-    top: 40px;
-    right: auto;
+    //left: 55px;
+    //top: 40px;
+    //right: auto;
   }
 }
 
@@ -207,6 +210,7 @@
 
 .charts-list {
   display: flex;
+  flex-wrap: wrap;
 
   list-style: none;
 
@@ -214,14 +218,18 @@
     margin-right: 50px;
   }
 
-  .chart-name a {
-    font-size: 14px;
-    color: black;
-    letter-spacing: 0.04em;
-  }
+  .chart-name {
+    margin-bottom: 25px;
 
-  .chart-name a:hover {
-    color: @primary;
-    text-decoration: none;
+    a {
+      font-size: 17px;
+      color: black;
+      letter-spacing: 0.04em;
+
+      &:hover {
+        color: @primary;
+        text-decoration: none;
+      }
+    }
   }
 }

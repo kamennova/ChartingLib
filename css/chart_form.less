@@ -23,9 +23,10 @@ main > .container {
 .chart-form-container.col-left {
   position: relative;
 
-  width: 450px;
+  //width: 450px;
   min-height: 100%;
-  flex-basis: 405px;
+  flex-basis: 385px;
+  //flex-basis: 405px;
   flex-shrink: 0;
   margin: 0;
   padding: @header_height 0 25px 0;
@@ -256,10 +257,6 @@ main > .container {
     width: auto;
   }
 
-  input[type=radio] {
-    margin-right: 5px;
-  }
-
   p {
     margin-bottom: 7px;
   }
@@ -271,9 +268,9 @@ main > .container {
 
   select {
     box-sizing: border-box;
-    padding: 6px 7px 6px;
+    padding: 5px 7px 5px;
 
-    font-size: 16px;
+    font-size: 15px;
 
     //background-color: #eee;
     background-color: lighten(@primary, 42%);
@@ -293,7 +290,7 @@ main > .container {
     }
 
     &:focus {
-      background-color: @accent;
+      background-color: var(--accent);
       box-shadow: none;
       outline: none;
       border: 1px solid var(--accent);
@@ -319,6 +316,19 @@ main > .container {
     }
   }
 
+  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--accent);
+    opacity: 1; /* Firefox */
+  }
+
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: var(--accent);
+  }
+
+  ::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--accent);
+  }
+
   //-----
 
   input[type="radio"] + .radio-indicator,
@@ -332,6 +342,26 @@ main > .container {
 
     border: 1px solid @grey;
   }
+
+  .checkbox-indicator::after,
+  .checkbox-indicator::before,
+  .radio-indicator::after,
+  .radio-indicator::before{
+    content: "";
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    display: none;
+    margin: auto;
+
+    background-color: var(--accent);
+  }
+
+  //---- checkbox input
 
   input[type="checkbox"] {
     & + .checkbox-indicator {
@@ -350,29 +380,19 @@ main > .container {
 
   .checkbox-indicator::after,
   .checkbox-indicator::before {
-    content: "";
-
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-
-    display: none;
     width: 8px;
     height: 2px;
-    margin: auto;
-
-    background-color: var(--accent);
   }
 
   .checkbox-indicator::after {
     transform: rotate(90deg);
   }
 
-  //----
+  //--- radio input
 
   input[type="radio"] {
+    margin-right: 5px;
+
     & + .radio-indicator {
       border-radius: 50%;
     }
@@ -387,20 +407,9 @@ main > .container {
   }
 
   .radio-indicator::after {
-    content: "";
-
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-
-    display: none;
     width: 6px;
     height: 6px;
-    margin: auto;
 
-    background-color: var(--accent);
     border-radius: 50%;
   }
 

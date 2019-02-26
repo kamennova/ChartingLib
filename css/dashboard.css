@@ -20,7 +20,8 @@
   position: relative;
   min-width: 240px;
   padding: 120px 20px 20px 0;
-  background-color: #e6eaffe0;
+  color: var(--accent);
+  background-color: #4158D0;
 }
 .sidebar::after {
   content: "";
@@ -28,7 +29,7 @@
   left: -2000px;
   top: 0;
   display: block;
-  height: 100vh;
+  height: 100%;
   width: 2000px;
   background-color: inherit;
   z-index: -1;
@@ -45,7 +46,7 @@
   position: relative;
   margin-bottom: 7px;
   font-size: 16px;
-  color: #3149c6;
+  color: var(--accent);
   font-weight: 600;
 }
 .side-nav > li > h4 .plus-icon {
@@ -121,11 +122,6 @@
 .side-nav .user-charts-nav li:first-of-type::before {
   height: 17px;
 }
-.dashboard-page .header-logo {
-  left: 55px;
-  top: 40px;
-  right: auto;
-}
 .dashboard {
   position: relative;
   display: flex;
@@ -145,13 +141,17 @@
 }
 .charts-list {
   display: flex;
+  flex-wrap: wrap;
   list-style: none;
 }
 .charts-list .chart {
   margin-right: 50px;
 }
+.charts-list .chart-name {
+  margin-bottom: 25px;
+}
 .charts-list .chart-name a {
-  font-size: 14px;
+  font-size: 17px;
   color: black;
   letter-spacing: 0.04em;
 }

@@ -27,9 +27,9 @@ $timeflow_labels_step = '';
 
 $chart_fields = ['owner_id', 'chart_name', 'chart_type_id', 'data_type', 'vertical_axis_value_step',
     'vertical_axis_labels_step', 'vertical_axis_measure_id', 'timeflow_step', 'timeflow_labels_step',
-    'timeflow_measure_id', 'timeflow_labels_measure_id'
-    , 'created_at'
-];
+    'timeflow_measure_id', 'timeflow_labels_measure_id', 'created_at',
+    'show_last'
+    ];
 
 $chart_fields_params = array_map(function ($value) {
     return ':' . $value;
@@ -62,11 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $timeflow_measure_id = trim($_POST['timeflow_measure_id']);
     $timeflow_labels_measure_id = trim($_POST['timeflow_labels_measure_id']);
 
-    $created_at = date("Y-m-d H:i:s");
-//    $created_at = '2019-02-20 18:37:39';
+    $show_last = trim($_POST['timeflow_start_point']);
 
-//    echo $chart_fields_str . "<br>";
-//    echo $chart_fields_params_str . "<br>";
+    $created_at = date("Y-m-d H:i:s");
+
+//    echo $_POST['timeflow_chart_value[1]'];
+//    exit;
 
     if (empty($err)) {
         $sql = "INSERT INTO chart ({$chart_fields_str}) VALUES ({$chart_fields_params_str})";
@@ -86,6 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':timeflow_labels_step', $timeflow_labels_step, PDO::PARAM_INT);
             $stmt->bindParam(':timeflow_measure_id', $timeflow_measure_id, PDO::PARAM_INT);
             $stmt->bindParam(':timeflow_labels_measure_id', $timeflow_labels_measure_id, PDO::PARAM_INT);
+
+            $stmt->bindParam(':show_last', $show_last, PDO::PARAM_INT);
 
             $stmt->bindValue(':created_at', $created_at, PDO::PARAM_STR);
 

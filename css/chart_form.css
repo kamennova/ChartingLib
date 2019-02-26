@@ -25,9 +25,8 @@ main > .container {
 }
 .chart-form-container.col-left {
   position: relative;
-  width: 450px;
   min-height: 100%;
-  flex-basis: 405px;
+  flex-basis: 385px;
   flex-shrink: 0;
   margin: 0;
   padding: 62px 0 25px 0;
@@ -198,9 +197,6 @@ main > .container {
   min-width: 0;
   width: auto;
 }
-.chart-form input[type=radio] {
-  margin-right: 5px;
-}
 .chart-form p {
   margin-bottom: 7px;
 }
@@ -210,8 +206,8 @@ main > .container {
 }
 .chart-form select {
   box-sizing: border-box;
-  padding: 6px 7px 6px;
-  font-size: 16px;
+  padding: 5px 7px 5px;
+  font-size: 15px;
   background-color: #edeffa;
   border: 1px solid #ccd2f2;
   border-radius: 4px;
@@ -226,7 +222,7 @@ main > .container {
   border: 1px solid var(--accent);
 }
 .chart-form select:focus {
-  background-color: #4158D0;
+  background-color: var(--accent);
   box-shadow: none;
   outline: none;
   border: 1px solid var(--accent);
@@ -245,6 +241,20 @@ main > .container {
   border-color: #455cd1;
   background-color: white;
 }
+.chart-form ::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--accent);
+  opacity: 1;
+  /* Firefox */
+}
+.chart-form :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: var(--accent);
+}
+.chart-form ::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: var(--accent);
+}
 .chart-form input[type="radio"] + .radio-indicator,
 .chart-form input[type="checkbox"] + .checkbox-indicator {
   position: absolute;
@@ -253,6 +263,20 @@ main > .container {
   width: 16px;
   height: 16px;
   border: 1px solid lightgrey;
+}
+.chart-form .checkbox-indicator::after,
+.chart-form .checkbox-indicator::before,
+.chart-form .radio-indicator::after,
+.chart-form .radio-indicator::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: none;
+  margin: auto;
+  background-color: var(--accent);
 }
 .chart-form input[type="checkbox"] + .checkbox-indicator {
   border-radius: 2px;
@@ -267,20 +291,14 @@ main > .container {
 }
 .chart-form .checkbox-indicator::after,
 .chart-form .checkbox-indicator::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: none;
   width: 8px;
   height: 2px;
-  margin: auto;
-  background-color: var(--accent);
 }
 .chart-form .checkbox-indicator::after {
   transform: rotate(90deg);
+}
+.chart-form input[type="radio"] {
+  margin-right: 5px;
 }
 .chart-form input[type="radio"] + .radio-indicator {
   border-radius: 50%;
@@ -292,17 +310,8 @@ main > .container {
   display: block;
 }
 .chart-form .radio-indicator::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: none;
   width: 6px;
   height: 6px;
-  margin: auto;
-  background-color: var(--accent);
   border-radius: 50%;
 }
 .chart-form .minicolors-theme-bootstrap .minicolors-input.medium-input {

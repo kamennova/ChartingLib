@@ -32,15 +32,10 @@
     <?= isset($stylesheets) ? $stylesheets : null ?>
     <?= $theme_stylesheets ?>
 
-<!--    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
-<!--            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
-<!--            crossorigin="anonymous"></script>-->
-<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
-
-<!--    <script src="//code.jquery.com/jquery-1.10.2.js"></script>-->
-<!--    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
-
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css" type="text/css">
+
+    <script src="/plugins/vue.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 

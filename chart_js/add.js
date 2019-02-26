@@ -37,6 +37,8 @@ if (document.body.classList.contains('theme-bright')) {
 }
 
 $(document).ready(function ($) {
+
+    // initialize sliders
     let slider_inputs = $(".form-field-slider");
     $.each(slider_inputs, function (i, val) {
 
@@ -53,6 +55,25 @@ $(document).ready(function ($) {
             slide: function Total(event, ui) {
                 input.val(ui.value);
                 update_val(input);
+            }
+        });
+    });
+
+    // prepare 2 forms submitting
+    let config_form = $("#config-form");
+    let data_form = $("#data-form");
+
+    $(config_form).submit(function(evt){
+        evt.preventDefault();
+
+        let forms_data = $(config_form).serialize() + "&" + $(data_form).serialize();
+
+        $.ajax({
+            url  : $(config_form).attr('action'),
+            type : "POST",
+            data : forms_data,
+            success : function(d){
+                alert(d);
             }
         });
     });
