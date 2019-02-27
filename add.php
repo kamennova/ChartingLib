@@ -90,11 +90,11 @@ $content .= <<<EOD
                     </p>
                     <p>
                         <label for="vertical-axis-value-step">Value step</label>
-                        <input type="number" name="vertical_axis_value_step" size="10" min="1" class="form-field smaller-input" id="vertical-axis-value-step" value="1">
+                        <input type="number" name="vertical_axis_value_step" size="10" min="1" class="form-field smaller-input" id="vertical-axis-value-step">
                     </p>
                     <p>
                         <label for="vertical-axis-labels-step">Axis labels step</label>
-                        <input type="number" name="vertical_axis_labels_step" size="10" min="1" class="form-field smaller-input" id="vertical-axis-labels-step" value="3">
+                        <input type="number" name="vertical_axis_labels_step" size="10" min="1" class="form-field smaller-input" id="vertical-axis-labels-step">
                     </p>
                     </div>
                 </section>
@@ -115,7 +115,7 @@ $content .= <<<EOD
                     <fieldset class="measure-fields-wrapper">
                             <!--<label for="timeflow_measure_id">Timeflow measure</label>-->
                             <label for="timeflow-step">Breakpoint step</label>    
-                            <input class="form-field smaller-input" type="number" value="1" min="1" size='10' id="timeflow-step" name="timeflow_step">
+                            <input class="form-field smaller-input" type="number" min="1" size='10' id="timeflow-step" name="timeflow_step">
                             <select name="timeflow_measure_id" id="timeflow-measure-id">
 EOD;
 $content .= generate_options_list($pdo, 'timeflow_measure', 'measure_name', 'day', 'measure_name');
@@ -125,7 +125,7 @@ $content .= <<<EOD
                     
                     <fieldset class="measure-fields-wrapper">
                         <label for="timeflow-labels-step">Axis labels step</label>
-                        <input type="number" name="timeflow_labels_step" min="1" size="10" class="form-field smaller-input" id="timeflow-labels-step" value="1">
+                        <input type="number" name="timeflow_labels_step" min="1" size="10" class="form-field smaller-input" id="timeflow-labels-step" >
                         <select name="timeflow_labels_measure_id" id="timeflow-labels-measure-id">
 EOD;
 $content .= generate_options_list($pdo, 'timeflow_measure', 'measure_name', 'day', 'measure_name');
@@ -134,7 +134,7 @@ $content .= <<<EOD
                     </fieldset>
                     <p>
                         <label for="timeflow-start-point">Show breakpoints since</label>
-                        <input type="number" name="timeflow_start_point" class="form-field smaller-input" id="timeflow-start-point" value="9"> 
+                        <input type="number" name="timeflow_start_point" class="form-field smaller-input" id="timeflow-start-point"> 
                         <span class="timeflow-measure"></span>s ago  
                         <!--<input type="date" id='timeflow-start-point' value="$timeflow_start_point" >-->
                     </p>                       
@@ -249,7 +249,9 @@ $content .= <<<EOD
             </form>
 </section>
 EOD;
+
 include_once 'upload.php';
+
 $content .= <<<EOD
     <section class="data-file-upload">
         <h2 class="form-section-title">Upload data table</h2>
@@ -261,9 +263,6 @@ $content .= <<<EOD
         </form>
         <p class="upload-message">$upload_message</p>
         $field_headers
-EOD;
-
-$content .= <<<EOD
         <form class="data-file-config-form" method="post">
         <section class="data-file-config">
         Choose field to monitor: 

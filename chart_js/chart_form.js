@@ -104,55 +104,91 @@ function destroy_old_labels(axis_type) {
 
 // ----
 
-function monitor_input_field(param) {
-    let param_name = param;
-    let param_selector = param.replace(/_/g, '-').replace(/ /g, '-');
+function fill_default(param) {
+    // let param_input = get_param_input();
+    // param_input.value(Configurable.config[param]);
+}
 
-    if (typeof Configurable.config[param_selector + '_input_selector'] !== undefined) {
-        param_selector = param_selector + '_input_selector';
-    } else if(document.getElementById(param)) {
-        let param_selector = '#' + param_name;
-    }
+function get_param_input(param) {
+    let param_selector,
+        param_input;
 
-    let param_input = document.querySelector(param_selector);
-    let second_level_parent = get_parent_by_level(param_input, 2);
-
-    let axis_type = '';
-
-    if (param_name.includes('timeflow') || param_name.includes('category')) {
-        axis_type = 'horizontal';
-    } else if (param_name.includes('vertical_axis')) {
-        axis_type = 'vertical';
+    if (Configurable.config[param + '_input_selector'] !== undefined) {
+        param_selector = Configurable.config[param + '_input_selector'];
+        param_input = document.querySelector(param_selector);
     } else {
+        param_selector = param.replace(/_| /g, '-');
+        param_input = document.getElementById(param_selector);
 
-        // TODO: replace timeflow -> horizontal
-        let grandparent_class;
-        if (grandparent_class = second_level_parent.className && grandparent_class.includes('-axis-fields')) {
-            if (grandparent_class.includes('timeflow') || grandparent_class.includes('category')) {
-                axis_type = 'horizontal';
-            } else {
-                axis_type = 'vertical';
-            }
-        } else if (second_level_parent.parentNode.className && second_level_parent.parentNode.className.includes('-axis-fields')) {
-            // param_axis_type = second_level_parent.parentNode.className
-            axis_type = second_level_parent.parentNode.className.includes('timeflow') ? 'horizontal' : 'vertical';
+        if (!param_input) {
+            param_selector += '-input';
+            param_input = document.getElementById(param_selector);
         }
     }
 
-    param_input.addEventListener('change', function () {
-        Configurable.config[param_name] = param_input.value;
-        if (destroy_old_labels(axis_type)) {
-            if (axis_type === 'horizontal') {
-                Configurable.display_timeflow_axis()
-            } else {
-                Configurable.display_vertical_axis();
+    return param_input;
+}
+
+for (const key in Configurable_fields) {
+    let value = Configurable_fields[key];
+
+    if (Configurable_fields.hasOwnProperty(key)) {
+        get_param_input(key);
+        console.log(key);
+        console.log(value);
+    }
+}
+
+
+function monitor_input_field(param) {
+    let param_input = get_param_input(param);
+    if (param_input) {
+        param_input.value = Configurable.config[param];
+
+        // console.log(param);
+        let second_level_parent;
+
+        if (get_parent_by_level(param_input, 2)) {
+            second_level_parent = get_parent_by_level(param_input, 2);
+        }
+
+        let axis_type = '';
+
+        if (param.includes('timeflow') || param.includes('category')) {
+            axis_type = 'horizontal';
+        } else if (param.includes('vertical_axis')) {
+            axis_type = 'vertical';
+        } else {
+
+            // TODO: replace timeflow -> horizontal
+            let grandparent_class;
+            if (grandparent_class = second_level_parent.className && typeof grandparent_class.includes('-axis-fields') !== 'undefined') {
+                if (grandparent_class.includes('timeflow') || grandparent_class.includes('category')) {
+                    axis_type = 'horizontal';
+                } else {
+                    axis_type = 'vertical';
+                }
+            } else if (second_level_parent.parentNode.className && second_level_parent.parentNode.className.includes('-axis-fields')) {
+                // param_axis_type = second_level_parent.parentNode.className
+                axis_type = second_level_parent.parentNode.className.includes('timeflow') ? 'horizontal' : 'vertical';
             }
         }
 
-        if (param_name === 'timeflow_start_point' || param_name === 'vertical_axis_labels_step' || param_name === 'vertical_axis_value_step') {
-            Configurable.draw_chart();
-        }
-    });
+        param_input.addEventListener('change', function () {
+            Configurable.config[param] = param_input.value;
+            if (destroy_old_labels(axis_type)) {
+                if (axis_type === 'horizontal') {
+                    Configurable.display_timeflow_axis()
+                } else {
+                    Configurable.display_vertical_axis();
+                }
+            }
+
+            if (param === 'timeflow_start_point' || param === 'vertical_axis_labels_step' || param === 'vertical_axis_value_step') {
+                Configurable.draw_chart();
+            }
+        });
+    }
 }
 
 for (let i = 0; i < Configurable.config.inputs_to_monitor.length; i++) {

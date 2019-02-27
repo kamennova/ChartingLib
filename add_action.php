@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
 // redirecting unlogged user to log in form
@@ -66,8 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $created_at = date("Y-m-d H:i:s");
 
-//    echo $_POST['timeflow_chart_value[1]'];
-//    exit;
+    $data_length = count($_POST['timeflow_chart_value']);
 
     if (empty($err)) {
         $sql = "INSERT INTO chart ({$chart_fields_str}) VALUES ({$chart_fields_params_str})";
@@ -93,37 +96,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindValue(':created_at', $created_at, PDO::PARAM_STR);
 
             for($i=0; $i < $chart_fields_count; $i++){
-                echo $i+1 . ') ' . $chart_fields[$i] . ": " .  ${$chart_fields[$i]} . "<br>";
+                // echo $i+1 . ') ' . $chart_fields[$i] . ": " .  ${$chart_fields[$i]} . "<br>";
             }
 
-//            var_dump($stmt);
-
-
             if ($stmt->execute()) {
-                /*$chart_id_query = "SELECT id FROM chart WHERE owner_id = {$owner_id} AND created_at = {$created_at} LIMIT 1";
-                $chart_id_result = $pdo->query($chart_id_query, MYSQLI_STORE_RESULT);
+                $chart_id = intval($pdo->lastInsertId());
 
-                $sql = "INSERT INTO timeflow_chart_data (chart_id, breakpoint, value) VALUES (:chart_id, :breakpoint, :value)";
+                $sql = "INSERT INTO timeflow_chart_data (chart_id, breakpoint, val) VALUES (:chart_id, :breakpoint, :val)";
 
-                if($stmt = $pdo->prepare($sql)){
+                if($stmt = $pdo->prepare($sql)) {
                     $stmt->bindParam(':chart_id', $chart_id, PDO::PARAM_INT);
                     $stmt->bindParam(':breakpoint', $breakpoint, PDO::PARAM_STR);
-                    $stmt->bindParam(':value', $value, PDO::PARAM_INT);
+                    $stmt->bindParam(':val', $value, PDO::PARAM_INT);
 
-                    $breakpoint_num = 0;
+                    echo 'a';
 
-                    $chart_id = $chart_id_result;
+                    for ($breakpoint_num = 0; $breakpoint_num < $data_length; $breakpoint_num++) {
 
-                    while(trim($_POST["timeflow-chart-value[$breakpoint_num]"]) !== ''){
-                        $breakpoint = trim($_POST["timeflow-chart-value[$breakpoint_num]"]);
-                        $value = trim($_POST["timeflow-chart-breakpoint[$breakpoint_num]"]);
+                        $breakpoint = trim($_POST['timeflow_chart_breakpoint'][$breakpoint_num]);
+                        $value = intval(trim($_POST['timeflow_chart_value'][$breakpoint_num]));
+
                         $stmt->execute();
 
-                        $breakpoint_num++;
+//                        echo $breakpoint_num . ' ' . $breakpoint . ', ' . $value . "<br>";
                     }
-                }*/
+                }
 
-                header("location: dashboard.php");
+//                header("location: dashboard.php");
                 exit;
             } else {
                 echo $stmt->errorCode();

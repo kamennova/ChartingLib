@@ -73,6 +73,7 @@ $(document).ready(function ($) {
             type : "POST",
             data : forms_data,
             success : function(d){
+                window.location = 'dashboard.php';
                 alert(d);
             }
         });

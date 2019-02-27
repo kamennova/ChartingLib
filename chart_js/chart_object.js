@@ -28,6 +28,8 @@ class Chart {
         let timeflow_axis_labels_container = document.querySelectorAll(this.config.chart_wrapper_selector + ' .timeflow-axis-labels-container')[0];
         let start_point = this.get_timeflow_start_point();
 
+        // console.log(start_point);
+
         let labels_measure = this.config.timeflow_axis_labels_measure;
         let value_measure = this.config.timeflow_measure;
 
@@ -36,7 +38,7 @@ class Chart {
             let step = this.config.timeflow_axis_labels_step;
             let steps_count = this.config.canvas_width / (this.config.timeflow_axis_labels_step * this.config.point_dist);
 
-            console.log(steps_count);
+            // console.log(steps_count);
 
             if (labels_measure === 'week') {
                 steps_count /= translate_measure(labels_measure);

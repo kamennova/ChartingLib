@@ -64,7 +64,7 @@ EOD;
     $chart_data = [];
     $chart_data_result = $pdo->query("SELECT * FROM timeflow_chart_data WHERE chart_id = {$row['id']}");
     while ($data_row = $chart_data_result->fetch(PDO::FETCH_ASSOC)) {
-        $chart_data [] = $data_row['value'];
+        $chart_data [] = $data_row['val'];
     }
 
     $chart_type = get_num_value($pdo, 'chart_type', 'type_name', $row['chart_type_id']);
@@ -121,29 +121,31 @@ EOD;
     $charts_list .= $chart_item;
 }
 
+if($chart_names_list){
+    $chart_names_list = '<ul class="user-charts-nav">' . $chart_names_list . '</ul>';
+}
+
+//-----
+
 $body_class_list []= 'dashboard-page';
 $body_class_list []= 'theme-bright';
 $stylesheets .= '<link href="css/dashboard.css" rel="stylesheet" />';
 
 $content .= <<<EOD
-<div class='container dashboard-container'>
+
   <aside class="sidebar">
     <ul class="side-nav">
         <li><a href="dashboard.php">Dashboard</a></li>
         <li><h4><span class="plus-icon"></span>My charts</h4>
-            
-EOD;
-
-if ($chart_names_list) {
-    $content .= '<ul class="user-charts-nav">' . $chart_names_list . '</ul>';
-}
-
-$content .= <<<EOD
+            $chart_names_list
         </li>
     </ul>
-    <a href="add.php" class="btn btn-add">Add chart</a>
+    <!--<a href="add.php" class="btn btn-add">Add chart</a>-->
   </aside>
+  
+<div class='container dashboard-container'>
   <section class="dashboard">
+
 EOD;
 if ($charts_list) {
     $content .= "<ul class='charts-list'>" . $charts_list . '</ul>';
@@ -151,15 +153,14 @@ if ($charts_list) {
     $content .= '<p class="nothing-found-message">No charts to show yet :/ </p>';
 }
 $content .= <<<EOD
-  </section>
+</section>
 </div>
 <script src="chart_js/functions.js"></script>
 <script src="chart_js/chart_object.js"></script>
 <script src="chart_js/draw_chart.js"></script>
+<script>$js</script>
+<script src='js/dashboard.js'></script>
 EOD;
-
-$content .= "<script>$js</script>";
-$content .= "<script src='js/dashboard.js'></script>";
 
 include_once 'layout.php';
 

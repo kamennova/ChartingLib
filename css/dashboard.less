@@ -5,9 +5,13 @@
 }
 
 .sidebar {
-  position: relative;
+  //position: relative;
+  position: absolute;
+  left: 0;
+  top: 0;
 
-  min-width: 240px;
+  width: 70px;
+  height: 100%;
   padding: 120px 20px 20px 0;
 
   color: var(--accent);
@@ -15,7 +19,7 @@
   background-color: @primary;
 }
 
-.sidebar::after {
+/*.sidebar::after {
   content: "";
 
   position: absolute;
@@ -29,9 +33,10 @@
   background-color: inherit;
 
   z-index: -1;
-}
+}*/
 
 .side-nav {
+  display: none;
   padding-left: 14px;
 
   list-style: none;
@@ -211,6 +216,7 @@
 .charts-list {
   display: flex;
   flex-wrap: wrap;
+  padding-left: 80px;
 
   list-style: none;
 
