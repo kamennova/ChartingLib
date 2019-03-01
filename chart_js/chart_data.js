@@ -29,16 +29,14 @@ if (typeof(table_data) !== "undefined") {
 function prepare_default_chart_data() {
     let row_count = document.querySelectorAll('#' + Configurable.config.data_table_id + ' tr').length;
     let date_options =  {year: 'numeric', month: "numeric", day: "numeric" };
-
-    monitor_data_row_input(0);
-
     let start_point = Configurable.get_timeflow_start_point();
-    document.getElementById('timeflow-chart-breakpoint[0]').value = start_point.toLocaleString('fr-CA',  date_options);
 
-    for (let i = 1; i < row_count; i++) {
+    for (let i = 0; i < row_count; i++) {
         // setting breakpoint date
         let breakpoint_val = new Date(start_point.getFullYear(), start_point.getMonth(), start_point.getDate() + Configurable.config.timeflow_step * i);
-        document.getElementById('timeflow-chart-breakpoint[' + i + ']').value = breakpoint_val.toLocaleDateString('fr-CA',  date_options);
+        let breakpoint_val_str = breakpoint_val.toLocaleDateString('fr-CA',  date_options);
+        Configurable.config.chart_breakpoints.push(breakpoint_val_str);
+        document.getElementById('timeflow-chart-breakpoint[' + i + ']').value = breakpoint_val_str;
 
         monitor_data_row_input(i);
     }

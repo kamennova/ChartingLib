@@ -134,7 +134,8 @@ $content .= <<<EOD
                     </fieldset>
                     <p>
                         <label for="timeflow-start-point">Show breakpoints since</label>
-                        <input type="number" name="timeflow_start_point" class="form-field smaller-input" id="timeflow-start-point"> 
+                        <!--<input type="number" name="timeflow_start_point" class="form-field smaller-input" id="timeflow-start-point">-->
+                        <input type="number" name="show_since_steps_ago" class="form-field smaller-input" id="show-since-steps-ago"> 
                         <span class="timeflow-measure"></span>s ago  
                         <!--<input type="date" id='timeflow-start-point' value="$timeflow_start_point" >-->
                     </p>                       
@@ -221,7 +222,7 @@ $content .= <<<EOD
         <div class="chart-wrapper">
             <div id="vertical-axis-labels-container" class="vertical-axis-labels-container axis-labels-container"></div>
             <div class="chart-canvas-wrapper">
-                <canvas id="chart-canvas" height="400px" width="1400px"></canvas>
+                <canvas id="chart-canvas" height="400px" width="1050px"></canvas>
             </div>
             <div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container horizontal-axis-labels-container axis-labels-container"></div>
             <div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>

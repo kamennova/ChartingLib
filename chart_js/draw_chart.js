@@ -1,4 +1,3 @@
-
 /* =========================
    Displaying the axises
 ========================= */
@@ -20,37 +19,112 @@ function translate_measure(val) {
     return price;
 }
 
-function draw_bar_chart(obj, ctx, days_diff) {
-    ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-
+function draw_bar_chart(obj, ctx, start_index, days_diff) {
     let bar_padding_left = obj.config.padding_left - obj.config.bar_width / 2;
 
-    ctx.moveTo(bar_padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height);
+    let x0 = obj.config.point_dist * (days_diff) + bar_padding_left,
+        y0 = obj.config.canvas_height;
 
-    let x0 = obj.config.point_dist * (days_diff -1) + bar_padding_left;
-    let y0 = obj.config.canvas_height;
+    let x = x0 - obj.config.point_dist,
+        index = start_index,
+        y,
+        R = obj.config.bar_border_radius;
 
-    obj.config.chart_data.forEach(function (item, i, arr) {
-        x0 += obj.config.point_dist;
+    for (let i = 0, points_count = obj.points_to_show_num(start_index); i < points_count; i++, index++) {
+        x += obj.config.point_dist;
+        y = y0 - obj.config.chart_sizing * obj.config.chart_data[index];
 
         ctx.beginPath();
 
-        ctx.moveTo(x0, y0);
-        ctx.lineTo(x0, y0 - (obj.config.chart_sizing * item - obj.config.bar_border_radius));
-        ctx.arc(x0 + obj.config.bar_border_radius, y0 - (obj.config.chart_sizing * item - obj.config.bar_border_radius), obj.config.bar_border_radius,  Math.PI, -1/2*Math.PI, false);
-        ctx.lineTo(x0 + obj.config.bar_width - obj.config.bar_border_radius, y0 - obj.config.chart_sizing * item);
-        ctx.arc(x0 + obj.config.bar_width - obj.config.bar_border_radius, y0 - (obj.config.chart_sizing * item - obj.config.bar_border_radius), obj.config.bar_border_radius, 3/2*Math.PI, 0, false);
-        ctx.lineTo(x0 + obj.config.bar_width, y0);
+        ctx.moveTo(x, y0);
+        ctx.lineTo(x, y + R);
+        ctx.arc(x + R, y + R, R, Math.PI, -1 / 2 * Math.PI, false);
+        ctx.lineTo(x + obj.config.bar_width - R, y);
+        ctx.arc(x + obj.config.bar_width - R, y + R, R, 3 / 2 * Math.PI, 0, false);
+        ctx.lineTo(x + obj.config.bar_width, y0);
 
         ctx.stroke();
         ctx.fill();
-    });
+    }
 }
 
-function draw_line_chart(obj, ctx, days_diff) {
+function draw_curve_chart(obj, ctx, start_index, days_diff, k = 2 /* smoothness coefficient */) {
+    let x0 = obj.config.padding_left + days_diff * obj.config.point_dist,
+        y0 = obj.config.canvas_height;
+
+    let x1 = x0,
+        y1 = y0 - obj.config.chart_data[start_index] * obj.config.chart_sizing;
+
+    ctx.moveTo(x1, y0);
+    ctx.lineTo(x1, y1);
+
+    let x = x0,
+        y,
+        index = start_index + 1;
+
+    ctx.strokeStyle = obj.config.line_colour;
+
+    for (let i = 1, points_count = obj.points_to_show_num(start_index); i < points_count; i++, index++) {
+        x += obj.config.point_dist;
+        y = obj.config.canvas_height - obj.config.chart_data[index] * obj.config.chart_sizing;
+        let cpt_x = x - obj.config.point_dist / 2;
+        let cpt_y1 = y0 - obj.config.chart_data[index - 1] * obj.config.chart_sizing;
+        let cpt_y2 = y0 - obj.config.chart_data[index] * obj.config.chart_sizing;
+
+        ctx.bezierCurveTo(cpt_x - k, cpt_y1, cpt_x + k, cpt_y2, x, y);
+    }
+
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = ctx.fillStyle;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+    ctx.lineTo(x, y0);
+
+    // --- redrawing the first line ---
+    ctx.strokeStyle = 'white'; // setting non-transparent bg
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x0, y0 - obj.config.chart_data[start_index] * obj.config.chart_sizing);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.strokeStyle = obj.config.fill_colour; // redrawing the line with fill colour
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x0, y0 - obj.config.chart_data[start_index] * obj.config.chart_sizing);
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function draw_point_chart(obj, ctx, start_index, days_diff) {
+    let x0 = obj.config.padding_left + obj.config.point_dist * days_diff,
+        y0 = obj.config.canvas_height;
+
+    let x = x0 - obj.config.point_dist,
+        y,
+        index = start_index;
+
+    for (let i = 0, points_count = obj.points_to_show_num(start_index); i < points_count; i++, index++) {
+        x += obj.config.point_dist;
+        y = y0 - obj.config.chart_sizing * obj.config.chart_data[index];
+
+        ctx.beginPath();
+        ctx.arc(x, y, obj.config.point_radius, 0, Math.PI * 2, true);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        // --- additional circle ---
+        /* ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+        ctx.arc(obj.config.point_dist * i + obj.config.padding_left - 10, obj.config.canvas_height - obj.config.chart_sizing * item, 5, 0, Math.PI * 2, true);
+        ctx.fill(); */
+    }
+}
+
+/*function draw_line_chart(obj, ctx, days_diff) {
     ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_sizing * obj.config.chart_data[0]);
 
-    let x0 = obj.config.point_dist * (days_diff -1) + obj.config.padding_left;
+    let x0 = obj.config.point_dist * (days_diff - 1) + obj.config.padding_left;
     let y0 = obj.config.canvas_height;
 
     obj.config.chart_data.forEach(function (item, i, arr) {
@@ -59,69 +133,4 @@ function draw_line_chart(obj, ctx, days_diff) {
     });
     ctx.fill();
     ctx.stroke();
-}
-
-function draw_curve_chart(obj, ctx, days_diff, k = 2 /* curve coefficient */) {
-    let points_count = obj.config.chart_data.length;
-
-    ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-    ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height);
-    ctx.lineTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_data[0] * obj.config.chart_sizing);
-
-    ctx.strokeStyle = obj.config.line_colour;
-
-    // obj.config.chart_data.forEach()
-    for (let i = 1; i < points_count; i++) {
-        let pt_x = obj.config.padding_left + obj.config.point_dist * (i + days_diff);
-        let pt_y = obj.config.canvas_height - obj.config.chart_data[i] * obj.config.chart_sizing;
-        let control_pt_x = pt_x - obj.config.point_dist / 2;
-        let control_pt_y1 = obj.config.canvas_height - obj.config.chart_data[i - 1] * obj.config.chart_sizing;
-        let control_pt_y2 = obj.config.canvas_height - obj.config.chart_data[i] * obj.config.chart_sizing;
-
-        ctx.bezierCurveTo(control_pt_x - k, control_pt_y1, control_pt_x + k, control_pt_y2, pt_x, pt_y);
-        if (i === (points_count - 1)) {
-            ctx.stroke();
-            ctx.strokeStyle = ctx.fillStyle;
-            ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-            ctx.lineTo(pt_x, obj.config.canvas_height);
-        }
-    }
-
-    ctx.fill();
-
-    // redrawing the first line
-    ctx.strokeStyle = 'white';
-    ctx.beginPath();
-    ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height);
-    ctx.lineTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_data[0] * obj.config.chart_sizing);
-    ctx.stroke();
-    ctx.closePath();
-
-    ctx.strokeStyle = obj.config.fill_colour;
-    ctx.beginPath();
-    ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height);
-    ctx.lineTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_data[0] * obj.config.chart_sizing);
-    ctx.stroke();
-    ctx.closePath();
-}
-
-function draw_point_chart(obj, ctx, days_diff) {
-
-    ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_sizing * obj.config.chart_data[0]);
-    obj.config.chart_data.forEach(function (item, i, arr) {
-        ctx.shadowColor = 'rgba(65, 88, 208, 0)';
-        // ctx.shadowBlur = 7;
-        // ctx.shadowOffsetX = 0;
-        // ctx.shadowOffsetY = 0;
-
-        ctx.fillStyle = '#4158D0';
-        ctx.moveTo(obj.config.point_dist * (i + days_diff) + obj.config.padding_left, obj.config.canvas_height - obj.config.chart_sizing * item);
-        ctx.arc(obj.config.point_dist * (i + days_diff) + obj.config.padding_left, obj.config.canvas_height - obj.config.chart_sizing * item, 4, 0, Math.PI * 2, true);
-        ctx.fill();
-
-        // ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-        // ctx.arc(obj.config.point_dist * i + obj.config.padding_left - 10, obj.config.canvas_height - obj.config.chart_sizing * item, 5, 0, Math.PI * 2, true);
-        // ctx.fill();
-    });
-    // ctx.stroke();
-}
+}*/

@@ -121,8 +121,6 @@ class Chart {
     draw_chart() {
         let canvas = document.querySelector(this.config.canvas_selector);
 
-        // console.log(canvas);
-
         if (canvas && canvas.getContext && this.config.chart_data) {
             let ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -130,40 +128,58 @@ class Chart {
             this.draw_timeflow_gridlines(ctx);
             this.draw_horizontal_grid(ctx);
 
-            ctx.lineWidth = this.config.line_width || 1;
-            ctx.strokeStyle = this.config.line_colour || 'black';
-            ctx.fillStyle = this.config.fill_colour || "blue";
-            ctx.shadowColor = this.config.shadow_colour || "rgba(0, 0, 0, 0)";
-            ctx.shadowBlur = this.config.shadow_blur || 0;
-            ctx.shadowOffsetX = this.config.shadow_offset_x || 0;
-            ctx.shadowOffsetY = this.config.shadow_offset_y || 0;
+            // --- preparing chart data ---
 
-            let labels_start_point = this.get_timeflow_start_point();
+            let timeflow_start_point = this.get_timeflow_start_point();
+            let timeflow_start_point_str = date_to_str(timeflow_start_point);
+            let start_index,
+                last_breakpoint;
 
-            // console.log(labels_start_point);
-
-            let value_start_point = new Date;
-            if (this.config.configurable) {
-                value_start_point = new Date(document.getElementById('timeflow-chart-breakpoint[0]').value);
+            for (let i = 0, count = this.config.chart_data.length; i < count; i++) {
+                if (this.config.chart_breakpoints[i] >= timeflow_start_point_str) {
+                    start_index = i;
+                    last_breakpoint = !!this.config.chart_breakpoints[i - 1];
+                    break;
+                }
             }
 
-            let days_diff = Math.floor((value_start_point - labels_start_point) / (1000 * 60 * 60 * 24));
+            let closest_breakpoint = str_to_date(this.config.chart_breakpoints[start_index], 'day');
+            // console.log("Closest: " + closest_breakpoint);
+            // console.log("Is last: " + last_breakpoint);
+            // console.log(start_index);
+            let days_diff = Math.floor((closest_breakpoint - timeflow_start_point) / (1000 * 60 * 60 * 24));
 
-            ctx.beginPath();
+            if ((this.config.chart_type === 'line_chart' || this.config.chart_type === 'curve_chart') && last_breakpoint) {
+                start_index--;
+                days_diff--;
+            }
 
-            switch (this.config.chart_type) {
-                case 'line_chart':
-                    draw_curve_chart(this, ctx, days_diff, this.config.point_dist / 2);
-                    break;
-                case 'bar_chart':
-                    draw_bar_chart(this, ctx, days_diff);
-                    break;
-                case 'curve_chart':
-                    draw_curve_chart(this, ctx, days_diff, this.config.smoothing);
-                    break;
-                case 'point_chart':
-                    draw_point_chart(this, ctx, days_diff);
-                    break;
+
+            if (days_diff < this.points_to_show_num(start_index)) {
+                ctx.lineWidth = this.config.line_width || 1;
+                ctx.strokeStyle = this.config.line_colour || 'black';
+                ctx.fillStyle = this.config.fill_colour || "blue";
+                ctx.shadowColor = this.config.shadow_colour || "rgba(0, 0, 0, 0)";
+                ctx.shadowBlur = this.config.shadow_blur || 0;
+                ctx.shadowOffsetX = this.config.shadow_offset_x || 0;
+                ctx.shadowOffsetY = this.config.shadow_offset_y || 0;
+
+                ctx.beginPath();
+
+                switch (this.config.chart_type) {
+                    case 'line_chart':
+                        draw_curve_chart(this, ctx, start_index, days_diff, this.config.point_dist / 2);
+                        break;
+                    case 'bar_chart':
+                        draw_bar_chart(this, ctx, start_index, days_diff);
+                        break;
+                    case 'curve_chart':
+                        draw_curve_chart(this, ctx, start_index, days_diff, this.config.smoothing);
+                        break;
+                    case 'point_chart':
+                        draw_point_chart(this, ctx, start_index, days_diff);
+                        break;
+                }
             }
         }
     }
@@ -225,7 +241,7 @@ class Chart {
 
     get_timeflow_start_point() {
         let today = new Date;
-        let start_point = new Date(today.getFullYear(), today.getMonth(), today.getDate() - this.config.timeflow_start_point);
+        let start_point = new Date(today.getFullYear(), today.getMonth(), today.getDate() - this.config.show_since_steps_ago);
 
         return start_point;
     }
@@ -235,14 +251,30 @@ class Chart {
         this.display_vertical_axis();
         this.draw_chart();
     }
+
+    get_start_breakpoint() {
+
+    }
+
+    points_to_show_num(start_index) {
+        // + 2 side points, + 1 padding-left point
+        let max_points_num = Math.floor(this.config.canvas_width / (this.config.timeflow_step * this.config.point_dist)) + 3;
+        let all_points_num = this.config.chart_data.length - start_index;
+        return (max_points_num < all_points_num ? max_points_num : all_points_num);
+    }
 }
 
-function get_points_num(obj) {
-    // let canvas_width = Configurable.config.canvas_width;
-    // let dist = Configurable.config.point_dist;
-
-    // let num = Math.floor(canvas_width / dist);
-    // num++; //
-
-    // return num;
+function str_to_date(str, accuracy) {
+    let year = str.substr(0, 4);
+    // if (accuracy !== 'year') {
+    let month = Number(str.substr(5, 2)) - 1;
+    if (accuracy !== 'month') {
+        let day = str.substr(8, 2);
+        if (accuracy !== 'day') {
+            // hours...
+        }
+        return new Date(year, month, day);
+    }
+    // }
+    return new Date(year, month);
 }

@@ -121,47 +121,47 @@ EOD;
     $charts_list .= $chart_item;
 }
 
-if($chart_names_list){
+if ($chart_names_list) {
     $chart_names_list = '<ul class="user-charts-nav">' . $chart_names_list . '</ul>';
 }
 
 //-----
 
-$body_class_list []= 'dashboard-page';
-$body_class_list []= 'theme-bright';
+$body_class_list [] = 'dashboard-page';
+$body_class_list [] = 'theme-bright';
 $stylesheets .= '<link href="css/dashboard.css" rel="stylesheet" />';
 
-$content .= <<<EOD
+ob_start(); ?>
 
-  <aside class="sidebar">
-    <ul class="side-nav">
-        <li><a href="dashboard.php">Dashboard</a></li>
-        <li><h4><span class="plus-icon"></span>My charts</h4>
-            $chart_names_list
-        </li>
-    </ul>
-    <!--<a href="add.php" class="btn btn-add">Add chart</a>-->
-  </aside>
-  
-<div class='container dashboard-container'>
-  <section class="dashboard">
+    <aside class="sidebar">
+        <ul class="side-nav">
+            <li><a href="dashboard.php">Dashboard</a></li>
+            <li><h4><span class="plus-icon"></span>My charts</h4>
+                $chart_names_list
+            </li>
+        </ul>
+        <!--<a href="add.php" class="btn btn-add">Add chart</a>-->
+    </aside>
 
-EOD;
-if ($charts_list) {
-    $content .= "<ul class='charts-list'>" . $charts_list . '</ul>';
-} else {
-    $content .= '<p class="nothing-found-message">No charts to show yet :/ </p>';
-}
-$content .= <<<EOD
-</section>
-</div>
-<script src="chart_js/functions.js"></script>
-<script src="chart_js/chart_object.js"></script>
-<script src="chart_js/draw_chart.js"></script>
-<script>$js</script>
-<script src='js/dashboard.js'></script>
-EOD;
+    <div class='container dashboard-container'>
+        <section class="dashboard">
 
+            <?php if ($charts_list) { ?>
+                <ul class='charts-list'> <?= $charts_list ?> </ul>
+            <?php } else { ?>
+                <p class="nothing-found-message">No charts to show yet :/ </p>
+            <?php } ?>
+        </section>
+    </div>
+    <script src="chart_js/functions.js"></script>
+    <script src="chart_js/chart_object.js"></script>
+    <script src="chart_js/draw_chart.js"></script>
+    <script><?= $js ?></script>
+    <script src='js/dashboard.js'></script>
+
+<?php
+$content = ob_get_contents();
+ob_end_clean();
 include_once 'layout.php';
 
 $pdo = null;

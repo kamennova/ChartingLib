@@ -57,3 +57,9 @@ function format_date(date) {
 
     return year + '-' + month + '-' + day;
 }
+
+function date_to_str(date) {
+    let date_options = {year: 'numeric', month: "numeric", day: "numeric"};
+    return date.toLocaleDateString('fr-CA', date_options);
+}
+

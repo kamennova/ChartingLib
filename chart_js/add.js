@@ -39,7 +39,7 @@ if (document.body.classList.contains('theme-bright')) {
 $(document).ready(function ($) {
 
     // initialize sliders
-    let slider_inputs = $(".form-field-slider");
+ /*   let slider_inputs = $(".form-field-slider");
     $.each(slider_inputs, function (i, val) {
 
         let input = $(val).next();
@@ -57,7 +57,7 @@ $(document).ready(function ($) {
                 update_val(input);
             }
         });
-    });
+    });*/
 
     // prepare 2 forms submitting
     let config_form = $("#config-form");

@@ -109,12 +109,32 @@ function fill_default(param) {
     // param_input.value(Configurable.config[param]);
 }
 
+// function get_param_input(param) {
+//     let param_selector,
+//         param_input;
+//
+//     if (Configurable.config[param + '_input_selector'] !== undefined) {
+//         param_selector = Configurable.config[param + '_input_selector'];
+//         param_input = document.querySelector(param_selector);
+//     } else {
+//         param_selector = param.replace(/_| /g, '-');
+//         param_input = document.getElementById(param_selector);
+//
+//         if (!param_input) {
+//             param_selector += '-input';
+//             param_input = document.getElementById(param_selector);
+//         }
+//     }
+//
+//     return param_input;
+// }
+
 function get_param_input(param) {
     let param_selector,
         param_input;
 
-    if (Configurable.config[param + '_input_selector'] !== undefined) {
-        param_selector = Configurable.config[param + '_input_selector'];
+    if (Configurable_fields[param].hasOwnProperty('input_selector')) {
+        param_selector = Configurable_fields[param]['input_selector'];
         param_input = document.querySelector(param_selector);
     } else {
         param_selector = param.replace(/_| /g, '-');
@@ -131,70 +151,115 @@ function get_param_input(param) {
 
 for (const key in Configurable_fields) {
     let value = Configurable_fields[key];
-
     if (Configurable_fields.hasOwnProperty(key)) {
-        get_param_input(key);
-        console.log(key);
-        console.log(value);
+        let input = get_param_input(key);
+
+        if (input) {
+            // setting input default value, min, max
+            if (value.input_type === 'select') {
+                if (value.val === 'id') {
+                    let val_id = document.getElementById(Configurable.config[key]);
+                    if(val_id){
+                        input.value = val_id.value;
+                    }
+                }
+            } else {
+                input.value = Configurable.config[key];
+            }
+
+            let depends = value.hasOwnProperty('depends');
+
+            if (value.input_type === 'slider') {
+                let slider_input = $(input).prev(".form-field-slider");
+
+                $(slider_input).slider({
+                    min: value.min || 0,
+                    max: value.max || 10,
+                    value: Configurable.config[key],
+
+                    slide: function Total(event, ui) {
+                        $(input).val(ui.value).trigger('change');
+                        update_values(key, input);
+                    }
+                });
+
+                if (depends) {
+                    // console.log(key);
+
+                    $(slider_input).slider('option', value.depends.attr, Configurable.config[value.depends.prop] * value.depends.koef);
+
+                    let dep_input = get_param_input(value.depends.prop);
+
+                    if (Configurable_fields[value.depends.prop].input_type === 'slider') {
+                        $(dep_input).change(function () {
+                            let old_span = $(slider_input).slider('option', 'max') - $(slider_input).slider('option', 'min');
+                            let old_value = $(slider_input).slider('option', 'value');
+                            let percentage = old_value / old_span;
+
+                            $(slider_input).slider('option', value.depends.attr, Configurable.config[value.depends.prop] * value.depends.koef);
+
+                            let new_span = $(slider_input).slider('option', 'max') - $(slider_input).slider('option', 'min');
+                            let new_value = new_span * percentage;
+                            Configurable.config[key] = new_value;
+
+                            $(slider_input).slider('option', 'value', new_value);
+                        });
+                    } else {
+                        dep_input.addEventListener('change', function () {
+                            $(slider_input).slider('option', value.depends.attr, Configurable.config[value.depends.prop] * value.depends.koef);
+                        });
+                    }
+                }
+
+            } else {
+                if (value.hasOwnProperty('min')) {
+                    input.min = value.min;
+                }
+
+                if (value.hasOwnProperty('max')) {
+                    input.max = value.max;
+                }
+
+                if (depends) {
+                    input[value.depends.attr] = Configurable.config[value.depends.prop] * value.depends.koef;
+
+                    let dep_input = get_param_input(value.depends.prop);
+                    dep_input.addEventListener('change', function () {
+                        input[value.depends.attr] = Configurable.config[value.depends.prop] * value.depends.koef;
+                    })
+                }
+            }
+
+            // listening to input change
+            input.addEventListener('change', () => {
+                update_values(key, input)
+            });
+        }
     }
 }
 
+function update_values(key, input) {
+    Configurable.config[key] = Number(input.value);
 
-function monitor_input_field(param) {
-    let param_input = get_param_input(param);
-    if (param_input) {
-        param_input.value = Configurable.config[param];
+    // TODO: destroy_old_labels call 2 times ???
+    if (Configurable_fields[key].hasOwnProperty('update_horizontal_axis')) {
+        destroy_old_labels('horizontal');
+        Configurable.display_timeflow_axis();
+    }
 
-        // console.log(param);
-        let second_level_parent;
+    if (Configurable_fields[key].hasOwnProperty('update_vertical_axis')) {
+        destroy_old_labels('vertical');
+        Configurable.display_vertical_axis();
+    }
 
-        if (get_parent_by_level(param_input, 2)) {
-            second_level_parent = get_parent_by_level(param_input, 2);
-        }
-
-        let axis_type = '';
-
-        if (param.includes('timeflow') || param.includes('category')) {
-            axis_type = 'horizontal';
-        } else if (param.includes('vertical_axis')) {
-            axis_type = 'vertical';
-        } else {
-
-            // TODO: replace timeflow -> horizontal
-            let grandparent_class;
-            if (grandparent_class = second_level_parent.className && typeof grandparent_class.includes('-axis-fields') !== 'undefined') {
-                if (grandparent_class.includes('timeflow') || grandparent_class.includes('category')) {
-                    axis_type = 'horizontal';
-                } else {
-                    axis_type = 'vertical';
-                }
-            } else if (second_level_parent.parentNode.className && second_level_parent.parentNode.className.includes('-axis-fields')) {
-                // param_axis_type = second_level_parent.parentNode.className
-                axis_type = second_level_parent.parentNode.className.includes('timeflow') ? 'horizontal' : 'vertical';
-            }
-        }
-
-        param_input.addEventListener('change', function () {
-            Configurable.config[param] = param_input.value;
-            if (destroy_old_labels(axis_type)) {
-                if (axis_type === 'horizontal') {
-                    Configurable.display_timeflow_axis()
-                } else {
-                    Configurable.display_vertical_axis();
-                }
-            }
-
-            if (param === 'timeflow_start_point' || param === 'vertical_axis_labels_step' || param === 'vertical_axis_value_step') {
-                Configurable.draw_chart();
-            }
-        });
+    if (Configurable_fields[key].hasOwnProperty('update_chart')) {
+        Configurable.draw_chart();
     }
 }
 
-for (let i = 0; i < Configurable.config.inputs_to_monitor.length; i++) {
-    monitor_input_field(Configurable.config.inputs_to_monitor[i]);
+function update_slider_attr() {
+// TODO: ????
 }
-
 
 // ----
 
@@ -247,13 +312,13 @@ $('#fill-colour-input.minicolors-input').minicolors({
 });
 
 // Style onchange
-
+/*
 document.getElementById('bar-width-input').addEventListener('change', function () {
     Configurable.config.bar_width = Number(this.value);
     set_bar_border_radius();
     Configurable.draw_chart();
 });
-
+*/
 // let points_dist_input = document.getElementById('points-dist-input');
 // points_dist_input.addEventListener('change', update_points_dist(points_dist_input));
 
@@ -273,6 +338,8 @@ function set_bar_border_radius() {
 
     bar_border_radius_input.max = max_radius;
 }
+
+/*
 
 bar_border_radius_input.addEventListener('change', function () {
     Configurable.config.bar_border_radius = Number(this.value);
@@ -294,3 +361,4 @@ document.getElementById('smoothing-input').addEventListener('change', function (
 let timeflow_measure_span = document.getElementsByClassName('timeflow-measure')[0];
 timeflow_measure_span.insertAdjacentText("afterbegin", Configurable.config.timeflow_measure);
 // TODO: event listener change timeflow_measure
+*/
