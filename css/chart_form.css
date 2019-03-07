@@ -18,21 +18,56 @@ body {
 }
 main > .container {
   display: flex;
+  margin-top: 63px;
+  padding: 0 !important;
+  z-index: 300;
 }
-.page-title {
-  margin-bottom: 35px;
-  font-size: 27px;
+.sidebar-nav-panel {
+  position: fixed;
+  display: flex;
+  flex-shrink: 0;
+  flex-basis: 50px;
+  align-items: center;
+  height: 100vh;
+  margin-top: -63px;
+  z-index: 150;
 }
-.chart-form-container.col-left {
+.sidebar-nav-panel .sidebar-tabs {
+  padding-left: 0;
+  list-style: none;
+}
+.sidebar-nav-panel .sidebar-tabs li {
+  width: 63px;
+  height: 63px;
+  margin: 0;
+  background-repeat: no-repeat;
+}
+.sidebar-nav-panel .sidebar-tabs li:hover {
+  cursor: pointer;
+}
+.sidebar-nav-panel .sidebar-tabs .data-tab {
+  background-image: url(../img/icons/data_white.png);
+  background-position: center center;
+  background-size: 18px;
+}
+.sidebar-nav-panel .sidebar-tabs .configurations-tab {
+  background-image: url(../img/icons/white.png);
+  background-position: center center;
+  background-size: 18px;
+}
+.chart-form-container.sidebar {
   position: relative;
-  min-height: 100%;
+  top: -63px;
+  left: 63px;
+  min-height: calc(100% + 63px);
   flex-basis: 385px;
   flex-shrink: 0;
   margin: 0;
-  padding: 62px 0 25px 0;
+  padding: 0 0 25px 15px;
+  z-index: 200;
   background-color: var(--foreground);
 }
-.chart-form-container.col-left::after {
+.chart-form-container.sidebar::after {
   content: "";
   position: absolute;
   top: 0;
@@ -43,11 +78,44 @@ main > .container {
   background-color: inherit;
   z-index: -1;
 }
-.col-right {
-  padding: 62px 0 15px 40px;
+.chart-form-container .sidebar-header {
+  position: relative;
+  display: flex;
+  height: 63px;
+  align-items: center;
+}
+.chart-form-container .sidebar-header .configuration-icon {
+  display: none;
+  width: 35px;
+  height: 35px;
+  margin-right: 14px;
+  background-image: url(../img/icons/white.png);
+  background-repeat: no-repeat;
+  background-size: 30px;
+  background-position: center center;
+}
+.chart-form-container .sidebar-header .configuration-icon:hover {
+  animation: spin 2s infinite linear;
+}
+.chart-form-container .sidebar-header .page-title {
+  margin: 0;
+  font-size: 17px;
+}
+.chart-form-container .sidebar-header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: block;
+  height: 1px;
+  width: 1000px;
+  background-color: #2c42b2;
+}
+.container > .col-right {
+  padding: 63px 0 15px calc(63px + 25px);
   overflow-x: hidden;
 }
-.col-right .chart-wrapper {
+.container > .col-right .chart-wrapper {
   position: relative;
   display: flex;
   flex-direction: row;
@@ -56,13 +124,24 @@ main > .container {
   align-content: flex-start;
   margin-bottom: 50px;
 }
-.col-right .canvas-wrapper {
+.container > .col-right .canvas-wrapper {
   flex-grow: 0;
   flex-shrink: 0;
 }
 /* ==================
         FORM
 ================== */
+.two-col-section {
+  margin-top: 10px !important;
+  margin-bottom: 25px !important;
+  padding-bottom: 10px;
+}
+.two-col-section .col-left {
+  margin-right: 32px;
+}
+.two-col-section .fieldset-title {
+  margin-bottom: 15px !important;
+}
 .form-section-title {
   margin-bottom: 18px;
   font-size: 16px;
@@ -132,7 +211,7 @@ main > .container {
   padding-left: 0;
   border: none;
 }
-.chart-form section.inline {
+.chart-form .inline {
   display: flex;
   flex-direction: row;
   flex-grow: 0;
@@ -140,13 +219,13 @@ main > .container {
   margin: 20px 0 15px;
   padding-right: 0;
 }
-.chart-form section.inline .fieldset-title {
+.chart-form .inline .fieldset-title {
   width: auto;
   flex-grow: 0;
   margin-right: 25px;
   margin-bottom: 0;
 }
-.chart-form section.inline .form-field-slider {
+.chart-form .inline .form-field-slider {
   width: 155px;
   flex-shrink: -1;
 }
@@ -174,11 +253,16 @@ main > .container {
 .chart-form .chart-type-fieldset .options-list li:last-of-type {
   margin-right: 0;
 }
+.chart-form .fields-title {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
 .chart-form label,
 .chart-form .fieldset-title {
   position: relative;
   margin-right: 10px;
-  font-size: 15px;
+  font-size: 12px;
+  text-transform: uppercase;
 }
 .chart-form .input-option-label {
   padding-left: 22px;
@@ -315,7 +399,7 @@ main > .container {
   border-radius: 50%;
 }
 .chart-form .minicolors-theme-bootstrap .minicolors-input.medium-input {
-  max-width: 190px;
+  max-width: 155px;
   padding-left: 37px;
 }
 .chart-form .minicolors-theme-bootstrap .minicolors-swatch {
@@ -326,10 +410,6 @@ main > .container {
 }
 .chart-form .btn-save {
   margin-right: 7px;
-}
-.colorpicker-input-container {
-  display: flex;
-  align-items: center;
 }
 .colorpicker-input-container label {
   margin-bottom: 0;

@@ -2,9 +2,101 @@
 
 .dashboard-container {
   display: flex;
+  flex-direction: column;
+  padding-top: @header_height;
 }
 
+.dashboard-header {
+  display: flex;
+  flex-shrink: 0;
+  flex-grow: 0;
+  align-content: flex-start;
+  align-items: flex-start;
+  //justify-content: flex-end;
+  margin-bottom: 25px;
+
+.page-title{
+  margin-top: 0;
+}
+
+  .btn-add{
+    margin-left: auto;
+  }
+}
+
+.dashboard-page {
+  .header-logo {
+    //left: 55px;
+    //top: 40px;
+    //right: auto;
+  }
+}
+
+.dashboard {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+  flex-grow: 1;
+  padding-bottom: 40px;
+}
+
+.nothing-found-message {
+  //position: absolute;
+  //left: 0;
+  //right: 0;
+  //top: 0;
+  //bottom: 0;
+
+  //display: flex;
+  flex-grow: 0;
+  padding: 20px;
+  margin: -120px auto 0;
+
+  font-size: 16px;
+  color: darkgrey;
+
+  border: 2px dotted @lightgrey;
+  border-radius: 15px;
+}
+
+.charts-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-left: 0;
+
+  list-style: none;
+
+  .chart {
+    //margin-right: 50px;
+    margin-bottom: 20px;
+    padding: 0 20px 15px;
+
+    border: 1px solid lighten(@lightgrey, 5%);
+    border-radius: 10px;
+  }
+
+  .chart-name {
+    margin-bottom: 25px;
+
+    a {
+      font-size: 17px;
+      color: black;
+      letter-spacing: 0.04em;
+
+      &:hover {
+        color: @primary;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+//---- bac
+
 .sidebar {
+  display: none;
   //position: relative;
   position: absolute;
   left: 0;
@@ -174,68 +266,4 @@
   //
   //  background-color: @primary
   //}
-}
-
-.dashboard-page {
-  .header-logo {
-    //left: 55px;
-    //top: 40px;
-    //right: auto;
-  }
-}
-
-.dashboard {
-  position: relative;
-
-  display: flex;
-  align-items: flex-start;
-  flex-grow: 1;
-  padding-top: @header_height;
-  padding-bottom: 40px;
-}
-
-.nothing-found-message {
-  //position: absolute;
-  //left: 0;
-  //right: 0;
-  //top: 0;
-  //bottom: 0;
-
-  //display: flex;
-  flex-grow: 0;
-  padding: 20px;
-  margin: -120px auto 0;
-
-  font-size: 16px;
-  color: darkgrey;
-
-  border: 2px dotted @lightgrey;
-  border-radius: 15px;
-}
-
-.charts-list {
-  display: flex;
-  flex-wrap: wrap;
-  padding-left: 80px;
-
-  list-style: none;
-
-  .chart{
-    margin-right: 50px;
-  }
-
-  .chart-name {
-    margin-bottom: 25px;
-
-    a {
-      font-size: 17px;
-      color: black;
-      letter-spacing: 0.04em;
-
-      &:hover {
-        color: @primary;
-        text-decoration: none;
-      }
-    }
-  }
 }

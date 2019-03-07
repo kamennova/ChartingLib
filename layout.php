@@ -53,6 +53,7 @@
                 </div>
                 <p class="greeting">Welcome, Masha</p>
             </nav>
+
             <a class="logo header-logo" href="index.php">
                 <span class="logo-pic">
                     <span class="bar bar-1"></span>
@@ -63,7 +64,6 @@
                 My stats
             </a>
             <ul class="site-links">
-                <li><a class="dashboard-link" href="dashboard.php">Dashboard</a></li>
                 <li><a class="theme-settings-link" href="#">Theme</a></li>
 
                 <?php session_start();
@@ -72,6 +72,7 @@
                     echo '<li><a class="login-link" href="login.php">Log in</a></li>';
                 } else {
 //<!--                logged in user menu-->
+                    echo '<li><a class="dashboard-link" href="dashboard.php">Dashboard</a></li>';
                     echo '<li><a class="logout-link" href="logout.php">Log out</a></li>';
                 } ?>
             </ul>

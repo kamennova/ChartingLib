@@ -15,8 +15,66 @@
 }
 .dashboard-container {
   display: flex;
+  flex-direction: column;
+  padding-top: 63px;
+}
+.dashboard-header {
+  display: flex;
+  flex-shrink: 0;
+  flex-grow: 0;
+  align-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+.dashboard-header .page-title {
+  margin-top: 0;
+}
+.dashboard-header .btn-add {
+  margin-left: auto;
+}
+.dashboard {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  flex-grow: 1;
+  padding-bottom: 40px;
+}
+.nothing-found-message {
+  flex-grow: 0;
+  padding: 20px;
+  margin: -120px auto 0;
+  font-size: 16px;
+  color: darkgrey;
+  border: 2px dotted #e6e6e6;
+  border-radius: 15px;
+}
+.charts-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-left: 0;
+  list-style: none;
+}
+.charts-list .chart {
+  margin-bottom: 20px;
+  padding: 0 20px 15px;
+  border: 1px solid #f3f3f3;
+  border-radius: 10px;
+}
+.charts-list .chart-name {
+  margin-bottom: 25px;
+}
+.charts-list .chart-name a {
+  font-size: 17px;
+  color: black;
+  letter-spacing: 0.04em;
+}
+.charts-list .chart-name a:hover {
+  color: #4158D0;
+  text-decoration: none;
 }
 .sidebar {
+  display: none;
   position: absolute;
   left: 0;
   top: 0;
@@ -129,42 +187,4 @@
 }
 .side-nav .user-charts-nav li:first-of-type::before {
   height: 17px;
-}
-.dashboard {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  flex-grow: 1;
-  padding-top: 62px;
-  padding-bottom: 40px;
-}
-.nothing-found-message {
-  flex-grow: 0;
-  padding: 20px;
-  margin: -120px auto 0;
-  font-size: 16px;
-  color: darkgrey;
-  border: 2px dotted #e6e6e6;
-  border-radius: 15px;
-}
-.charts-list {
-  display: flex;
-  flex-wrap: wrap;
-  padding-left: 80px;
-  list-style: none;
-}
-.charts-list .chart {
-  margin-right: 50px;
-}
-.charts-list .chart-name {
-  margin-bottom: 25px;
-}
-.charts-list .chart-name a {
-  font-size: 17px;
-  color: black;
-  letter-spacing: 0.04em;
-}
-.charts-list .chart-name a:hover {
-  color: #4158D0;
-  text-decoration: none;
 }

@@ -2,10 +2,25 @@
 
 //----CHART DRAWING-----
 
+.chart-wrapper {
+  position: relative;
+}
+
 .chart-canvas-wrapper {
   margin-left: 25px;
 
   z-index: 5;
+}
+
+.no-data-message {
+  position: absolute;
+  left: 0;
+  top: 40%;
+
+  width: 100%;
+  margin: 0;
+
+  text-align: center;
 }
 
 .axis-label {
@@ -69,7 +84,7 @@
   height: 20px;
   margin-left: 24px;
 
-  border-top: 1px solid @grey;
+  border-top: 1px solid #eef0f4;
 
   .timeflow-axis-label {
     top: 0;
@@ -126,10 +141,10 @@
  Axises modifications
 ==================== */
 
-.axis-labels-container.no-line{
+.axis-labels-container.no-line {
   border: 0;
 }
 
-.axis-labels-container.no-ticks .axis-label::after{
+.axis-labels-container.no-ticks .axis-label::after {
   display: none;
 }

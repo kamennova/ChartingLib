@@ -11,26 +11,72 @@ body {
 
 main > .container {
   display: flex;
-  //padding-top: @header_height;
+  margin-top: @header_height;
+  padding: 0 !important;
+
+  z-index: 300;
 }
 
-.page-title {
-  margin-bottom: 35px;
+.sidebar-nav-panel {
+  position: fixed;
 
-  font-size: 27px;
+  display: flex;
+  flex-shrink: 0;
+  flex-basis: 50px;
+  align-items: center;
+  height: 100vh;
+  margin-top: -@header_height;
+
+  //background-color: @primary;
+
+  z-index: 150;
+
+  .sidebar-tabs{
+    padding-left: 0;
+
+    list-style: none;
+
+    li{
+      width: @header_height;
+      height: @header_height;
+      margin: 0;
+
+      background-repeat: no-repeat;
+
+      &:hover{
+        cursor: pointer;
+      }
+    }
+
+    .data-tab{
+      background-image: url(../img/icons/data_white.png);
+      background-position: center center;
+      background-size: 18px;
+    }
+
+    .configurations-tab{
+      background-image: url(../img/icons/white.png);
+      background-position: center center;
+      background-size: 18px;
+    }
+  }
 }
 
-.chart-form-container.col-left {
+.chart-form-container.sidebar {
   position: relative;
+  top: -@header_height;
+  left: @header_height;
 
+  //display: none;
   //width: 450px;
-  min-height: 100%;
+  min-height: calc(100% + @header_height);
   flex-basis: 385px;
   //flex-basis: 405px;
   flex-shrink: 0;
   margin: 0;
-  padding: @header_height 0 25px 0;
+  padding: 0 0 25px 15px;
 
+  z-index: 200;
   background-color: var(--foreground);
   //background-color: #f5f5f5db;
 
@@ -48,10 +94,64 @@ main > .container {
     background-color: inherit;
     z-index: -1;
   }
+
+  &.hidden {
+
+  }
 }
 
-.col-right {
-  padding: @header_height 0 15px 40px;
+.chart-form-container .sidebar-header {
+  position: relative;
+
+  display: flex;
+  height: @header_height;
+  align-items: center;
+
+  .configuration-icon {
+    display: none;
+    width: 35px;
+    height: 35px;
+    margin-right: 14px;
+
+    background-image: url(../img/icons/white.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: center center;
+  }
+
+  .configuration-icon:hover {
+    animation: spin 2s infinite linear;
+  }
+
+  .page-title {
+    margin: 0;
+    //padding-left: 30px;
+    //padding: 12px;
+    //margin-bottom: 35px;
+    //margin-left: -12px;
+
+    font-size: 17px;
+
+    //background-color: darken(@primary, 8%);
+  }
+
+  &::after {
+    content: "";
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    display: block;
+    height: 1px;
+    width: 1000px;
+
+    background-color: darken(@primary, 10%);
+  }
+}
+
+.container > .col-right {
+  padding: @header_height 0 15px calc(@header_height + 25px);
   overflow-x: hidden;
 
   .chart-wrapper {
@@ -74,6 +174,20 @@ main > .container {
 /* ==================
         FORM
 ================== */
+
+.two-col-section {
+  margin-top: 10px !important;
+  margin-bottom: 25px !important;
+  padding-bottom: 10px;
+  //justify-content: space-between;
+  .col-left {
+    margin-right: 32px;
+  }
+
+  .fieldset-title {
+    margin-bottom: 15px !important;
+  }
+}
 
 .form-section-title {
   margin-bottom: 18px;
@@ -175,7 +289,7 @@ main > .container {
     //border-bottom: 1px solid @grey;
   }
 
-  section.inline {
+  .inline {
     display: flex;
     flex-direction: row;
     flex-grow: 0;
@@ -226,13 +340,19 @@ main > .container {
     }
   }
 
+  .fields-title{
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
   label,
   .fieldset-title {
     position: relative;
 
     margin-right: 10px;
 
-    font-size: 15px;
+    font-size: 12px;
+    text-transform: uppercase;
   }
 
   .input-option-label {
@@ -346,7 +466,7 @@ main > .container {
   .checkbox-indicator::after,
   .checkbox-indicator::before,
   .radio-indicator::after,
-  .radio-indicator::before{
+  .radio-indicator::before {
     content: "";
 
     position: absolute;
@@ -418,7 +538,7 @@ main > .container {
   .minicolors-theme-bootstrap {
 
     .minicolors-input.medium-input {
-      max-width: 190px;
+      max-width: 155px;
       padding-left: 37px;
     }
 
@@ -439,8 +559,8 @@ main > .container {
 }
 
 .colorpicker-input-container {
-  display: flex;
-  align-items: center;
+  //display: flex;
+  //align-items: center;
 
   label {
     margin-bottom: 0;
@@ -489,8 +609,7 @@ main > .container {
 
   margin-right: 60px;
 
-
-  .chart-data-input-form .show-more-rows-link{
+  .chart-data-input-form .show-more-rows-link {
     font-size: 14px;
     color: @primary;
     text-decoration: underline;
@@ -535,7 +654,6 @@ main > .container {
     }
   }
 }
-
 
 //--Data file upload section--
 

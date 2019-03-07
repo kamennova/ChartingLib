@@ -25,6 +25,8 @@ function draw_bar_chart(obj, ctx, start_index, days_diff) {
     let x0 = obj.config.point_dist * (days_diff) + bar_padding_left,
         y0 = obj.config.canvas_height;
 
+    console.log(days_diff);
+
     let x = x0 - obj.config.point_dist,
         index = start_index,
         y,
@@ -54,7 +56,8 @@ function draw_curve_chart(obj, ctx, start_index, days_diff, k = 2 /* smoothness 
 
     let x1 = x0,
         y1 = y0 - obj.config.chart_data[start_index] * obj.config.chart_sizing;
-
+    ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
+    ctx.lineWidth = 4;
     ctx.moveTo(x1, y0);
     ctx.lineTo(x1, y1);
 
@@ -62,7 +65,7 @@ function draw_curve_chart(obj, ctx, start_index, days_diff, k = 2 /* smoothness 
         y,
         index = start_index + 1;
 
-    ctx.strokeStyle = obj.config.line_colour;
+    // ctx.strokeStyle = obj.config.line_colour;
 
     for (let i = 1, points_count = obj.points_to_show_num(start_index); i < points_count; i++, index++) {
         x += obj.config.point_dist;
@@ -74,11 +77,47 @@ function draw_curve_chart(obj, ctx, start_index, days_diff, k = 2 /* smoothness 
         ctx.bezierCurveTo(cpt_x - k, cpt_y1, cpt_x + k, cpt_y2, x, y);
     }
 
+    ctx.lineTo(x, y0);
+
+    let gradient = ctx.createLinearGradient(0, 0, 0, y0);
+    let stop1 = '#FFE53B';
+    let stop2 = '#FF2525';
+
+    let stop11 = '#FAACA8';
+    let stop12 ='#DDD6F3';
+
+    let stop21 = '#D9AFD9';
+    let stop22 = '#97D9E1';
+    let stop23 = 'rgba(127, 223, 234, 0.5)';
+
+    gradient.addColorStop(0, stop21);
+    gradient.addColorStop(1, stop23);
+
+
+    // background-color: #FFE53B;
+    // background-image: linear-gradient(147deg, #FFE53B 0%, #FF2525 74%);
+
+
+    ctx.fillStyle = gradient;
+
     ctx.fill();
     ctx.stroke();
+
+    // --- redrawing the last line ---
+    ctx.strokeStyle = 'white'; // setting non-transparent bg
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y0);
+    ctx.stroke();
+    ctx.closePath();
+
     ctx.strokeStyle = ctx.fillStyle;
     ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
     ctx.lineTo(x, y0);
+    ctx.stroke();
+    ctx.closePath();
 
     // --- redrawing the first line ---
     ctx.strokeStyle = 'white'; // setting non-transparent bg

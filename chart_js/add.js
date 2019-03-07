@@ -16,7 +16,7 @@ Configurable.draw_chart();
 monitor_measure_value();
 
 if (document.body.classList.contains('theme-bright')) {
-    let form_fields = document.querySelectorAll('.col-left input');
+    let form_fields = document.querySelectorAll('.sidebar input');
     let form_fields_number = form_fields.length;
 
     for (let i = 0; i < form_fields_number; i++) {

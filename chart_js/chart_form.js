@@ -4,7 +4,7 @@
 
 let pie_chart_fields = document.getElementById('pie-chart-fields');
 let plane_chart_fields = document.getElementById('plane-chart-fields');
-let chart_type_input = document.getElementById(Configurable.config.chart_type_input_selector);
+let chart_type_input = document.querySelector(Configurable_fields.chart_type.input_selector);
 
 // default chart type is 'plane'
 hide(pie_chart_fields);
@@ -200,6 +200,23 @@ for (const key in Configurable_fields) {
 
                             let new_span = $(slider_input).slider('option', 'max') - $(slider_input).slider('option', 'min');
                             let new_value = new_span * percentage;
+
+                            if(key === 'smoothing'){
+                                // console.log(value);
+                            }
+
+                            if(new_value < value.min){
+                                new_value = Number(value.min);
+                            } else if(new_value > value.max){
+                                new_value = value.max;
+                            }
+
+                            // TODO: Infinity bug
+                            /*console.log(new_span);
+                            console.log(percentage);
+                            console.log(new_value);
+                            console.log('----');*/
+
                             Configurable.config[key] = new_value;
 
                             $(slider_input).slider('option', 'value', new_value);
