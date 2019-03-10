@@ -9,14 +9,13 @@ let Configurable = new Chart(1, {
     ,
 
     chart_wrapper_selector: '.chart-wrapper',
-    data_table_id: 'timeflow-chart-data-input-tbody',
 
     canvas_selector: '#chart-canvas',
     preview_canvas_selector: '#chart-preview-canvas',
 
     canvas_width: 400,
     canvas_height: 400,
-    padding_left: 0,
+    // padding_left: 0,
 });
 
 let Preview = new Chart(1, {

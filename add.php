@@ -1,6 +1,5 @@
 <?php
 
-
 if (isset($body_class_list)) {
     $body_classes = '';
     foreach ($body_class_list as $body_class) {
@@ -22,13 +21,8 @@ if (isset($body_class_list)) {
     <meta charset
     "UTF-8">
     <title><?= isset($title) ? $title : 'My stats' ?></title>
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,500,700|Varela+Round" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="css/normalize.css">
-
-    <link rel="stylesheet" href="plugins/jquery-minicolors/jquery.minicolors.css">
     <link rel="stylesheet" href="css/style.css">
 
     <?= isset($stylesheets) ? $stylesheets : null ?>
@@ -39,7 +33,7 @@ if (isset($body_class_list)) {
 <body class='<?= $body_classes ?> theme-light'>
 <div class="site-wrapper">
     <section class="chart">
-        <div class="chart-container-wrapper">
+        <!-- <div class="chart-container-wrapper">
             <h2 class="chart-container-name">Followers</h2>
             <div class="chart-wrapper">
                 <div id="vertical-axis-labels-container"
@@ -48,9 +42,9 @@ if (isset($body_class_list)) {
                     <canvas id="chart-canvas" height="400px" width="400px"></canvas>
                 </div>
                 <div id="timeflow-axis-labels-container"
-                     class="timeflow-axis-labels-container horizontal-axis-labels-container axis-labels-container"></div>
+                     class="timeflow-axis-labels-container horizontal-axis-labels-container axis-labels-container"></div> --!>
 <!--                <div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>-->
-                <div class="point-details-modal">
+                <!--<div class="point-details-modal">
                     <p class="breakpoint-date">Sat, Feb 24</p>
                     <ul class="points">
                         <li>
@@ -83,19 +77,21 @@ if (isset($body_class_list)) {
                     Left
                 </li>
             </ul>
-        </div>
+        </div> -->
         <div class="chart-container-wrapper-2">
 
         </div>
     </section>
 </div>
 
+<script src="chart_js/CHART_DATA.json"></script>
 <script src="chart_js/default.js"></script>
 <script src="chart_js/functions.js"></script>
 <script src="chart_js/chart_object.js"></script>
 <script src="chart_js/configurable.js"></script>
 <script src="chart_js/draw_chart.js"></script>
 <script src="chart_js/chart_preview.js"></script>
+<script src="chart_js/chart_container.js"></script>
 <script src="chart_js/add.js"></script>
 </body>
 </html>

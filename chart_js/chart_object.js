@@ -8,15 +8,28 @@ class Chart {
         this.config = config;
     }
 
-    init(){
-        console.log(this.config.chart_name);
-        console.log('inited');
+    init() {
+        // console.log(this.config);
+        // console.log('---');
+
         this.fill();
+        // console.log(this);
+        // console.log('---');
+        this.draw_chart();
+
+        // filling point detail modal list
+        let point_modal_list = document.querySelector(this.config.chart_wrapper_selector + ' .point-details-modal ul');
+        let list_option = '<li style="color:' + this.config.line_colour + '"><span class="point-value"></span><br><span class="point-chart-name">' + this.config.chart_name + '</span></li>';
+        point_modal_list.insertAdjacentHTML('beforeend', list_option);
     }
 
     fill() {
+        // console.log(this);
+        // console.log('---');
         for (const key in Default_config) {
             let value = Default_config[key];
+
+
 
             if (!this.config.hasOwnProperty(key) || this.config[key] == null) {
                 this.config[key] = Default_config[key];
@@ -34,10 +47,12 @@ class Chart {
         }
 
         this.config.chart_sizing = (this.config.canvas_height - this.config.line_width / 2 - this.config.point_radius) / max;
+
+        // console.log(this.config.chart_sizing);
     }
 
     // destroying old labels, if they exist
-    destroy_old_labels(axis_type) {
+    /* destroy_old_labels(axis_type) {
         let old_labels = document.querySelector(this.config.chart_wrapper_selector + ' .' + axis_type + '-axis-labels-container');
 
         if (old_labels) {
@@ -141,73 +156,57 @@ class Chart {
         if (!this.config.vertical_axis_show_ticks) {
             vertical_axis_labels_container.classList.add('no-ticks');
         }
-    }
+    }*/
 
     draw_chart(draw_grid = true, draw_full = false) {
-        let canvas = document.querySelector(this.config.canvas_selector);
+        let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
 
         if (canvas && canvas.getContext) {
-
             let ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 
             if (draw_grid) {
-                this.draw_horizontal_grid(ctx);
+                // this.draw_horizontal_grid(ctx);
             }
 
             if (this.config.chart_data.length > 0) {
-                // --- preparing chart data ---
 
-                /*let timeflow_start_point = this.get_timeflow_start_point();
-                let timeflow_start_point_str = date_to_str(timeflow_start_point);
-                let start_index,
-                    last_breakpoint;
-
-                for (let i = 0, count = this.config.chart_data.length; i < count; i++) {
-                    if (this.config.chart_breakpoints[i] >= timeflow_start_point_str) {
-                        start_index = i;
-                        last_breakpoint = !!this.config.chart_breakpoints[i - 1];
-                        break;
-                    }
-                }
-
-
-                let closest_breakpoint = str_to_date(this.config.chart_breakpoints[start_index], 'day');
-                // let days_diff = Math.floor((closest_breakpoint - timeflow_start_point) / (1000 * 60 * 60 * 24));*/
 
                 let start_index,
                     end_index;
                 let last_breakpoint = true;
 
                 if (draw_full) {
-                    start_index = 0;
-                    end_index = this.config.chart_data.length - 1;
-                } else {
-                    start_index = Math.floor(document.data_start * this.config.chart_data.length);
-                    end_index = Math.floor(document.data_end * this.config.chart_data.length);
+                    this.config.start_index = 0;
+                    this.config.end_index = this.config.chart_data.length - 1;
                 }
+
+
+                // console.log(start_index);
 
                 // console.log(document.data_start);
 
                 let days_diff = 0;
 
-                let points_count = end_index - start_index + 1;
-                this.config.points_count = points_count;
-                this.config.start_index = start_index;
+                let points_count = this.config.end_index - this.config.start_index + 1;
+                // this.config.points_count = points_count;
+                // this.config.start_index = start_index;
 
                 // -- GETTING MAX ---
-                this.autosize(start_index, points_count);
+                // this.autosize(start_index, points_count);
 
                 // -----
 
                 this.config.point_dist = this.config.canvas_width / points_count;
+                //
+                // if ((this.config.chart_type === 'line_chart' || this.config.chart_type === 'curve_chart') && last_breakpoint) {
+                //     // start_index--;
+                //     // days_diff--;
+                // }
 
-                if ((this.config.chart_type === 'line_chart' || this.config.chart_type === 'curve_chart') && last_breakpoint) {
-                    // start_index--;
-                    // days_diff--;
-                }
+                if (points_count > 0) {
 
-                if (days_diff < this.points_to_show_num(start_index)) {
                     ctx.lineWidth = this.config.line_width;
                     ctx.strokeStyle = this.config.line_colour;
                     ctx.fillStyle = this.config.fill_colour;
@@ -218,9 +217,10 @@ class Chart {
 
                     ctx.beginPath();
 
+
                     switch (this.config.chart_type) {
                         case 'line_chart':
-                            draw_curve_chart(this, ctx, start_index, days_diff, this.config.point_dist / 2);
+                            draw_curve_chart(this, ctx, this.config.start_index, days_diff, this.config.point_dist / 2);
                             break;
                         case 'bar_chart':
                             draw_bar_chart(this, ctx, start_index, days_diff);
@@ -242,25 +242,7 @@ class Chart {
         this.draw_chart(this.config.preview_canvas_selector, false);
     }
 
-    draw_horizontal_grid(ctx) {
-        let gridlines_count = Math.floor(this.config.canvas_height / (this.config.vertical_axis_labels_step * this.config.chart_sizing));
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.config.grid_colour;
-
-        let y0 = this.config.canvas_height;
-
-        for (let i = 0; i < gridlines_count; i++) {
-            y0 -= this.config.chart_sizing * this.config.vertical_axis_labels_step;
-            y0 = ~~y0 + 0.5;
-
-            ctx.beginPath();
-            ctx.moveTo(0, y0);
-            ctx.lineTo(this.config.canvas_width, y0);
-            ctx.stroke();
-            ctx.closePath();
-        }
-    }
 
     get_timeflow_start_point() {
         let today = new Date;
@@ -282,47 +264,78 @@ class Chart {
         return (max_points_num < all_points_num ? max_points_num : all_points_num);
     }
 
-    show_point_details() {
-        let canvas = document.querySelector(this.config.canvas_selector);
-        let rect = canvas.getBoundingClientRect();
+    /*    show_point_details() {
+            let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
+            let rect = canvas.getBoundingClientRect();
 
-        let obj_config = this.config;
-        let obj = this;
-        // let start_index = this.config.start_index;
-        // let points_count = this.con
+            let obj_config = this.config;
+            let obj = this;
+            console.log(this);
+            // let start_index = this.config.start_index;
+            // let points_count = this.con
 
-        canvas.addEventListener('mousemove', function (e) {
-            document.querySelector('.point-details-modal').classList.add('show');
+            canvas.addEventListener('mousemove', function (e) {
+                document.querySelector('.point-details-modal').classList.add('show');
 
-            let percentage = (e.pageX - rect.left) / canvas.width;
-            let point_index = Math.floor(obj_config.start_index + obj_config.points_count * percentage);
+                let percentage = (e.pageX - rect.left) / canvas.width;
+                let point_index = Math.floor(obj_config.start_index + obj_config.points_count * percentage);
 
-            if(document.curr_point_index !== point_index){
-                obj.draw_chart();
-                document.curr_point_index = point_index;
-                obj.highlight_point(canvas, point_index);
-                obj.show_point_modal(point_index);
-            }
-        });
+                if(document.curr_point_index !== point_index){
+                    obj.draw_chart();
+                    document.curr_point_index = point_index;
+                    obj.highlight_point(canvas, point_index);
+                    obj.show_point_modal(point_index);
+                }
+            });
 
-        canvas.addEventListener('mouseleave', function(){
-            document.querySelector('.point-details-modal').classList.remove('show');
-        })
-    }
+            canvas.addEventListener('mouseleave', function(){
+                document.querySelector('.point-details-modal').classList.remove('show');
+            })
+        }
 
-    highlight_point(canvas, index) {
+        highlight_point(canvas, index) {
+            let ctx = canvas.getContext('2d');
+            let x0 = (index - this.config.start_index) * this.config.point_dist,
+                y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = this.config.grid_accent_colour;
+
+            ctx.beginPath();
+            ctx.moveTo(x0, 0);
+            ctx.lineTo(x0, this.config.canvas_height);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.fillStyle = this.config.background_color;
+            ctx.strokeStyle = this.config.line_colour;
+            ctx.lineWidth = this.config.line_width;
+
+            ctx.beginPath();
+            ctx.arc(~~(x0 + 0.5), ~~(y0 + 0.5), ~~(this.config.point_radius + 0.5), 0, Math.PI * 2, false);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        show_point_modal(index){
+            let modal = document.querySelector('.point-details-modal');
+            modal.style.left = ((index - this.config.start_index) * this.config.point_dist - 32) + 'px';
+
+            let date = str_to_date(this.config.chart_breakpoints[index], 'day');
+            date = date.toLocaleDateString('en-US', { weekday: 'short',  month: 'short', day: 'numeric' });
+
+            modal.querySelector('.point-value').textContent = this.config.chart_data[index];
+            modal.querySelector('.breakpoint-date').textContent = date;
+        } */
+
+
+    highlight_point(index) {
+        let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
         let ctx = canvas.getContext('2d');
         let x0 = (index - this.config.start_index) * this.config.point_dist,
             y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.config.grid_accent_colour;
-
-        ctx.beginPath();
-        ctx.moveTo(x0, 0);
-        ctx.lineTo(x0, this.config.canvas_height);
-        ctx.stroke();
-        ctx.closePath();
 
         ctx.fillStyle = this.config.background_color;
         ctx.strokeStyle = this.config.line_colour;
@@ -333,17 +346,6 @@ class Chart {
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
-    }
-
-    show_point_modal(index){
-        let modal = document.querySelector('.point-details-modal');
-        modal.style.left = ((index - this.config.start_index) * this.config.point_dist - 32) + 'px';
-
-        let date = str_to_date(this.config.chart_breakpoints[index], 'day');
-        date = date.toLocaleDateString('en-US', { weekday: 'short',  month: 'short', day: 'numeric' });
-
-        modal.querySelector('.point-value').textContent = this.config.chart_data[index];
-        modal.querySelector('.breakpoint-date').textContent = date;
     }
 }
 
