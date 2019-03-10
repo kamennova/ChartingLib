@@ -2,10 +2,6 @@
 
 require_once 'add_functions.php';
 
-//$body_class_list []= 'theme-classic';
-$body_class_list [] = 'theme-bright';
-//$body_class_list [] = 'theme-dark';
-
 $stylesheets .= '<link rel="stylesheet" href="css/chart.css" type="text/css">' .
     '<link rel="stylesheet" href="css/chart_form.css" type="text/css">';
 
@@ -14,14 +10,14 @@ ob_start(); ?>
     <div class="container">
         <div class="sidebar-nav-panel">
             <ul class="sidebar-tabs">
-                <li class="data-tab"><span></span></li>
                 <li class="configurations-tab"><span></span></li>
+                <li class="data-tab"><span></span></li>
             </ul>
         </div>
-        <aside class='chart-form-container sidebar'>
+        <aside class='chart-form-container sidebar hidden'>
             <header class="sidebar-header">
                 <span class="configuration-icon"></span>
-                <h2 class="page-title">Configurations</h2>
+                <h2 class="page-title chart-name">My super chart</h2>
             </header>
             <!--            <h1 class="page-title">My super chart</h1>-->
             <form class="chart-form" id="config-form" method="post" action="add_action.php">
@@ -259,20 +255,34 @@ ob_start(); ?>
             </form>
         </aside>
         <div class="col-right">
+            <h2 class="chart-name"></h2>
             <div class="chart-wrapper">
                 <div id="vertical-axis-labels-container"
                      class="vertical-axis-labels-container axis-labels-container"></div>
                 <div class="chart-canvas-wrapper">
-                    <canvas id="chart-canvas" height="400px" width="1050px"></canvas>
+                    <canvas id="chart-canvas" height="400px" width="400px"></canvas>
                 </div>
                 <div id="timeflow-axis-labels-container"
                      class="timeflow-axis-labels-container horizontal-axis-labels-container axis-labels-container"></div>
                 <div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>
             </div>
-            <section class="chart-data-input">
+            <div class="chart-preview-wrapper">
+                <div class="hidden-area-container chart-area-container"></div>
+                <div class="show-area-container chart-area-container">
+                    <div class="area-border area-left-border" id="area-border-left"></div>
+                    <div class="area-border area-right-border" id="area-border-right"></div>
+                </div>
+                <div class="hidden-area-container chart-area-container"></div>
+                <canvas id="chart-preview-canvas" height="60px" width="400px"></canvas>
+            </div>
+            <section class="chart-data-input visually-hidden">
                 <section class="manual-data-input">
                     <form class="chart-data-input-form" id="data-form" method="post">
-                        <h2 class="form-section-title">Enter some data</h2>
+                        <h2 class="form-section-title">Data table</h2>
+                        <p class="inline">
+                            <label>Default data</label>
+                            <input type="number" name="default_data_num" id="default-data-num-input"/>
+                        </p>
                         <table class="plane-chart-data-input data-input-table" id="timeflow-chart-data-input">
                             <thead>
                             <tr>
@@ -331,13 +341,20 @@ ob_start(); ?>
         </div>
     </div>
 
+<?php if ($chart_state === 'update') { ?>
+    <script>let User_config = <?= $user_config ?></script>
+    <?php ;
+} ?>
+    <script src="chart_js/default.js"></script>
     <script src="chart_js/functions.js"></script>
     <script src="chart_js/chart_object.js"></script>
     <script src="chart_js/configurable.js"></script>
     <script src="chart_js/chart_form.js"></script>
-    <script src="chart_js/chart_data.js"></script>
+<!--    <script src="chart_js/chart_data.js"></script>-->
     <script src="chart_js/draw_chart.js"></script>
+    <script src="chart_js/chart_preview.js"></script>
     <script src="chart_js/add.js"></script>
+
 
 <?php
 $content = ob_get_contents();

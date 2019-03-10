@@ -1,59 +1,3 @@
-
-let Default_config = {
-    chart_name: "My super chart",
-    chart_type: 'curve_chart',
-    chart_data: [0, 5, 3, 9, 6, 2, 9, 4, 0],
-    chart_breakpoints: [],
-    show_since_steps_ago: 9,
-
-    // vertical axis parameters
-    vertical_axis_value_step: 1,
-    vertical_axis_labels_step: 3,
-
-    // horizontal axis parameters
-    horizontal_axis_type: 'timeflow',
-
-    timeflow_step: 1,
-    timeflow_measure: 'day',
-    timeflow_axis_labels_step: 1,
-    timeflow_axis_labels_measure: 'day',
-
-    /* ====================
-        Style parameters
-    ===================== */
-
-    chart_sizing: 30,
-    point_dist: 60,
-    line_width: 2,
-    shadow_colour: 'rgba(0, 0, 0, 0)',
-    shadow_blur: 7,
-    shadow_offset_x: 0,
-    shadow_offset_y: 0,
-
-    // axises & labels
-    vertical_axis_show_ticks: false,
-    vertical_axis_show_line: false,
-    horizontal_axis_show_ticks: false,
-    horizontal_axis_show_line: true,
-    grid_colour: '#eef0f4',
-
-    draw_points: true,
-    point_radius: 3,
-    point_border_colour: '#4158D0',
-    point_fill_colour: '#4158D0',
-
-    // bar chart
-    bar_width: 44,
-    bar_border_radius: 5,
-
-    // curve chart
-    smoothing: 2,
-
-    // colours
-    line_colour: '#4158D0',
-    fill_colour: 'rgba(0, 0, 0, 0)',
-};
-
 /**==========================
  Chart model
  ==========================*/
@@ -62,35 +6,34 @@ class Chart {
     constructor(element, config) {
         this.element = element;
         this.config = config;
-        // this.init = true;
     }
 
-    fill(){
-        // console.log(this.config);
+    init(){
+        console.log(this.config.chart_name);
+        console.log('inited');
+        this.fill();
+    }
+
+    fill() {
         for (const key in Default_config) {
             let value = Default_config[key];
 
-            if(!this.config.hasOwnProperty(key) || this.config[key] == null){
+            if (!this.config.hasOwnProperty(key) || this.config[key] == null) {
                 this.config[key] = Default_config[key];
             }
         }
     }
 
-    autosize() {
-        let count = this.config.chart_data.length;
-        if (count !== 0) {
-            let max = this.config.chart_data[0];
-            for (let i = 1; i < count; i++) {
-                if (Number(this.config.chart_data[i]) > max) {
-                    max = this.config.chart_data[i];
-                }
-            }
+    autosize(start_index, points_count) {
+        let max = this.config.chart_data[start_index];
 
-            if (this.config.chart_sizing * max > (this.config.canvas_height - this.config.line_width / 2)) {
-                this.config.chart_sizing = (this.config.canvas_height - this.config.line_width / 2) / max;
+        for (let i = 1; i < points_count; i++) {
+            if (Number(this.config.chart_data[start_index + i]) > max) {
+                max = this.config.chart_data[start_index + i];
             }
         }
 
+        this.config.chart_sizing = (this.config.canvas_height - this.config.line_width / 2 - this.config.point_radius) / max;
     }
 
     // destroying old labels, if they exist
@@ -112,8 +55,6 @@ class Chart {
         let timeflow_axis_labels_container = document.querySelectorAll(this.config.chart_wrapper_selector + ' .timeflow-axis-labels-container')[0];
         let start_point = this.get_timeflow_start_point();
 
-        // console.log(start_point);
-
         let labels_measure = this.config.timeflow_axis_labels_measure;
         let value_measure = this.config.timeflow_measure;
 
@@ -121,8 +62,6 @@ class Chart {
             // display dates axises
             let step = this.config.timeflow_axis_labels_step;
             let steps_count = this.config.canvas_width / (this.config.timeflow_axis_labels_step * this.config.point_dist);
-
-            // console.log(steps_count);
 
             if (labels_measure === 'week') {
                 steps_count /= translate_measure(labels_measure);
@@ -181,12 +120,14 @@ class Chart {
     }
 
     display_vertical_axis() {
+        this.destroy_old_labels('vertical');
+
         // TODO scale labels axis
         let steps_count = Math.ceil((this.config.canvas_height / this.config.chart_sizing) / this.config.vertical_axis_labels_step);
         let vertical_axis_labels_container = document.querySelector(this.config.chart_wrapper_selector + ' .vertical-axis-labels-container');
         let vertical_axis_labels = '';
 
-        for (let i = 1; i <= steps_count; i++) {
+        for (let i = 0; i <= steps_count; i++) {
             let bottom_pos = this.config.chart_sizing * i * this.config.vertical_axis_labels_step;
 
             vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px'>" + this.config.vertical_axis_labels_step * (i) + "</span>";
@@ -202,7 +143,7 @@ class Chart {
         }
     }
 
-    draw_chart() {
+    draw_chart(draw_grid = true, draw_full = false) {
         let canvas = document.querySelector(this.config.canvas_selector);
 
         if (canvas && canvas.getContext) {
@@ -210,13 +151,14 @@ class Chart {
             let ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            this.draw_timeflow_gridlines(ctx);
-            this.draw_horizontal_grid(ctx);
+            if (draw_grid) {
+                this.draw_horizontal_grid(ctx);
+            }
 
             if (this.config.chart_data.length > 0) {
                 // --- preparing chart data ---
 
-                let timeflow_start_point = this.get_timeflow_start_point();
+                /*let timeflow_start_point = this.get_timeflow_start_point();
                 let timeflow_start_point_str = date_to_str(timeflow_start_point);
                 let start_index,
                     last_breakpoint;
@@ -231,25 +173,48 @@ class Chart {
 
 
                 let closest_breakpoint = str_to_date(this.config.chart_breakpoints[start_index], 'day');
-                console.log(timeflow_start_point);
-                // console.log("Closest: " + closest_breakpoint);
-                // console.log("Is last: " + last_breakpoint);
-                // console.log(start_index);
-                let days_diff = Math.floor((closest_breakpoint - timeflow_start_point) / (1000 * 60 * 60 * 24));
+                // let days_diff = Math.floor((closest_breakpoint - timeflow_start_point) / (1000 * 60 * 60 * 24));*/
+
+                let start_index,
+                    end_index;
+                let last_breakpoint = true;
+
+                if (draw_full) {
+                    start_index = 0;
+                    end_index = this.config.chart_data.length - 1;
+                } else {
+                    start_index = Math.floor(document.data_start * this.config.chart_data.length);
+                    end_index = Math.floor(document.data_end * this.config.chart_data.length);
+                }
+
+                // console.log(document.data_start);
+
+                let days_diff = 0;
+
+                let points_count = end_index - start_index + 1;
+                this.config.points_count = points_count;
+                this.config.start_index = start_index;
+
+                // -- GETTING MAX ---
+                this.autosize(start_index, points_count);
+
+                // -----
+
+                this.config.point_dist = this.config.canvas_width / points_count;
 
                 if ((this.config.chart_type === 'line_chart' || this.config.chart_type === 'curve_chart') && last_breakpoint) {
-                    start_index--;
-                    days_diff--;
+                    // start_index--;
+                    // days_diff--;
                 }
 
                 if (days_diff < this.points_to_show_num(start_index)) {
-                    ctx.lineWidth = this.config.line_width || 1;
-                    ctx.strokeStyle = this.config.line_colour || 'black';
-                    ctx.fillStyle = this.config.fill_colour || "blue";
-                    ctx.shadowColor = this.config.shadow_colour || "rgba(0, 0, 0, 0)";
-                    ctx.shadowBlur = this.config.shadow_blur || 0;
-                    ctx.shadowOffsetX = this.config.shadow_offset_x || 0;
-                    ctx.shadowOffsetY = this.config.shadow_offset_y || 0;
+                    ctx.lineWidth = this.config.line_width;
+                    ctx.strokeStyle = this.config.line_colour;
+                    ctx.fillStyle = this.config.fill_colour;
+                    ctx.shadowColor = this.config.shadow_colour;
+                    ctx.shadowBlur = this.config.shadow_blur;
+                    ctx.shadowOffsetX = this.config.shadow_offset_x;
+                    ctx.shadowOffsetY = this.config.shadow_offset_y;
 
                     ctx.beginPath();
 
@@ -272,40 +237,9 @@ class Chart {
         }
     }
 
-    draw_timeflow_gridlines(ctx) {
-        // destroying old labels, if they exist
-        let old_gridline_labels = document.getElementsByClassName('timeflow-gridline-label');
-        if (old_gridline_labels) {
-            let old_gridline_labels_count = old_gridline_labels.length;
-            for (let i = 0; i < old_gridline_labels_count; i++) {
-                if (!old_gridline_labels[0].parentNode.removeChild(old_gridline_labels[0])) return false;
-            }
-        }
-
-        let steps_count = Math.floor(this.config.canvas_width / this.config.point_dist);
-        let start_point = this.get_timeflow_start_point();
-
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.config.grid_colour;
-
-        for (let i = 0; i <= steps_count; i++) {
-            let full_date = new Date(start_point.getFullYear(), start_point.getMonth(), start_point.getDate() + i);
-            let date = full_date.getDate();
-
-            if (date === 1) { // draw month start gridline
-                ctx.beginPath();
-                ctx.moveTo(~~(this.config.point_dist * i + this.config.padding_left) + 0.5, this.config.canvas_height);
-                ctx.lineTo(~~(this.config.point_dist * i + this.config.padding_left) + 0.5, 30);
-                ctx.stroke();
-                ctx.closePath();
-
-                // add month label
-                let labels_container = document.getElementsByClassName('timeflow-gridlines-labels-container')[0];
-                let month_name = short_month_names[full_date.getMonth()];
-                let pos = this.config.point_dist * i + this.config.padding_left;
-                labels_container.insertAdjacentHTML('beforeend', "<span class='timeflow-gridline-label month-label' style='left:" + pos + "px'>" + month_name + "</span>")
-            }
-        }
+    draw_preview_chart() {
+        this.autosize(this.config.preview_canvas_selector);
+        this.draw_chart(this.config.preview_canvas_selector, false);
     }
 
     draw_horizontal_grid(ctx) {
@@ -313,7 +247,6 @@ class Chart {
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.config.grid_colour;
-        // console.log(ctx.strokeStyle);
 
         let y0 = this.config.canvas_height;
 
@@ -348,6 +281,70 @@ class Chart {
         let all_points_num = this.config.chart_data.length - start_index;
         return (max_points_num < all_points_num ? max_points_num : all_points_num);
     }
+
+    show_point_details() {
+        let canvas = document.querySelector(this.config.canvas_selector);
+        let rect = canvas.getBoundingClientRect();
+
+        let obj_config = this.config;
+        let obj = this;
+        // let start_index = this.config.start_index;
+        // let points_count = this.con
+
+        canvas.addEventListener('mousemove', function (e) {
+            document.querySelector('.point-details-modal').classList.add('show');
+
+            let percentage = (e.pageX - rect.left) / canvas.width;
+            let point_index = Math.floor(obj_config.start_index + obj_config.points_count * percentage);
+
+            if(document.curr_point_index !== point_index){
+                obj.draw_chart();
+                document.curr_point_index = point_index;
+                obj.highlight_point(canvas, point_index);
+                obj.show_point_modal(point_index);
+            }
+        });
+
+        canvas.addEventListener('mouseleave', function(){
+            document.querySelector('.point-details-modal').classList.remove('show');
+        })
+    }
+
+    highlight_point(canvas, index) {
+        let ctx = canvas.getContext('2d');
+        let x0 = (index - this.config.start_index) * this.config.point_dist,
+            y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = this.config.grid_accent_colour;
+
+        ctx.beginPath();
+        ctx.moveTo(x0, 0);
+        ctx.lineTo(x0, this.config.canvas_height);
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.fillStyle = this.config.background_color;
+        ctx.strokeStyle = this.config.line_colour;
+        ctx.lineWidth = this.config.line_width;
+
+        ctx.beginPath();
+        ctx.arc(~~(x0 + 0.5), ~~(y0 + 0.5), ~~(this.config.point_radius + 0.5), 0, Math.PI * 2, false);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    show_point_modal(index){
+        let modal = document.querySelector('.point-details-modal');
+        modal.style.left = ((index - this.config.start_index) * this.config.point_dist - 32) + 'px';
+
+        let date = str_to_date(this.config.chart_breakpoints[index], 'day');
+        date = date.toLocaleDateString('en-US', { weekday: 'short',  month: 'short', day: 'numeric' });
+
+        modal.querySelector('.point-value').textContent = this.config.chart_data[index];
+        modal.querySelector('.breakpoint-date').textContent = date;
+    }
 }
 
 function str_to_date(str, accuracy) {
@@ -364,3 +361,6 @@ function str_to_date(str, accuracy) {
     // }
     return new Date(year, month);
 }
+
+
+

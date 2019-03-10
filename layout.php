@@ -1,3 +1,11 @@
+
+<?php
+
+$body_class_list []= 'theme-classic';
+//$body_class_list [] = 'theme-bright';
+//$body_class_list [] = 'theme-dark';
+?>
+
 <?php if (isset($body_class_list)) {
     $body_classes = '';
     foreach ($body_class_list as $body_class) {

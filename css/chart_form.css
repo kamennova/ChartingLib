@@ -3,15 +3,11 @@
   --background: white;
   --foreground: #e6eaffe0;
 }
-.theme-bright {
-  --accent: white;
+.theme-light {
   --background: white;
-  --foreground: #4158D0;
 }
 .theme-dark {
-  --accent: #4158D0;
   --background: #0f0830;
-  --foreground: #1d105b;
 }
 body {
   background-color: var(--background);
@@ -26,19 +22,22 @@ main > .container {
   position: fixed;
   display: flex;
   flex-shrink: 0;
-  flex-basis: 50px;
-  align-items: center;
+  flex-basis: 30px;
+  flex-direction: column;
+  align-items: flex-start;
   height: 100vh;
   margin-top: -63px;
-  z-index: 150;
+  z-index: 250;
 }
 .sidebar-nav-panel .sidebar-tabs {
+  width: 63px;
+  padding-top: 10px;
   padding-left: 0;
   list-style: none;
 }
 .sidebar-nav-panel .sidebar-tabs li {
   width: 63px;
-  height: 63px;
+  height: 50px;
   margin: 0;
   background-repeat: no-repeat;
 }
@@ -78,6 +77,9 @@ main > .container {
   background-color: inherit;
   z-index: -1;
 }
+.chart-form-container.sidebar.hidden {
+  width: 0;
+}
 .chart-form-container .sidebar-header {
   position: relative;
   display: flex;
@@ -106,27 +108,73 @@ main > .container {
   position: absolute;
   right: 0;
   bottom: 0;
-  display: block;
+  display: none;
   height: 1px;
   width: 1000px;
   background-color: #2c42b2;
 }
 .container > .col-right {
+  margin-left: 500px;
+  align-items: center;
+  align-content: center;
+  flex-grow: 0;
+  justify-content: center;
+  justify-items: center;
   padding: 63px 0 15px calc(63px + 25px);
   overflow-x: hidden;
+  width: 100%;
 }
 .container > .col-right .chart-wrapper {
   position: relative;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-grow: 0;
   flex-wrap: wrap;
   align-content: flex-start;
   margin-bottom: 50px;
+  width: 400px;
 }
 .container > .col-right .canvas-wrapper {
   flex-grow: 0;
   flex-shrink: 0;
+}
+.container > .col-right .chart-preview-wrapper {
+  position: relative;
+  display: flex;
+  width: 400px;
+}
+.container > .col-right .chart-preview-wrapper .chart-area-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+.container > .col-right .chart-preview-wrapper .hidden-area-container {
+  left: 0;
+  flex-shrink: 0;
+  flex-grow: 1;
+  flex-basis: 100px;
+  width: auto;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.container > .col-right .chart-preview-wrapper .show-area-container {
+  right: 0;
+  width: 30%;
+  border: none;
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+.container > .col-right .chart-preview-wrapper .area-border {
+  position: absolute;
+  height: 100%;
+  width: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+.container > .col-right .chart-preview-wrapper .area-left-border {
+  left: -5px;
+}
+.container > .col-right .chart-preview-wrapper .area-right-border {
+  right: -5px;
 }
 /* ==================
         FORM
@@ -346,7 +394,7 @@ main > .container {
   left: 0;
   width: 16px;
   height: 16px;
-  border: 1px solid lightgrey;
+  border: 1px solid #96a2aa;
 }
 .chart-form .checkbox-indicator::after,
 .chart-form .checkbox-indicator::before,
@@ -439,7 +487,7 @@ main > .container {
   right: -37px;
   display: inline-block;
   margin: auto 0;
-  color: #bababa;
+  color: #7a8993;
 }
 .chart-data-form {
   padding: 20px 15px 25px 25px;
@@ -452,7 +500,7 @@ main > .container {
   border-top: 0;
 }
 .data-input-table td {
-  border-top: 1px solid lightgrey;
+  border-top: 1px solid #96a2aa;
 }
 .data-input-table td input {
   border: none;

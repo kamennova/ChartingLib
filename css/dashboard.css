@@ -3,15 +3,11 @@
   --background: white;
   --foreground: #e6eaffe0;
 }
-.theme-bright {
-  --accent: white;
+.theme-light {
   --background: white;
-  --foreground: #4158D0;
 }
 .theme-dark {
-  --accent: #4158D0;
   --background: #0f0830;
-  --foreground: #1d105b;
 }
 .dashboard-container {
   display: flex;
@@ -45,7 +41,7 @@
   margin: -120px auto 0;
   font-size: 16px;
   color: darkgrey;
-  border: 2px dotted #e6e6e6;
+  border: 2px dotted #eef0f4;
   border-radius: 15px;
 }
 .charts-list {
@@ -58,7 +54,7 @@
 .charts-list .chart {
   margin-bottom: 20px;
   padding: 0 20px 15px;
-  border: 1px solid #f3f3f3;
+  border: 1px solid #fdfefe;
   border-radius: 10px;
 }
 .charts-list .chart-name {

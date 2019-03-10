@@ -3,23 +3,20 @@
 function get_only_value($pdo, $table_name, $value_name, $id)
 {
     $chart_value = '';
-    
+
     if ($query = $pdo->prepare("SELECT {$value_name} FROM {$table_name} WHERE id = ? LIMIT 1")) {
-//        echo 'kkk';exit;
         $query->bindParam(1, $id, PDO::PARAM_INT);
 
         if ($query->execute()) {
-//            echo 'kkk';exit;
             $chart_value = $query->fetch(PDO::FETCH_NUM)[0];
         }
     }
-    
+
     return preg_replace('/\s+/', '_', $chart_value);
 }
 
 function chart_row_to_js($pdo, $row)
 {
-
     $chart_id = $row['id'];
 
     // getting chart data
@@ -32,8 +29,6 @@ function chart_row_to_js($pdo, $row)
         }
     }
 
-
-
     // getting chart breakpoints
     $chart_breakpoints = [];
     $chart_breakpoints_res = $pdo->prepare("SELECT breakpoint FROM timeflow_chart_data WHERE chart_id = ?");
@@ -43,16 +38,13 @@ function chart_row_to_js($pdo, $row)
         }
     }
 
-
-
-    //    ----
+    // ----
 
     $chart_type = get_only_value($pdo, 'chart_type', 'type_name', $row['chart_type_id']);
-//    echo 'kkk';exit;
     $timeflow_measure = get_only_value($pdo, 'timeflow_measure', 'measure_name', $row['timeflow_measure_id']);
     $timeflow_axis_labels_measure = get_only_value($pdo, 'timeflow_measure', 'measure_name', $row['timeflow_labels_measure_id']);
 
-//    --- style ---
+    // --- config array ---
 
     $chart_config = array(
         "data_type" => $row['data_type'],

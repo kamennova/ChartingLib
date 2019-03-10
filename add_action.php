@@ -51,6 +51,33 @@ for ($i = 0; $i < $chart_fields_count; $i++) {
 $chart_fields_str = substr($chart_fields_str, 0, -2);
 $chart_fields_params_str = substr($chart_fields_params_str, 0, -2);
 
+$start_date = '09-02-2019';
+
+
+
+    /*
+    $date = "04-15-2013";
+$date1 = str_replace('-', '/', $date);
+$tomorrow = date('m-d-Y',strtotime($date1 . "+1 days"));
+
+echo $tomorrow;*/
+
+/*$new_stmt = $pdo->prepare("INSERT INTO timeflow_chart_data (chart_id, breakpoint, val) VALUES (5, ?, ?)");
+
+for($i = 1; $i < 30; $i++){
+    $date = date('Y-m-d', strtotime($start_date . "+$i days"));
+    $val = rand(40, 250);
+
+    echo $date . ' ' . $val . "<br>";
+
+    $new_stmt->bindParam(1, $date, PDO::PARAM_STR);
+    $new_stmt->bindParam(2, $val, PDO::PARAM_INT);
+
+    $new_stmt->execute();
+}
+
+exit;*/
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $owner_id = $_SESSION['id'];
     $chart_name = trim($_POST['chart_name']);

@@ -3,15 +3,11 @@
   --background: white;
   --foreground: #e6eaffe0;
 }
-.theme-bright {
-  --accent: white;
+.theme-light {
   --background: white;
-  --foreground: #4158D0;
 }
 .theme-dark {
-  --accent: #4158D0;
   --background: #0f0830;
-  --foreground: #1d105b;
 }
 .site-links {
   display: none;

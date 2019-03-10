@@ -1,5 +1,22 @@
 @import "variables";
 
+@grid_colour_default:#eef0f4;
+
+.site-wrapper{
+
+}
+
+
+.chart{
+  margin: 20px auto;
+
+  .chart-container-name{
+    margin-bottom: 30px;
+
+    font-size: 25px;
+    font-weight: bold;
+  }
+}
 //----CHART DRAWING-----
 
 .chart-wrapper {
@@ -7,9 +24,82 @@
 }
 
 .chart-canvas-wrapper {
-  margin-left: 25px;
+  //margin-left: 25px;
 
   z-index: 5;
+}
+
+.chart-wrapper {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  margin-bottom: 50px;
+  width: 400px;
+}
+
+.canvas-wrapper {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.chart-preview-wrapper {
+  position: relative;
+
+  display: flex;
+  width: 400px;
+
+  .chart-area-container {
+    position: absolute;
+    top: 0;
+
+    height: 100%;
+  }
+
+  .hidden-area-container {
+    left: 0;
+
+    flex-shrink: 0;
+    flex-grow: 1;
+    flex-basis: 100px;
+    width: auto;
+
+    //width: 70%;
+
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .show-area-container{
+    right: 0;
+
+    width: 30%;
+
+    border: none;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .area-border{
+    position: absolute;
+
+    height: 100%;
+    width: 5px;
+
+    background-color: rgba(0, 0, 0, 0.6);
+
+    cursor: pointer;
+  }
+
+  .area-border-left{
+    left: 0;
+  }
+
+  .area-border-right{
+    right: 0px;
+  }
 }
 
 .no-data-message {
@@ -23,13 +113,26 @@
   text-align: center;
 }
 
+//----
+
 .axis-label {
   position: absolute;
 
   display: inline-block;
 
   font-size: 12px;
-  color: dimgrey;
+  color: #7b7b7b;
+
+  border-color: inherit;
+
+  &::after{
+    content: "";
+
+    position: absolute;
+
+    display: block;
+    border-color: inherit;
+  }
 }
 
 /* ===================
@@ -38,39 +141,35 @@
 
 .vertical-axis-labels-container {
   position: absolute;
+  left: 0;
+  top: -3px;
 
   min-width: 25px;
+  //padding-bottom: 9px;
+
+  border-right: 1px solid @grid_colour_default;
 
   overflow: hidden;
-  //overflow-y: hidden;
-  //overflow-x: auto;
-
-  border-right: 1px solid @grey;
-
   z-index: 10;
 
   .vertical-axis-label {
-    right: 0;
+    left: 0;
 
     margin-right: 7px;
-    margin-bottom: -9px;
+    //margin-bottom: -9px;
   }
 
   .vertical-axis-label::after {
-    content: "";
-
-    position: absolute;
     top: 0;
     bottom: 0;
     right: -7px;
 
-    display: block;
     width: 4px;
     height: 1px;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin: auto 0;
 
-    background-color: darken(@grey, 10%);
+    border-top: 1px solid;
+    border-color: inherit;
   }
 }
 
@@ -82,9 +181,9 @@
   position: relative;
 
   height: 20px;
-  margin-left: 24px;
+  //margin-left: 24px;
 
-  border-top: 1px solid #eef0f4;
+  border-top: 1px solid @grid_colour_default;
 
   .timeflow-axis-label {
     top: 0;
@@ -97,19 +196,16 @@
   }
 
   .timeflow-axis-label::after {
-    content: "";
-
-    position: absolute;
     top: -4px;
     left: 0;
     right: 0;
 
-    display: block;
     width: 1px;
     height: 4px;
     margin: 0 auto;
 
-    background-color: darken(@grey, 10%);
+    border-right: 1px solid;
+    border-color: inherit;
   }
 }
 
@@ -147,4 +243,97 @@
 
 .axis-labels-container.no-ticks .axis-label::after {
   display: none;
+}
+
+/* ====================
+     Chart labels
+==================== */
+
+.charts-labels-list{
+  display: flex;
+  margin: 20px 0;
+  padding-left: 0;
+
+  list-style: none;
+
+  .chart-label{
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    padding: 5px 10px 5px 5px;
+
+    border: 1px solid @border_grey;
+    border-radius: 17px;
+
+    .chart-show-input{
+      display: block;
+      width: 20px;
+      height: 20px;
+      margin-right: 6px;
+
+      background-color: red;
+      border-radius: 50%;
+
+    }
+  }
+}
+
+
+/* ====================
+     Point details
+==================== */
+
+.point-details-modal{
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  display: none;
+  flex-direction: column;
+  flex-grow: 0;
+  padding: 5px 12px 5px 7px;
+
+  background-color: var(--background);
+  border: 1px solid #ececec;
+  border-radius: 12px;
+
+  z-index: 10;
+
+  .breakpoint-date{
+    margin-bottom: 5px;
+  }
+
+  .points{
+    display: flex;
+    margin-bottom: 0;
+    padding-left: 0;
+
+    list-style: none;
+
+    li{
+      margin-right: 16px;
+
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    li:first-of-type{
+      color: green;
+    }
+
+    li:last-of-type{
+      margin-right: 0;
+
+      color: red;
+    }
+
+    .point-value{
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
+}
+
+.point-details-modal.show{
+  display: flex;
 }
