@@ -41,7 +41,7 @@ if (document.body.classList.contains('theme-bright')) {
         console.log(unix_timestamp);
         console.log(new Date(unix_timestamp*1000));
     }
-});*/
+}); */
 
 // -----
 

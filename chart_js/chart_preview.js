@@ -16,14 +16,6 @@ function preview_box_init() {
         });
     }
 
-    // let area_left_border = document.querySelector('.area-border.area-border-left');
-
-    // area_left_border.addEventListener("mousedown", function () {
-    //     document.currAreaBorder = get_border_side(this);
-    //     document.addEventListener("mousemove", chart_preview_listener);
-    //     document.addEventListener("mouseup", cancel_listener);
-    // });
-
     let chart_preview_listener = function (e) {
         e = e || window.event;
         let mouse_x = e.pageX;

@@ -9,28 +9,31 @@ class Chart {
     }
 
     init() {
-        // console.log(this.config);
-        // console.log('---');
-
         this.fill();
-        // console.log(this);
-        // console.log('---');
-        this.draw_chart();
 
         // filling point detail modal list
         let point_modal_list = document.querySelector(this.config.chart_wrapper_selector + ' .point-details-modal ul');
         let list_option = '<li style="color:' + this.config.line_colour + '"><span class="point-value"></span><br><span class="point-chart-name">' + this.config.chart_name + '</span></li>';
         point_modal_list.insertAdjacentHTML('beforeend', list_option);
+
+        let charts_labels_list = document.querySelector(this.config.chart_wrapper_selector + ' .charts-labels-list');
+        let input_name = this.config.chart_name.replace(/ /, '-');
+        let label = '<li><label class="chart-label">' +
+            '<input type="checkbox" class="visually-hidden chart-draw-checkbox" name="' + input_name + '" checked>' +
+            '<span style="background-color: ' + this.config.line_colour + '" class="checkbox-indicator"></span>'
+            + this.config.chart_name + '</label></li>';
+
+        /* let input = document.createElement('input');
+        input.classList.add('visually-hidden');
+        input.setAttribute('name', input_name);
+        input.checked = true; */
+
+        charts_labels_list.insertAdjacentHTML('beforeend', label);
     }
 
     fill() {
-        // console.log(this);
-        // console.log('---');
         for (const key in Default_config) {
             let value = Default_config[key];
-
-
-
             if (!this.config.hasOwnProperty(key) || this.config[key] == null) {
                 this.config[key] = Default_config[key];
             }
@@ -47,8 +50,6 @@ class Chart {
         }
 
         this.config.chart_sizing = (this.config.canvas_height - this.config.line_width / 2 - this.config.point_radius) / max;
-
-        // console.log(this.config.chart_sizing);
     }
 
     // destroying old labels, if they exist
@@ -158,38 +159,31 @@ class Chart {
         }
     }*/
 
-    draw_chart(draw_grid = true, draw_full = false) {
-        let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
+    draw_chart(canvas_selector = this.config.canvas_selector, draw_full = false) {
+        let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + canvas_selector);
 
-        if (canvas && canvas.getContext) {
+        if (canvas && canvas.getContext && this.config.draw) {
             let ctx = canvas.getContext('2d');
-            // ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-
-            if (draw_grid) {
-                // this.draw_horizontal_grid(ctx);
-            }
-
             if (this.config.chart_data.length > 0) {
-
 
                 let start_index,
                     end_index;
                 let last_breakpoint = true;
 
                 if (draw_full) {
-                    this.config.start_index = 0;
-                    this.config.end_index = this.config.chart_data.length - 1;
+                    start_index = 0;
+                    end_index = this.config.chart_data.length - 1;
+                } else {
+                    end_index = this.config.end_index;
+                    start_index = this.config.start_index;
                 }
 
 
-                // console.log(start_index);
-
-                // console.log(document.data_start);
-
                 let days_diff = 0;
 
-                let points_count = this.config.end_index - this.config.start_index + 1;
+                let points_count = end_index - start_index + 1;
+
+
                 // this.config.points_count = points_count;
                 // this.config.start_index = start_index;
 
@@ -198,7 +192,14 @@ class Chart {
 
                 // -----
 
-                this.config.point_dist = this.config.canvas_width / points_count;
+                this.config.point_dist = canvas.width / (points_count - 1);
+
+                if (draw_full) {
+                    // console.log(this.config.point_dist);
+                    // console.log(points_count);
+                    // console.log(canvas.width);
+                    // console.log('---');
+                }
                 //
                 // if ((this.config.chart_type === 'line_chart' || this.config.chart_type === 'curve_chart') && last_breakpoint) {
                 //     // start_index--;
@@ -217,10 +218,10 @@ class Chart {
 
                     ctx.beginPath();
 
-
                     switch (this.config.chart_type) {
                         case 'line_chart':
-                            draw_curve_chart(this, ctx, this.config.start_index, days_diff, this.config.point_dist / 2);
+                            draw_line_chart(this, ctx, start_index, points_count, days_diff);
+                            // draw_line_chart(this, ctx, start_index, days_diff);
                             break;
                         case 'bar_chart':
                             draw_bar_chart(this, ctx, start_index, days_diff);
@@ -241,7 +242,6 @@ class Chart {
         this.autosize(this.config.preview_canvas_selector);
         this.draw_chart(this.config.preview_canvas_selector, false);
     }
-
 
 
     get_timeflow_start_point() {

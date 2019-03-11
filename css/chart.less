@@ -1,22 +1,22 @@
 @import "variables";
 
-@grid_colour_default:#eef0f4;
+@grid_colour_default: #eef0f4;
 
-.site-wrapper{
+.site-wrapper {
 
 }
 
-
-.chart{
+.chart {
   margin: 20px auto;
 
-  .chart-container-name{
+  .chart-container-name {
     margin-bottom: 30px;
 
     font-size: 25px;
     font-weight: bold;
   }
 }
+
 //----CHART DRAWING-----
 
 .chart-wrapper {
@@ -37,7 +37,7 @@
   flex-grow: 0;
   flex-wrap: wrap;
   align-content: flex-start;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   width: 400px;
 }
 
@@ -52,6 +52,9 @@
   display: flex;
   width: 400px;
 
+  //background-color:  #e9f0f3d6;
+  overflow-x: hidden;
+
   .chart-area-container {
     position: absolute;
     top: 0;
@@ -59,7 +62,7 @@
     height: 100%;
   }
 
-  .hidden-area-container {
+  /*.hidden-area-container {
     left: 0;
 
     flex-shrink: 0;
@@ -70,35 +73,78 @@
     //width: 70%;
 
     background-color: rgba(0, 0, 0, 0.2);
-  }
+  }*/
 
-  .show-area-container{
+  .show-area-container {
     right: 0;
 
     width: 30%;
 
-    border: none;
-    border-top: 2px solid rgba(0, 0, 0, 0.1);
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    &::before, &::after {
+      content: "";
+
+      position: absolute;
+      left: 5px;
+
+      display: block;
+
+      width: -webkit-calc(100% - 10px);
+      width: -moz-calc(100% - 10px);
+      width: -o-calc(100% - 10px);
+      width: calc(100% - 10px);
+
+      height: 2px;
+
+      background-color: #a0b5c375;
+    }
+
+    &::after {
+      bottom: 0;
+    }
+    //border: none;
+    //border-top: 2px solid rgba(0, 0, 0, 0.1);
+    //border-bottom: 2px solid rgba(0, 0, 0, 0.1);
   }
 
-  .area-border{
+  .area-border {
     position: absolute;
 
     height: 100%;
     width: 5px;
 
-    background-color: rgba(0, 0, 0, 0.6);
+    //box-sizing: content-box;
+    background-color: #a0b5c375;
 
     cursor: pointer;
+
+    .layer {
+      position: absolute;
+      top: 0;
+
+      display: block;
+      width: 400px; // TODO style js
+      height: 100%;
+
+      background-color: #e9f0f3d6;
+
+      cursor: default;
+    }
   }
 
-  .area-border-left{
+  .area-border-left {
     left: 0;
+
+    .layer {
+      right: 5px;
+    }
   }
 
-  .area-border-right{
-    right: 0px;
+  .area-border-right {
+    right: 0;
+
+    .layer {
+      left: 5px;
+    }
   }
 }
 
@@ -125,7 +171,7 @@
 
   border-color: inherit;
 
-  &::after{
+  &::after {
     content: "";
 
     position: absolute;
@@ -150,7 +196,7 @@
   border-right: 1px solid @grid_colour_default;
 
   overflow: hidden;
-  z-index: 10;
+  z-index: -1;
 
   .vertical-axis-label {
     left: 0;
@@ -249,41 +295,83 @@
      Chart labels
 ==================== */
 
-.charts-labels-list{
+.charts-labels-list {
   display: flex;
   margin: 20px 0;
   padding-left: 0;
 
   list-style: none;
 
-  .chart-label{
+  .chart-label {
     display: flex;
     align-items: center;
-    margin-right: 20px;
+    margin-right: 15px;
     padding: 5px 10px 5px 5px;
+
+    font-size: 14px;
+    color: #575c5e;
 
     border: 1px solid @border_grey;
     border-radius: 17px;
 
-    .chart-show-input{
+    cursor: pointer;
+
+    .checkbox-indicator {
+      position: relative;
+
       display: block;
       width: 20px;
       height: 20px;
-      margin-right: 6px;
+      margin-right: 8px;
 
-      background-color: red;
+      //background-color: white;
+      //border
+      //background-color: red;
       border-radius: 50%;
 
+      // --- tick ---
+      &::after,
+      &::before {
+        content: "";
+
+        position: absolute;
+        left: 11px;
+        top: 6px;
+
+        display: none;
+        width: 2px;
+        height: 10px;
+
+        background-color: white;
+        border-radius: 3px;
+      }
+
+      &::before {
+        top: 9px;
+        left: 6px;
+        height: 6px;
+        transform: rotate(-45deg);
+      }
+
+      &::after {
+        transform: rotate(40deg);
+      }
     }
+
+    input:checked + .checkbox-indicator {
+      &::after, &::before {
+        display: block;
+      }
+    }
+
   }
 }
-
 
 /* ====================
      Point details
 ==================== */
 
-.point-details-modal{
+.point-details-modal {
   position: absolute;
   left: 0;
   top: 0;
@@ -299,41 +387,43 @@
 
   z-index: 10;
 
-  .breakpoint-date{
+  .breakpoint-date {
     margin: 3px 0 8px;
   }
 
-  .points{
+  .points {
     display: flex;
     margin: 0;
     padding-left: 0;
 
     list-style: none;
 
-    li{
+    li {
       margin-right: 16px;
 
       font-size: 14px;
       font-weight: 300;
     }
 
-    li:first-of-type{
+    li:first-of-type {
       color: green;
     }
 
-    li:last-of-type{
+    li:last-of-type {
       margin-right: 0;
 
       color: red;
     }
 
-    .point-value{
+    .point-value {
       font-size: 15px;
       font-weight: bold;
     }
   }
 }
 
-.point-details-modal.show{
+.point-details-modal.show {
   display: flex;
 }
+
+//---

@@ -74,7 +74,7 @@ function draw_curve_chart(obj, ctx, start_index, days_diff, k = 2 /* smoothness 
         let cpt_y1 = y0 - obj.config.chart_data[index - 1] * obj.config.chart_sizing;
         let cpt_y2 = y0 - obj.config.chart_data[index] * obj.config.chart_sizing;
 
-        ctx.bezierCurveTo(~~(cpt_x - k)+0.5, ~~(cpt_y1)+0.5, ~~(cpt_x + k)+0.5, ~~(cpt_y2)+0.5, (~~x)+0.5, ~~y + 0.5);
+        ctx.bezierCurveTo(~~(cpt_x - k) + 0.5, ~~(cpt_y1) + 0.5, ~~(cpt_x + k) + 0.5, ~~(cpt_y2) + 0.5, (~~x) + 0.5, ~~y + 0.5);
     }
 
     ctx.lineTo(x, y0);
@@ -141,16 +141,24 @@ function draw_point_chart(obj, ctx, start_index, days_diff) {
     }
 }
 
-function draw_line_chart(obj, ctx, days_diff) {
-    ctx.moveTo(obj.config.padding_left + obj.config.point_dist * days_diff, obj.config.canvas_height - obj.config.chart_sizing * obj.config.chart_data[0]);
+function draw_line_chart(obj, ctx, start_index, count, days_diff) {
+    let x0 = obj.config.padding_left + obj.config.point_dist * days_diff,
+        y0 = ctx.canvas.clientHeight;
+        // y0 = obj.config.canvas_height;
 
-    let x0 = obj.config.point_dist * (days_diff - 1) + obj.config.padding_left;
-    let y0 = obj.config.canvas_height;
+    let index = start_index,
+        x = x0,
+        y = y0 - obj.config.chart_sizing * obj.config.chart_data[index++];
 
-    obj.config.chart_data.forEach(function (item, i, arr) {
-        x0 += obj.config.point_dist;
-        ctx.lineTo(x0, y0 - obj.config.chart_sizing * item);
-    });
-    ctx.fill();
+    ctx.moveTo(x, y);
+
+    for (let i = 1; i < count; i++, index++) {
+        x += obj.config.point_dist;
+        y = y0 - obj.config.chart_sizing * obj.config.chart_data[index];
+        ctx.lineTo(x, y);
+    }
+
+    // ctx.fill();
     ctx.stroke();
+    ctx.closePath();
 }

@@ -21,7 +21,7 @@ if (isset($body_class_list)) {
     <meta charset
     "UTF-8">
     <title><?= isset($title) ? $title : 'My stats' ?></title>
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,500,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
 
@@ -33,6 +33,11 @@ if (isset($body_class_list)) {
 <body class='<?= $body_classes ?> theme-light'>
 <div class="site-wrapper">
     <section class="chart">
+<!--        <div class="test">-->
+<!--            <div class="layer"></div>-->
+<!--            <div class="area"></div>-->
+<!--            <div class="layer"></div>-->
+<!--        </div>-->
         <!-- <div class="chart-container-wrapper">
             <h2 class="chart-container-name">Followers</h2>
             <div class="chart-wrapper">
