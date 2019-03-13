@@ -176,7 +176,7 @@
 
     position: absolute;
 
-    display: block;
+    display: none;
     border-color: inherit;
   }
 }
@@ -324,7 +324,9 @@
       height: 20px;
       margin-right: 8px;
 
-      //background-color: white;
+      border: 1px solid;
+
+
       //border
       //background-color: red;
       border-radius: 50%;
@@ -335,8 +337,8 @@
         content: "";
 
         position: absolute;
-        left: 11px;
-        top: 6px;
+        left: 10px;
+        top: 5px;
 
         display: none;
         width: 2px;
@@ -347,8 +349,8 @@
       }
 
       &::before {
-        top: 9px;
-        left: 6px;
+        top: 8px;
+        left: 5px;
         height: 6px;
         transform: rotate(-45deg);
       }
@@ -362,6 +364,10 @@
       &::after, &::before {
         display: block;
       }
+    }
+
+    input:not(:checked) + .checkbox-indicator{
+      background-color: white !important;
     }
 
   }

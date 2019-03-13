@@ -20,7 +20,7 @@ class Chart {
         let input_name = this.config.chart_name.replace(/ /, '-');
         let label = '<li><label class="chart-label">' +
             '<input type="checkbox" class="visually-hidden chart-draw-checkbox" name="' + input_name + '" checked>' +
-            '<span style="background-color: ' + this.config.line_colour + '" class="checkbox-indicator"></span>'
+            '<span style="background-color: ' + this.config.line_colour + '; border-color: ' + this.config.line_colour + '" class="checkbox-indicator"></span>'
             + this.config.chart_name + '</label></li>';
 
         /* let input = document.createElement('input');
@@ -215,6 +215,7 @@ class Chart {
                     ctx.shadowBlur = this.config.shadow_blur;
                     ctx.shadowOffsetX = this.config.shadow_offset_x;
                     ctx.shadowOffsetY = this.config.shadow_offset_y;
+                    ctx.lineJoin = 'round';
 
                     ctx.beginPath();
 
@@ -331,21 +332,24 @@ class Chart {
 
 
     highlight_point(index) {
-        let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
-        let ctx = canvas.getContext('2d');
-        let x0 = (index - this.config.start_index) * this.config.point_dist,
-            y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
+
+        if (this.config.draw) {
+            let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
+            let ctx = canvas.getContext('2d');
+            let x0 = (index - this.config.start_index) * this.config.point_dist,
+                y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
 
 
-        ctx.fillStyle = this.config.background_color;
-        ctx.strokeStyle = this.config.line_colour;
-        ctx.lineWidth = this.config.line_width;
+            ctx.fillStyle = this.config.background_color;
+            ctx.strokeStyle = this.config.line_colour;
+            ctx.lineWidth = this.config.line_width;
 
-        ctx.beginPath();
-        ctx.arc(~~(x0 + 0.5), ~~(y0 + 0.5), ~~(this.config.point_radius + 0.5), 0, Math.PI * 2, false);
-        ctx.fill();
-        ctx.stroke();
-        ctx.closePath();
+            ctx.beginPath();
+            ctx.arc(~~(x0 + 0.5), ~~(y0 + 0.5), ~~(this.config.point_radius + 0.5), 0, Math.PI * 2, false);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+        }
     }
 }
 

@@ -76,3 +76,4 @@ function loadJSON(callback) {
     };
     xobj.send(null);
 }
+

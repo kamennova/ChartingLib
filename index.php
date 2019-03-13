@@ -1,168 +1,101 @@
 <?php
 
-header('location: /add.php');
-exit;
+if (isset($body_class_list)) {
+    $body_classes = '';
+    foreach ($body_class_list as $body_class) {
 
-require_once 'connection.php';
-$link = mysqli_connect($host, $user, $password, $database) or die("Error: " . mysqli_error($link));
+        if (strpos($body_class, 'theme') !== false) {
+            // theme name is 'theme-xyz'
+            $theme_name = substr($body_class, 6);
 
-//-------Stats output------
+            $theme_stylesheets = "<link rel='stylesheet' href='css/themes/$theme_name.css' />";
+        }
 
-$chart_max_value = 6;
-$chart_columns_number = 7;
-$chart_sizing = 30; // px per grades between divider hr
-$chart_grading = 2; // value step
-
-date_default_timezone_set('Europe/Kiev');
-//date_default_timezone_set('Asia/Barnaul');
-//echo date('d h:i:s A');
-
-$today = date('Y-m-d');
-
-$today_record = "SELECT * FROM tea_cups WHERE tea_cups.date = '$today'";
-
-$result = mysqli_query($link, $today_record);
-
-if ($result->num_rows == 0) {
-    $add_today_record = mysqli_query($link, "INSERT INTO tea_cups(date, quantity) VALUES ('$today', '0')");
-
-    if (!mysqli_query($link, $add_today_record)) {
-        echo "ERROR: Could not be able to execute $add_today_record. " . mysqli_error($link);
+        $body_classes .= $body_class . ' ';
     }
-}
+} ?>
 
-$tea_cups_query = "SELECT * FROM (SELECT * FROM tea_cups ORDER BY date DESC LIMIT {$chart_columns_number}) tmp ORDER by tmp.date ASC";
-$tea_cups_result = mysqli_query($link, $tea_cups_query) or die("Error: " . mysqli_error($link));
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset
+    "UTF-8">
+    <title><?= isset($title) ? $title : 'My stats' ?></title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
 
-$tea_cups_chart = '';
-$tea_cups_chart_labels = '';
+    <?= isset($stylesheets) ? $stylesheets : null ?>
+    <?= $theme_stylesheets ?>
+    <link rel="stylesheet" href="css/chart.css" type="text/css">
+</head>
 
-for ($i = 0; $i <= $chart_max_value; $i += $chart_grading) {
-    $divider_grading = $i * $chart_sizing;
-    $tea_cups_chart .= "<hr class='chart-grading' style='bottom: {$divider_grading}px' />" .
-        ($i === 0 ? '' : "<span class='chart-grading-label' style='bottom: {$divider_grading}px'>$i</span>");
-}
+<body class='<?= $body_classes ?> theme-light'>
+<div class="site-wrapper">
+    <section class="chart">
+<!--        <div class="test">-->
+<!--            <div class="layer"></div>-->
+<!--            <div class="area"></div>-->
+<!--            <div class="layer"></div>-->
+<!--        </div>-->
+        <!-- <div class="chart-container-wrapper">
+            <h2 class="chart-container-name">Followers</h2>
+            <div class="chart-wrapper">
+                <div id="vertical-axis-labels-container"
+                     class="vertical-axis-labels-container axis-labels-container"></div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-canvas" height="400px" width="400px"></canvas>
+                </div>
+                <div id="timeflow-axis-labels-container"
+                     class="timeflow-axis-labels-container horizontal-axis-labels-container axis-labels-container"></div> --!>
+<!--                <div id="timeflow-gridlines-labels-container" class="timeflow-gridlines-labels-container"></div>-->
+                <!--<div class="point-details-modal">
+                    <p class="breakpoint-date">Sat, Feb 24</p>
+                    <ul class="points">
+                        <li>
+                            <span class="point-value">142</span><br>
+                            <span class="point-chart-name">Joined</span>
+                        </li>
+                        <li>
+                            <span class="point-value">67</span><br>
+                            <span class="point-chart-name">Left</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chart-preview-wrapper">
+                <div class="hidden-area-container chart-area-container"></div>
+                <div class="show-area-container chart-area-container">
+                    <div class="area-border-right area-border" id="area-border-left"></div>
+                    <div class="area-border-left area-border" id="area-border-right"></div>
+                </div>
+                <div class="hidden-area-container chart-area-container"></div>
+                <canvas id="chart-preview-canvas" height="60px" width="400px"></canvas>
+            </div>
+            <ul class="charts-labels-list">
+                <li class="chart-label">
+                    <span class="chart-show-input"></span>
+                    Joined
+                </li>
+                <li class="chart-label">
+                    <span class="chart-show-input"></span>
+                    Left
+                </li>
+            </ul>
+        </div> -->
+        <div class="chart-container-wrapper-2">
 
-while ($row = mysqli_fetch_assoc($tea_cups_result)) {
-    $column_height = $chart_sizing * $row['quantity'];
-    $tea_cups_chart .= "<div class='chart-column' style='height: {$column_height}px' ></div>";
-
-    if ($row['date'] == date('Y-m-d')) {
-        $label_content = 'Today';
-    } else {
-        $label_content = date('D jS', strtotime($row['date']));
-    }
-    $tea_cups_chart_labels .= "<label class='chart-label'>" . $label_content . '</label>';
-}
-
-//---line chart---
-
-mysqli_data_seek($tea_cups_result, 0);
-
-$chart_col_width = 45;
-$chart_cols_dist = 15;
-
-$chart_points_dist = $chart_col_width + $chart_cols_dist;
-$chart_left_padding = 30 + $chart_col_width / 2;
-$canvas_height = 200;
-
-$line_chart_js = "var canvas = document.getElementById('example-canvas'); if (canvas.getContext) {var ctx = canvas.getContext('2d'); ctx.lineWidth = 2; ctx.beginPath();";
-$line_chart_labels = '';
-
-$i = 0;
-
-while ($row = mysqli_fetch_assoc($tea_cups_result)) {
-
-    $column_height = $canvas_height - $chart_sizing * $row['quantity'];
-
-    if ($i == 0) {
-        $line_chart_js .= "ctx.moveTo($chart_left_padding, $column_height);";
-        $line_chart_js .= "ctx.arc($chart_left_padding, $column_height, 5, 0, Math.PI * 2, true);";
-        $line_chart_js .= "ctx.lineTo($chart_left_padding + 5, $column_height);";
-    } else {
-        $line_chart_js .= "ctx.lineTo($chart_points_dist * $i + $chart_left_padding - 5, $column_height);";
-        $line_chart_js .= "ctx.arc($chart_points_dist * $i + $chart_left_padding, $column_height, 5, 0, Math.PI * 2, true);";
-        $line_chart_js .= "ctx.lineTo($chart_points_dist * $i + $chart_left_padding + 5, $column_height);";
-    }
-
-    if ($row['date'] == date('Y-m-d')) {
-        $label_content = 'Today';
-    } else {
-        $label_content = date('D jS', strtotime($row['date']));
-    }
-    $line_chart_labels .= "<label class='chart-label'>" . $label_content . '</label>';
-
-    $i++;
-}
-
-$line_chart_js .= "ctx.stroke();}";
-
-
-//--------
-
-$content = <<< EOD
-
-<div class="container row">
-  <div class="col-sm-4">
-    <section class="stats">
-       <section class="tea-cups-daily-stats bar-chart basic-style">
-           <h2 class="section-title">Tea cups daily</h2>
-           <div class='chart-container column-chart'>$tea_cups_chart</div>
-           <div class="labels-container">$tea_cups_chart_labels</div>
-           </section>
-          </section>
-          </div>
-          <div class="col-sm-4">
-           <section class="bar-chart style-2">
-                <h2 class="section-title">Style 2</h2>
-           <div class='chart-container column-chart'>$tea_cups_chart</div>
-           <div class="labels-container">$tea_cups_chart_labels</div>
-</section>
-</div>
-<div class="col-sm-4">
-           <section class="bar-chart style-3">
-                <h2 class="section-title">Style 3</h2>
-           <div class='chart-container column-chart'>$tea_cups_chart</div>
-           <div class="labels-container">$tea_cups_chart_labels</div>
-</section>
-</div>
-
-
-EOD;
-
-include 'insert.php';
-
-$content .= <<< EOD
-<div class="col-sm-4">
- <section class="line-chart basic-style">
- <h2 class="section-title">Line chart. Basic style</h2>
- <canvas id="example-canvas" width="500" height="200">message</canvas>
- <div class="labels-container">$line_chart_labels</div>
-</section>
-</div>
-<div class="col-sm-4">
-<section class="line-chart style-2">
-<h2 class="section-title">Line chart. Style 2</h2>
- <canvas id="line-chart-canvas-style-2" width="500" height="200">message</canvas>
- <div class="labels-container">$line_chart_labels</div>
-</div>
-<form method="post">
-    <p>
-        <label class="label-add" for="cups_quantity"><span class="visually-hidden">+1 cup</span></label>
-        <!--<input type="hidden" name="cups_quantity" id="cups_quantity">-->
-        <input type="number" name="cups_quantity" id="cups_quantity" onchange="this.form.submit()">
-    </p>
-    <!--<input type="submit" value="Submit">-->
-</form>
+        </div>
     </section>
-    <a class="btn" href="add.php">Add chart</a>
-  </div>
-</div><script>$line_chart_js</script>              
-EOD;
+</div>
 
-
-?>
-
-
-<?php mysqli_close($link); ?>
-<?php require_once 'layout.php'; ?>
+<script src="chart_js/CHART_DATA.json"></script>
+<script src="chart_js/default.js"></script>
+<script src="chart_js/functions.js"></script>
+<script src="chart_js/chart_object.js"></script>
+<script src="chart_js/draw_chart.js"></script>
+<script src="chart_js/chart_preview.js"></script>
+<script src="chart_js/chart_container.js"></script>
+<script src="chart_js/add.js"></script>
+</body>
+</html>
