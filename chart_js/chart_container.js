@@ -66,7 +66,10 @@ class Chart_container {
         this.clear_canvas();
         this.draw_horizontal_grid();
 
+
         for (let i = 0; i < this.charts.length; i++) {
+            this.charts[i].config.padding_left = this.config.add_padding;
+            this.charts[i].config.point_dist = this.config.precise_point_dist;
             this.charts[i].config.start_index = this.config.start_index;
             this.charts[i].config.end_index = this.config.end_index;
             this.charts[i].draw_chart();
@@ -328,8 +331,8 @@ class Chart_container {
         this.show_area_container.addEventListener("mousedown", function (e) {
             let rect = this.show_area_container.getBoundingClientRect();
 
-            document.curr_preview_box_pos = rect.right - e.pageX; // TODO obj.config...
-            document.curr_show_area_width = rect.right - rect.left; // TODO
+            document.curr_preview_box_pos = rect.right - e.pageX;
+            document.curr_show_area_width = rect.right - rect.left;
 
             document.addEventListener("mousemove", move_show_area);
             document.addEventListener("mouseup", cancel_move_show_area);
@@ -362,12 +365,44 @@ class Chart_container {
 
             let points_in_box = Math.floor(this.show_area_container.offsetWidth / this.config.preview_canvas_width * data_len);
 
+
+            let data_show_percentage = this.show_area_container.offsetWidth / this.config.preview_canvas_width;
+
+            let precise_point_count = data_show_percentage * data_len;
+            this.config.precise_point_dist = this.config.canvas_width / precise_point_count;
+
             this.config.data_start = (rect.left - x_pos_left) / this.config.preview_canvas_width;
             // this.config.data_end = this.config.data_start + points_in_box
-            // this.config.data_end = (rect.right - x_pos_left) / this.config.preview_canvas_width;
-            this.config.start_index = Math.floor(this.config.data_start * data_len); // 9.5
-            this.config.end_index = this.config.start_index + points_in_box;
+            this.config.data_end = this.config.data_start + data_show_percentage;
+
             // this.config.end_index = Math.floor(this.config.data_end * data_len);
+            // this.config.precise_end_index = this.config.data_end * data_len;
+
+
+
+            let unrounded_start_index = this.config.data_start * data_len;
+            let unrounded_end_index = this.config.data_end * data_len;
+
+            this.config.start_index = Math.ceil(unrounded_start_index); // 9.5
+            this.config.end_index = Math.floor(unrounded_end_index);
+
+
+            this.config.add_padding = (this.config.start_index - unrounded_start_index) * this.config.precise_point_dist; // TODO get rest of float???
+            // console.log(this.config.add_padding);
+            // console.log(this.config.precise_point_dist);
+/*
+            console.log(this.config.precise_point_count);
+            console.log(this.config.data_start);
+            console.log(this.config.data_end);
+            console.log(data_show_percentage);
+
+                // console.log(this.config.add_padding);
+            // console.log(this.config.data_start * data_len);
+            // console.log(this.config.start_index);
+            console.log('---');*/
+
+            // this.config.end_index = this.config.start_index + points_in_box;
+
         }
     }
 
@@ -386,7 +421,7 @@ class Chart_container {
 
     // ---
 
-    get_points_num(){
+    get_points_num() {
         return this.config.end_index - this.config.start_index;
     }
 }

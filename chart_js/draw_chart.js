@@ -51,7 +51,7 @@ function draw_bar_chart(obj, ctx, start_index, days_diff) {
 }
 
 function draw_curve_chart(obj, ctx, start_index, days_diff, k = 2 /* smoothness coefficient */) {
-    let x0 = obj.config.padding_left + days_diff * obj.config.point_dist,
+    let x0 = obj.config.padding_left + -1 * obj.config.point_dist,
         y0 = ctx.canvas.clientHeight;
 
     let x1 = x0,
@@ -141,10 +141,13 @@ function draw_point_chart(obj, ctx, start_index, days_diff) {
     }
 }
 
-function draw_line_chart(obj, ctx, start_index, count, days_diff) {
-    let x0 = obj.config.padding_left + obj.config.point_dist * days_diff,
+function draw_line_chart(obj, ctx, start_index, count) {
+    // console.log(obj.config.padding_left);
+    let x0 = obj.config.padding_left + obj.config.point_dist * -1,
         y0 = ctx.canvas.clientHeight;
         // y0 = obj.config.canvas_height;
+
+    // console.log(x0);
 
     let index = start_index,
         x = x0,
