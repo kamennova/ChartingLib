@@ -59,74 +59,31 @@ class Chart {
             let ctx = canvas.getContext('2d');
             if (this.config.chart_data.length > 0) {
 
-                let start_index,
-                    end_index,
-                    points_count,
-                    days_diff;
+                ctx.lineWidth = this.config.line_width;
+                ctx.strokeStyle = this.config.line_colour;
+                ctx.fillStyle = this.config.fill_colour;
+                ctx.shadowColor = this.config.shadow_colour;
+                ctx.shadowBlur = this.config.shadow_blur;
+                ctx.shadowOffsetX = this.config.shadow_offset_x;
+                ctx.shadowOffsetY = this.config.shadow_offset_y;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
 
-                if (draw_full) {
-                    start_index = 0;
-                    points_count = this.config.chart_data.length;
-                    days_diff = 0;
-                } else {
-                    end_index = this.config.end_index;
-                    start_index = this.config.start_index;
-                    points_count = end_index - start_index + 1 + 2;
-                    days_diff = -1;
-                }
+                ctx.beginPath();
 
-                // this.config.points_count = points_count;
-                // this.config.start_index = start_index;
-
-                // -- GETTING MAX ---
-                // this.autosize(start_index, points_count);
-
-                // -----
-
-                // this.config.point_dist = canvas.width / (points_count - 1);
-
-                if (draw_full) {
-                    // console.log(this.config.point_dist);
-                    // console.log(points_count);
-                    // console.log(canvas.width);
-                    // console.log('---');
-                } else {
-                    // console.log(start_index);
-                    // console.log(end_index);
-                    // console.log(points_count);
-                    // console.log('---');
-                }
-
-                if (points_count > 0) {
-
-                    ctx.lineWidth = this.config.line_width;
-                    ctx.strokeStyle = this.config.line_colour;
-                    ctx.fillStyle = this.config.fill_colour;
-                    ctx.shadowColor = this.config.shadow_colour;
-                    ctx.shadowBlur = this.config.shadow_blur;
-                    ctx.shadowOffsetX = this.config.shadow_offset_x;
-                    ctx.shadowOffsetY = this.config.shadow_offset_y;
-                    ctx.lineJoin = 'round';
-
-                    ctx.beginPath();
-
-                    switch (this.config.chart_type) {
-                        case 'line_chart':
-                            draw_line_chart(this, ctx, start_index, points_count);
-                            // draw_line_chart(this, ctx, start_index, days_diff);
-                            break;
-                        // case 'bar_chart':
-                        //     draw_bar_chart(this, ctx, start_index);
-                        //     break;
-                        case 'curve_chart':
-                            draw_curve_chart(this, ctx, start_index, days_diff, this.config.smoothing);
-                            break;
-                        case 'point_chart':
-                            draw_point_chart(this, ctx, start_index, days_diff);
-                            break;
-                    }
+                switch (this.config.chart_type) {
+                    case 'line_chart':
+                        draw_line_chart.bind(this)(ctx); // TODO ??? count & pass points count
+                        break;
+                    case 'curve_chart':
+                        draw_curve_chart.bind(this)(ctx);
+                        break;
+                    case 'point_chart':
+                        draw_point_chart.bind(this)(ctx);
+                        break;
                 }
             }
+
         }
     }
 

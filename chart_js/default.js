@@ -55,5 +55,5 @@ let Default_config = {
     line_colour: '#3cc23f',
     fill_colour: 'rgba(0, 0, 0, 0)',
 
-    padding_left: 0,
+    offset_left: 0,
 };
