@@ -83,9 +83,8 @@ if (isset($body_class_list)) {
                 </li>
             </ul>
         </div> -->
-        <div class="chart-container-wrapper-2">
-
-        </div>
+        <div class="chart-container-wrapper-2"> </div>
+        <div class="chart-container-wrapper-1"> </div>
     </section>
 </div>
 
