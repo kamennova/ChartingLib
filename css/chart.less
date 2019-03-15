@@ -387,17 +387,19 @@
 
   display: none;
   flex-direction: column;
-  flex-grow: 0;
-  padding: 5px 12px 5px 7px;
+  flex-shrink: 0; // TODO modal width absolute
+  padding: 5px 12px 7px 10px;
 
   background-color: var(--background);
   border: 1px solid #ececec;
-  border-radius: 12px;
+  border-radius: 7px;
 
   z-index: 10;
 
   .breakpoint-date {
-    margin: 3px 0 8px;
+    margin: 3px 0 5px;
+
+    font-size: 15px;
   }
 
   .points {
@@ -410,8 +412,8 @@
     li {
       margin-right: 16px;
 
-      font-size: 14px;
-      font-weight: 300;
+      font-size: 13px;
+      font-weight: 400;
     }
 
     li:first-of-type {

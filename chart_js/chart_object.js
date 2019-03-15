@@ -4,7 +4,6 @@
 
 class Chart {
     constructor(element, config) {
-        this.element = element;
         this.config = config;
     }
 
@@ -23,11 +22,6 @@ class Chart {
             '<span style="background-color: ' + this.config.line_colour + '; border-color: ' + this.config.line_colour + '" class="checkbox-indicator"></span>'
             + this.config.chart_name + '</label></li>';
 
-        /* let input = document.createElement('input');
-        input.classList.add('visually-hidden');
-        input.setAttribute('name', input_name);
-        input.checked = true; */
-
         charts_labels_list.insertAdjacentHTML('beforeend', label);
     }
 
@@ -40,19 +34,7 @@ class Chart {
         }
     }
 
-    autosize(start_index, points_count) {
-        let max = this.config.chart_data[start_index];
-
-        for (let i = 1; i < points_count; i++) {
-            if (Number(this.config.chart_data[start_index + i]) > max) {
-                max = this.config.chart_data[start_index + i];
-            }
-        }
-
-        this.config.chart_sizing = (this.config.canvas_height - this.config.line_width / 2 - this.config.point_radius) / max;
-    }
-
-    draw_chart(canvas_selector = this.config.canvas_selector, draw_full = false) {
+    draw_chart(canvas_selector = this.config.canvas_selector) {
         let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + canvas_selector);
 
         if (canvas && canvas.getContext && this.config.draw) {
@@ -73,7 +55,7 @@ class Chart {
 
                 switch (this.config.chart_type) {
                     case 'line_chart':
-                        draw_line_chart.bind(this)(ctx); // TODO ??? count & pass points count
+                        this.draw_line_chart(ctx);
                         break;
                     case 'curve_chart':
                         draw_curve_chart.bind(this)(ctx);
@@ -83,42 +65,14 @@ class Chart {
                         break;
                 }
             }
-
         }
     }
 
-    draw_preview_chart() {
-        this.autosize(this.config.preview_canvas_selector);
-        this.draw_chart(this.config.preview_canvas_selector, false);
-    }
-
-
-    get_timeflow_start_point() {
-        let today = new Date;
-        return new Date(today.getFullYear(), today.getMonth(), today.getDate() - this.config.show_since_steps_ago);
-    }
-
-    draw_all() {
-        this.fill();
-        this.autosize();
-        this.display_timeflow_axis();
-        this.display_vertical_axis();
-        this.draw_chart();
-    }
-
-    points_to_show_num(start_index) {
-        // + 2 side points, + 1 padding-left point
-        let max_points_num = Math.floor(this.config.canvas_width / (this.config.timeflow_step * this.config.point_dist)) + 3;
-        let all_points_num = this.config.chart_data.length - start_index;
-        return (max_points_num < all_points_num ? max_points_num : all_points_num);
-    }
-
     highlight_point(index) {
-
         if (this.config.draw) {
             let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
             let ctx = canvas.getContext('2d');
-            let x0 = (index - this.config.start_index) * this.config.point_dist,
+            let x0 = (index - this.config.start_index) * this.config.point_dist + this.config.offset_left,
                 y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
 
 
@@ -133,22 +87,41 @@ class Chart {
             ctx.closePath();
         }
     }
-}
 
-function str_to_date(str, accuracy) {
-    let year = str.substr(0, 4);
-    // if (accuracy !== 'year') {
-    let month = Number(str.substr(5, 2)) - 1;
-    if (accuracy !== 'month') {
-        let day = str.substr(8, 2);
-        if (accuracy !== 'day') {
-            // hours...
+    // ---
+
+    draw_line_chart(ctx) {
+        let x,
+            y0 = ctx.canvas.clientHeight,
+            index = this.config.start_index,
+            count = this.config.points_count; // number of all points (visible + max 2 outside ones)
+
+        if (this.config.start_index === 0) {
+            x = this.config.offset_left;
+            count--;
+        } else {
+            x = this.config.offset_left - this.config.point_dist;
+            index--;
         }
-        return new Date(year, month, day);
+
+        let y = y0 - this.config.chart_sizing * this.config.chart_data[index];
+
+        ctx.moveTo(x, y);
+        index++;
+
+        for (let i = 0; i < count; i++, index++) {
+            /*if(!this.config.chart_data[index]){
+               console.log(index);
+            }*/
+
+            x += this.config.point_dist;
+            y = y0 - this.config.chart_sizing * this.config.chart_data[index];
+
+            ctx.lineTo(x, y);
+        }
+
+        // ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
     }
-    // }
-    return new Date(year, month);
 }
-
-
-

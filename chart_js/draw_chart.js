@@ -90,38 +90,3 @@ function draw_point_chart(ctx, start_index, days_diff) {
         ctx.fill(); */
     }
 }
-
-function draw_line_chart(ctx) {
-    let x,
-        y0 = ctx.canvas.clientHeight,
-        index = this.config.start_index,
-        count = this.config.points_count; // number of all points (visible + max 2 outside ones)
-
-    if (this.config.start_index === 0) {
-        x = this.config.offset_left;
-        count--;
-    } else {
-        x = this.config.offset_left - this.config.point_dist;
-        index--;
-    }
-
-    let y = y0 - this.config.chart_sizing * this.config.chart_data[index];
-
-    ctx.moveTo(x, y);
-    index++;
-
-    for (let i = 0; i < count; i++, index++) {
-        /*if(!this.config.chart_data[index]){
-           console.log(index);
-        }*/
-
-        x += this.config.point_dist;
-        y = y0 - this.config.chart_sizing * this.config.chart_data[index];
-
-        ctx.lineTo(x, y);
-    }
-
-    // ctx.fill();
-    ctx.stroke();
-    ctx.closePath();
-}

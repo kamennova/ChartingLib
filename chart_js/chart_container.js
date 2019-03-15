@@ -65,7 +65,7 @@ class Chart_container {
 
     // --- Set vertical chart step ---
 
-    autosize(is_preview = false) {
+    autosize(is_preview = false) { // TODO fix quick autosize
         let prefix = is_preview ? 'preview_' : '';
         let config = this[prefix + 'chart_config'];
 
@@ -79,7 +79,7 @@ class Chart_container {
                     }
                 }
             }
-        }
+         }
 
         if (max > 0) {
             this.config.chart_max = max;
@@ -117,7 +117,6 @@ class Chart_container {
 
         for (let i = 0, data_len = this.get_data_len(); i <= data_len; i += this.config.timeflow_axis_labels_step) {
             let left_pos = this.charts[0].config.point_dist * i + this.config.offset_left - 12;
-            // console.log(left_pos);
 
             let full_date = new Date(this.timeflow_data[this.config.start_index + i] * 1000);
             let date = full_date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
@@ -142,7 +141,7 @@ class Chart_container {
     display_vertical_axis() {
         this.destroy_old_labels('vertical');
 
-        let label_margin = 12;
+        let label_margin = 0;
         let steps_count = this.get_grid_steps_count();
         let vertical_axis_labels_container = this.container.querySelector(' .vertical-axis-labels-container');
         let vertical_axis_labels = '';
@@ -175,7 +174,7 @@ class Chart_container {
     }
 
     get_grid_steps_count() {
-        let label_offset_height = 20;
+        let label_offset_height = 10;
         return Math.floor((this.chart_config.content_height - label_offset_height) / (this.chart_config.chart_sizing * this.config.vertical_axis_labels_step));
     }
 
@@ -188,7 +187,7 @@ class Chart_container {
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.config.grid_colour;
 
-        let y0 = this.chart_config.content_height + this.chart_config.chart_sizing * this.config.vertical_axis_labels_step - 1;
+        let y0 = this.config.canvas_height + this.chart_config.chart_sizing * this.config.vertical_axis_labels_step - 1;
 
         for (let i = 0; i <= gridlines_count; i++) {
             y0 -= this.chart_config.chart_sizing * this.config.vertical_axis_labels_step;
@@ -287,11 +286,26 @@ class Chart_container {
         this.canvas = this.container.querySelector('.chart-canvas');
         this.preview_canvas = this.container.querySelector('.chart-preview-canvas');
         this.show_area_container = this.container.querySelector('.show-area-container');
+        this.modal = this.container.querySelector('.point-details-modal');
     }
 
     // --- Point details modal ---
 
     init_point_details_show() {
+        /* TODO fix modal hover
+        let chart_wrapper = this.container.querySelector('.chart-wrapper');
+        this.canvas.addEventListener('mouseover', function(){
+            this.container.querySelector('.point-details-modal').classList.add('show');
+        }.bind(this));
+        this.canvas.addEventListener('mousemove', this.point_details_show);
+        this.canvas.addEventListener('mouseleave', this.cancel_point_details_show);*/
+
+        this.modal.addEventListener('mouseover', function(){
+            this.modal.classList.add('show');
+        }.bind(this));
+        this.canvas.addEventListener('mouseover', function(){
+            this.modal.classList.add('show');
+        }.bind(this));
         this.canvas.addEventListener('mousemove', this.point_details_show);
         this.canvas.addEventListener('mouseleave', this.cancel_point_details_show);
     }
@@ -302,33 +316,34 @@ class Chart_container {
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.config.grid_accent_colour;
 
-        let x0 = ~~((document.curr_point_index - this.config.start_index) * this.charts[0].config.point_dist) + 0.5;
+        let x0 = this.get_point_x_coord(document.curr_point_index);
 
         ctx.beginPath();
-        ctx.moveTo(x0, 0);
-        ctx.lineTo(x0, this.config.canvas_height - this.config.padding_top);
+        ctx.moveTo(x0, this.chart_config.padding_top);
+        ctx.lineTo(x0, this.config.canvas_height);
         ctx.stroke();
         ctx.closePath();
     }
 
+    get_point_x_coord(index){
+        return ~~((index - this.chart_config.start_index) * this.chart_config.point_dist + this.chart_config.offset_left) + 0.5
+    }
+
     show_point_modal(index) {
-        let modal = this.container.querySelector('.point-details-modal');
-        modal.style.left = ((index - this.config.start_index) * this.charts[0].config.point_dist - 32) + 'px'; // TODO
+        this.modal.style.left = (this.get_point_x_coord(document.curr_point_index) - 32) + 'px';
 
-        let date = 'Sat 12, Feb';
-        /*let date = str_to_date(this.config.chart_breakpoints[index], 'day');
-        date = date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'});*/
+        let full_date = new Date(this.timeflow_data[document.curr_point_index] * 1000);
+        let date = full_date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'});
 
-        let point_values = modal.querySelectorAll('.point-value');
+        let point_values = this.modal.querySelectorAll('.point-value');
 
         for (let i = 0; i < this.charts.length; i++) {
-            // console.log(this.charts[i].config.draw); // TODO not displaying draw: false charts
             if (this.charts[i].config.draw) {
                 point_values[i].textContent = this.charts[i].config.chart_data[index];
             }
         }
 
-        modal.querySelector('.breakpoint-date').textContent = date;
+        this.modal.querySelector('.breakpoint-date').textContent = date;
     }
 
     // ---
@@ -353,7 +368,7 @@ class Chart_container {
         let inputs = this.container.querySelectorAll('.chart-draw-checkbox');
 
         for (let i = 0; i < inputs.length; i++) {
-            inputs[i].addEventListener('change', cancel_chart_draw.bind(this, i));
+            inputs[i].addEventListener('change', toggle_chart_draw.bind(this, i));
         }
     }
 
@@ -582,9 +597,6 @@ class Chart_container {
         this.config.data_show_percentage = this.show_area_container.offsetWidth / this.config.preview_canvas_width;
         let precise_point_count = this.config.data_show_percentage * (this.data_len - 1);
         this.chart_config.point_dist = this.content_width / precise_point_count; // horizontal distance btw points
-
-        // console.log(this.config.data_show_percentage);
-        // console.log(this.chart_config.point_dist);
     }
 
     set_data_show_percentage() {
@@ -655,17 +667,20 @@ class Chart_container {
 // ----
 
 let point_details_show = function (e) {
-    this.container.querySelector('.point-details-modal').classList.add('show');
+    e = e || window.event;
+
     let rect = this.canvas.getBoundingClientRect();
 
-    let percentage = (e.pageX - rect.left) / this.canvas.width;
-    let point_index = Math.round(this.config.start_index + (this.config.end_index - this.config.start_index) * percentage);
+    let canvas_pos = e.pageX - rect.left;
+    let point_index = this.chart_config.start_index + Math.round((canvas_pos - this.chart_config.offset_left) / this.chart_config.point_dist);
 
     if (document.curr_point_index !== point_index) {
         document.curr_point_index = point_index;
+
         this.clear_canvas();
         this.draw_horizontal_grid();
         this.highlight_line();
+
         for (let i = 0; i < this.charts.length; i++) {
             this.charts[i].draw_chart();
             this.charts[i].highlight_point(point_index);
@@ -677,7 +692,7 @@ let point_details_show = function (e) {
 
 let cancel_point_details_show = function () {
     document.curr_point_index = -1;
-    this.container.querySelector('.point-details-modal').classList.remove('show');
+    this.modal.classList.remove('show');
 
     this.clear_canvas();
     this.draw_horizontal_grid();
@@ -738,8 +753,10 @@ let cancel_chart_preview_resize = function () {
 
 // ---
 
-let cancel_chart_draw = function (i) {
+let toggle_chart_draw = function (i) {
     this.charts[i].config.draw = !this.charts[i].config.draw;
+    this.modal.querySelectorAll('li')[i].classList.toggle('hidden');
+
     this.update_all();
 };
 
