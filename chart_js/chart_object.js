@@ -188,42 +188,25 @@ class Chart {
             index = this.config.start_index,
             count = this.config.points_count; // number of all points (visible + max 2 outside ones)
 
-        if (this.config.start_index === 0) {
-            count--;
-        } else {
+        if (this.config.start_index !== 0) {
             x -= this.config.point_dist;
             index--;
-        }
-
-        if (this.config.end_index === this.config.chart_data.length - 1) {
-            count--;
         }
 
         let y = y0 - this.config.chart_sizing * this.config.chart_data[index];
 
         ctx.moveTo(x, y);
+        count--;
         index++;
 
         for (let i = 0; i < count; i++, index++) {
-            // if(!this.config.chart_data[index]){
-            //    console.log(index);
-            // }
-
+            if(!this.config.chart_data[index]){
+                console.log(index);
+            }
             x += this.config.point_dist;
             y = y0 - this.config.chart_sizing * this.config.chart_data[index];
 
-
             ctx.lineTo(x, y);
-
-            if (index === this.config.start_index || index === this.config.end_index) {
-                ctx.lineTo(x, y + 6);
-                ctx.lineTo(x, y - 6);
-                ctx.lineTo(x, y);
-            } else {
-                ctx.lineTo(x, y + 1);
-                ctx.lineTo(x, y - 1);
-                ctx.lineTo(x, y);
-            }
         }
 
         // ctx.fill();

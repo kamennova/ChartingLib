@@ -1,12 +1,20 @@
 @import "variables";
 
-@grid_colour_default: #eef0f4;
+@theme_transition_time: 0.2s;
 
-.site-wrapper {
+&theme-bg-transition{
+  transition: @theme_transition_time linear background-color;
+}
 
+body {
+  background-color: var(--background);
+
+  transition: @theme_transition_time linear background-color;
 }
 
 .chart {
+  background-color: var(--background);
+
   margin: 20px auto;
 
   .chart-container-name {
@@ -15,16 +23,23 @@
 
     font-size: 25px;
     font-weight: bold;
+    color: var(--contrast);
     line-height: 1;
   }
+
+  transition: @theme_transition_time linear background-color;
 }
 
 //----CHART DRAWING-----
 
-.chart-container-wrapper{
+.chart-container-wrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  height: 100%;
+  flex-shrink: 0;
+  //align-items: stretch;
+  //flex-grow: 1;
   //align-items: center;
 }
 
@@ -42,6 +57,8 @@
   align-content: flex-start;
   margin-bottom: 20px;
   width: 400px;
+
+  z-index: 10;
 }
 
 .canvas-wrapper {
@@ -58,6 +75,7 @@
 
   //background-color:  #e9f0f3d6;
   overflow-x: hidden;
+  overflow-y: visible;
 
   .chart-area-container {
     position: absolute;
@@ -80,6 +98,7 @@
   }*/
 
   .show-area-container {
+    overflow-y: visible;
     right: 0;
 
     &::before, &::after {
@@ -103,21 +122,36 @@
     &::after {
       bottom: 0;
     }
-    //border: none;
-    //border-top: 2px solid rgba(0, 0, 0, 0.1);
-    //border-bottom: 2px solid rgba(0, 0, 0, 0.1);
   }
 
   .area-border {
+    overflow-y: visible;
     position: absolute;
 
     height: 100%;
     width: 5px;
 
-    //box-sizing: content-box;
     background-color: #a0b5c375;
 
     cursor: pointer;
+
+    &.active::after { // TODO
+      content: "";
+
+      position: absolute;
+      top: 50%;
+      bottom: 0;
+      right: 0;
+      left: 50%;
+
+      display: block;
+      height: 40px;
+      width: 40px;
+      margin: -20px 0 0 -20px;
+
+      background-color: inherit;
+      border-radius: 50%;
+    }
 
     .layer {
       position: absolute;
@@ -127,30 +161,33 @@
       width: 400px; // TODO style js
       height: 100%;
 
-      background-color: #e9f0f3d6;
+      background-color: var(--background-darker);
+      //#e9f0f3d6;
 
       cursor: default;
+
+      transition: @theme_transition_time linear background-color;
     }
-  }
 
-  .area-border-left {
-    left: 0;
+    &-left {
+      left: 0;
 
-    .layer {
-      right: 5px;
+      .layer {
+        right: 5px;
+      }
     }
-  }
 
-  .area-border-right {
-    right: 0;
+    &-right {
+      right: 0;
 
-    .layer {
-      left: 5px;
+      .layer {
+        left: 5px;
+      }
     }
   }
 }
 
-.no-data-message {
+.no-data-message { // TODO display???
   position: absolute;
   left: 0;
   top: 40%;
@@ -170,7 +207,7 @@
 
   font-size: 12px;
   font-weight: 600;
-  color: #a1acb3;
+  color: var(--muted);
 
   border-color: inherit;
 
@@ -226,7 +263,7 @@
     Horizontal axis
 ==================== */
 
-.timeflow-axis{
+.timeflow-axis {
   max-width: 100%;
   overflow: hidden;
 }
@@ -244,9 +281,16 @@
 
     width: 45px;
     margin-top: 4px;
-    margin-left: -1px;
+    margin-left: -22.5px;
 
     text-align: center;
+
+    opacity: 1;
+    transition: opacity 0.2s linear;
+  }
+
+  .timeflow-axis-label.faded{
+    opacity: 0;
   }
 
   .timeflow-axis-label::after {
@@ -262,34 +306,6 @@
     border-color: inherit;
   }
 }
-
-/* ===================
-       Gridlines
-==================== */
-
-.timeflow-gridlines-labels-container {
-  position: absolute;
-  top: 0;
-  left: 25px;
-
-  .month-label {
-    position: absolute;
-    top: 10px;
-
-    width: 26px;
-    margin-left: -13px;
-
-    font-size: 11px;
-    color: grey;
-    letter-spacing: 0.03em;
-    text-align: center;
-    text-transform: uppercase;
-  }
-}
-
-/* ====================
- Axises modifications
-==================== */
 
 .axis-labels-container.no-line {
   border: 0;
@@ -314,13 +330,13 @@
     display: flex;
     align-items: center;
     margin-right: 15px;
-    padding: 5px 10px 5px 5px;
+    padding: 6px 12px 6px 6px;
 
     font-size: 14px;
-    color: #575c5e;
+    color: var(--contrast);
 
-    border: 1px solid @border_grey;
-    border-radius: 17px;
+    border: 1px solid var(--border-grey);
+    border-radius: 18px;
 
     cursor: pointer;
 
@@ -330,13 +346,9 @@
       display: block;
       width: 20px;
       height: 20px;
-      margin-right: 8px;
+      margin-right: 10px;
 
       border: 1px solid;
-
-
-      //border
-      //background-color: red;
       border-radius: 50%;
 
       // --- tick ---
@@ -374,7 +386,7 @@
       }
     }
 
-    input:not(:checked) + .checkbox-indicator{
+    input:not(:checked) + .checkbox-indicator {
       background-color: white !important;
     }
 
@@ -395,8 +407,9 @@
   flex-shrink: 0; // TODO modal width absolute
   padding: 5px 12px 7px 10px;
 
-  background-color: var(--background);
-  border: 1px solid #ececec;
+  background-color: var(--background-lighter);
+  border: 1px solid var(--background-darker);
+  //#ececec;
   border-radius: 7px;
 
   z-index: 10;
@@ -405,6 +418,8 @@
     margin: 3px 0 5px;
 
     font-size: 15px;
+    color: var(--contrast);
+    white-space: nowrap;
   }
 
   .points {
@@ -421,14 +436,8 @@
       font-weight: 400;
     }
 
-    li:first-of-type {
-      color: green;
-    }
-
     li:last-of-type {
       margin-right: 0;
-
-      color: red;
     }
 
     .point-value {
@@ -444,6 +453,17 @@
 
 //---
 
-.test{
-  border: 1px solid black;
+.theme-btn {
+  display: block;
+  margin: auto auto 12px;
+  align-self: flex-end;
+
+  font-size: 17px;
+  color: #34a0e5;
+
+  cursor: pointer;
+
+  .mode-name {
+    text-transform: capitalize;
+  }
 }

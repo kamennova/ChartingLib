@@ -1,11 +1,16 @@
-.theme-classic {
-  --accent: #4158D0;
+.day-mode {
+  --contrast: black;
   --background: white;
-  --foreground: #e6eaffe0;
+  --background-lighter: white;
+  --background-darker: #f1f6f9de;
+  --muted: #a1acb3;
+  --border-grey: #e6ecf0;
 }
-.theme-light {
-  --background: white;
-}
-.theme-dark {
-  --background: #0f0830;
+.night-mode {
+  --contrast: white;
+  --background: #242f3e;
+  --background-lighter: #253241;
+  --background-darker: rgba(0, 0, 0, 0.14);
+  --border-grey: #465768;
+  --muted: #465768;
 }

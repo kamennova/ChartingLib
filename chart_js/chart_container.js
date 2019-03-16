@@ -14,6 +14,7 @@ class Chart_container {
     init() {
         this.fill();
         this.insert_HTML();
+        this.theme_switch_init();
         this.charts_init();
 
         this.preview_chart_init();
@@ -65,25 +66,56 @@ class Chart_container {
         }
     }
 
+    // ---
+
+    theme_switch_init() {
+        this.config.theme_colors = theme_colors;
+        this.set_colours();
+        this.theme_btn.querySelector('.mode-name').textContent = this.get_other_mode(this.config.mode);
+
+        this.theme_btn.addEventListener('click', function () {
+            document.body.classList.remove(this.config.mode + '-mode');
+            this.theme_btn.querySelector('.mode-name').textContent = this.config.mode;
+            this.toggle_mode();
+            document.body.classList.add(this.config.mode + '-mode');
+
+            this.set_colours();
+            this.update_main_chart_canvas(); // TODO optimize
+
+        }.bind(this));
+    }
+
+    set_colours() {
+        this.config.grid_accent_colour = this.config.theme_colors[this.config.mode].grid_accent_colour;
+        this.config.grid_colour = this.config.theme_colors[this.config.mode].grid_colour;
+
+    }
+
+    toggle_mode() {
+        this.config.mode = (this.config.mode === 'day' ? 'night' : 'day');
+    }
+
+    get_other_mode(mode) {
+        return (mode === 'day' ? 'night' : 'day');
+    }
+
     // --- Set vertical chart step ---
 
-    autosize(is_preview = false) { // TODO fix quick autosize
+    autosize(is_preview = false) {
         let prefix = is_preview ? 'preview_' : '';
         let config = this[prefix + 'chart_config'];
 
         let max = -10000,
-            i = 0;
+            start_point = config.start_index;
         if (config.start_index !== 0) {
-            i--;
+            start_point--;
         }
-        // if(config.start_index !== 0)
-        // count = config.start_index
 
         for (let a = 0; a < this.charts.length; a++) {
             if (this.charts[a].config.draw) {
-                for (; i < config.points_count; i++) {
-                    if (this.charts[a].config.chart_data[config.start_index + i] > max) {
-                        max = this.charts[a].config.chart_data[config.start_index + i];
+                for (let i = 0; i < config.points_count; i++) {
+                    if (this.charts[a].config.chart_data[start_point + i] > max) {
+                        max = this.charts[a].config.chart_data[start_point + i];
                     }
                 }
             }
@@ -119,33 +151,64 @@ class Chart_container {
     display_timeflow_axis() {
         this.destroy_old_labels('timeflow');
 
-        let steps_count = this.get_timeflow_axis_labels_count();
-        // while (steps_count > 6) {
-        // steps_count /= 2;
-        // this.config.timeflow_labels_step *= 2;
-        // this.config.timeflow_axis_labels_step = this.config.canvas_width /
-        // }
+        let steps_count = this.config.point_distances_count;
+        console.log(steps_count);
+        let k = 1;
 
-        for (let i = 0; i <= steps_count; i += this.config.timeflow_labels_step) { // TODO ??? timeflow step
+        if (steps_count > this.config.timeflow_steps_count) {
+            k = Math.ceil(steps_count / this.config.timeflow_steps_count);
+        }
+
+        for (let i = 0; i < steps_count; i++) { // TODO ??? timeflow step
             let left_pos = this.get_point_x_coord(this.chart_config.start_index + i) - 12;
 
             let full_date = new Date(this.timeflow_data[this.chart_config.start_index + i] * 1000);
             let date = full_date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
 
-            let label = document.createElement('span');
-            label.classList.add('axis-label', 'timeflow-axis-label');
-            label.style.left = left_pos + 'px';
-            label.innerText = date;
+            let class_list = 'axis-label timeflow-axis-label ';
+            class_list += (i % k === 0 ? '' : 'faded');
+            let style = 'left: ' + left_pos + 'px';
+            let label = "<span class='" + class_list + "' style='" + style + "' >" + date + "</span>";
 
-            this.timeflow_axis.appendChild(label); // TODO append later
+            this.timeflow_axis.insertAdjacentHTML('beforeend', label); // TODO append later
+        }
+    }
+
+    move_timeflow_axis() {
+        this.destroy_old_labels('timeflow');
+
+        let steps_count = Math.floor(this.config.canvas_width / this.chart_config.point_dist); // TODO fix
+        let k = 1;
+
+        if (steps_count > this.config.timeflow_steps_count) {
+            k = Math.ceil(steps_count / this.config.timeflow_steps_count);
+        }
+
+        let labels_start_index = this.chart_config.start_index;
+
+        while (labels_start_index % k !== 0) {
+            labels_start_index++;
+        }
+
+        for (let i = 0; i < steps_count; i += k) {
+            let left_pos = this.get_point_x_coord(labels_start_index + i); // TODO appear immediately
+
+            let full_date = new Date(this.timeflow_data[labels_start_index + i] * 1000);
+            let date = full_date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+
+            let class_list = 'axis-label timeflow-axis-label ';
+            let style = 'left: ' + left_pos + 'px';
+            let label = "<span class='" + class_list + "' style='" + style + "' >" + date + "</span>";
+
+            this.timeflow_axis.insertAdjacentHTML('beforeend', label); // TODO append later
         }
     }
 
 
     get_timeflow_axis_labels_count() {
-        let steps_count = this.config.canvas_width / (this.chart_config.point_dist);
+        // let steps_count = this.config.canvas_width / (this.chart_config.point_dist);
 
-        return Math.floor(steps_count);
+        // return Math.floor(steps_count);
     }
 
     // ---
@@ -251,6 +314,7 @@ class Chart_container {
 
         this.content_width = this.config.canvas_width - 2 * this.config.side_padding;
         this.config.preview_canvas_width = this.content_width;
+        this.config.mode = 'day';
 
         this.set_chart_config();
         this.set_preview_chart_config();
@@ -266,7 +330,6 @@ class Chart_container {
 
         this.point_details_show = point_details_show.bind(this);
         this.cancel_point_details_show = cancel_point_details_show.bind(this);
-
     }
 
     set_preview_chart_config() {
@@ -313,18 +376,21 @@ class Chart_container {
     // ---
 
     insert_HTML() {
+        document.body.classList.add(this.config.mode + '-mode');
         this.container.classList.add('chart-container-wrapper');
 
         this.insert_container_name();
         this.insert_chart_content();
         this.insert_preview_chart_content();
         this.insert_chart_labels();
+        this.insert_theme_button();
 
         this.canvas = this.container.querySelector('.chart-canvas');
         this.preview_canvas = this.container.querySelector('.chart-preview-canvas');
         this.show_area_container = this.container.querySelector('.show-area-container');
         this.modal = this.container.querySelector('.point-details-modal');
         this.timeflow_axis = this.container.querySelector('.timeflow-axis-labels-container');
+        this.theme_btn = this.container.querySelector('.theme-btn');
     }
 
     // --- Point details modal ---
@@ -410,12 +476,6 @@ class Chart_container {
         }
     }
 
-    // ---
-
-    get_data_len() {
-        return this.config.end_index - this.config.start_index;
-    }
-
     charts_init() {
         let basic_chart_config = {
             draw: true,
@@ -480,6 +540,11 @@ class Chart_container {
         this.container.appendChild(list);
     }
 
+    insert_theme_button() {
+        let button = '<p class="theme-btn">Switch to <span class="mode-name"></span> Mode</p>';
+        this.container.insertAdjacentHTML('beforeend', button);
+    }
+
     // ---
 
     insert_chart_wrapper(is_preview = false) {
@@ -488,7 +553,6 @@ class Chart_container {
 
         if (is_preview) {
             wrapper.setAttribute('width', this.content_width + 'px');
-            // wrapper.style.flexBasis = this.content_width+'px';
         }
 
         wrapper.classList.add(class_name);
@@ -505,10 +569,6 @@ class Chart_container {
         canvas.classList.add(class_name);
         canvas.setAttribute('height', height);
         canvas.setAttribute('width', width);
-
-        if (!is_preview) {
-            // this.canvas = canvas;//
-        }
 
         return canvas;
     }
@@ -583,7 +643,9 @@ class Chart_container {
         let area_borders = this.container.querySelectorAll('.area-border');
 
         for (let i = 0; i < 2; i++) {
-            area_borders[i].addEventListener("mousedown", function (obj) {
+            area_borders[i].addEventListener("mousedown", function (obj, e) {
+                obj.classList.add('active');
+
                 document.curr_area_border = this.get_border_side(obj);
                 document.show_area_move = false;
 
@@ -592,6 +654,8 @@ class Chart_container {
                 let k = (other_side === 'left' ? -1 : 1);
 
                 let old_pos = k * (this['x_pos_' + other_side] - rect[other_side]);
+
+                document.border_cursor_pos = k * (e.pageX - rect[document.curr_area_border]); // dist btw mouse and border edge ~ [1px, 5px]
 
                 this.show_area_container.style[other_side] = old_pos + 'px';
                 this.show_area_container.style[document.curr_area_border] = 'auto';
@@ -642,6 +706,8 @@ class Chart_container {
     set_point_dist() {
         this.config.data_show_percentage = this.show_area_container.offsetWidth / this.config.preview_canvas_width;
         let precise_point_distances_count = this.config.data_show_percentage * (this.data_len - 1);
+        // this.config.point_distances_count = Math.floor(precise_point_distances_count);
+        // console.log(precise_point_distances_count);
         this.chart_config.point_dist = this.content_width / precise_point_distances_count; // horizontal distance btw points
     }
 
@@ -689,9 +755,9 @@ class Chart_container {
         let total_offset_r = offset_right + this.chart_config.side_padding;
         let steps_diff_right = Math.floor(total_offset_r / this.chart_config.point_dist);
 
-        if (steps_diff_right > 0){
-            if(steps_diff_right > this.data_len - this.chart_config.end_index - 1) {
-                steps_diff_right = this.data_len - this.chart_config.end_index -1;
+        if (steps_diff_right > 0) {
+            if (steps_diff_right > this.data_len - this.chart_config.end_index - 1) {
+                steps_diff_right = this.data_len - this.chart_config.end_index - 1;
             }
             this.chart_config.end_index += steps_diff_right; // index of side canvas point
         }
@@ -707,7 +773,7 @@ class Chart_container {
         }
 
         if (this.chart_config.start_index !== 0) {
-            this.chart_config.points_count++; // TODO fix point number
+            this.chart_config.points_count++;
         }
     }
 
@@ -770,7 +836,7 @@ let cancel_point_details_show = function () {
 
 // ---
 
-let move_show_area = function (e) {
+let move_show_area = function (e) { // TODO fix moving large box
     if (document.show_area_move) {
         e = e || window.event;
         let mouse_x = e.pageX;
@@ -781,7 +847,12 @@ let move_show_area = function (e) {
             this.show_area_container.style.right = new_pos_right + 'px';
             this.show_area_container.style.left = 'auto';
             this.get_data_range();
-            this.update_main_chart();
+
+            this.autosize();
+            this.display_vertical_axis();
+            this.update_main_chart_canvas();
+            this.move_timeflow_axis();
+            // this.update_main_chart();
         }
     }
 };
@@ -800,11 +871,11 @@ let chart_preview_resize = function (e) {
     let other = this.other_side(document.curr_area_border);
     let k = other === 'left' ? -1 : 1;
 
-    let dist_to_side = k * (mouse_x - this['x_pos_' + document.curr_area_border]);
+    let dist_to_side = k * (mouse_x - this['x_pos_' + document.curr_area_border]) - document.border_cursor_pos;
     let dist_to_other_border = k * (rect[other] - mouse_x) - this.area_border_width;
 
     if (dist_to_side >= 0 && dist_to_other_border >= 0) {
-        let new_width = k * (rect[other] - mouse_x);
+        let new_width = k * (rect[other] - mouse_x) + document.border_cursor_pos;
         this.show_area_container.style.width = new_width + 'px';
 
         this.get_data_range(); // TODO func optimiztaion + right border
@@ -815,6 +886,7 @@ let chart_preview_resize = function (e) {
 };
 
 let cancel_chart_preview_resize = function () {
+    this.container.querySelector('.area-border.active').classList.remove('active'); // TODO not add active on
     document.removeEventListener("mousemove", this.chart_preview_resize);
     document.show_area_move = true;
 };
@@ -827,11 +899,22 @@ let toggle_chart_draw = function (i) {
     this.animate_toggle_chart_draw(i);
 };
 
+theme_colors = {
+    night: {
+        grid_accent_colour: '#394858',
+        grid_colour: '#3d4a5d',
+    },
+    day: {
+        grid_colour: '#f2f4f5',
+        grid_accent_colour: '#dfe6eb',
+    }
+};
+
 Default_container_config = {
     canvas_height: 400,
     canvas_width: 400,
 
-    preview_canvas_height: 60,
+    preview_canvas_height: 55,
     preview_canvas_width: undefined,
 
     side_padding: 15,
@@ -841,16 +924,14 @@ Default_container_config = {
     data_end: 1,
 
     vertical_axis_steps_count: 6,
+    timeflow_steps_count: 6,
     timeflow_labels_step: 1,
-
-    grid_colour: '#f2f4f5',
-    grid_accent_colour: '#dfe6eb',
 };
 
 const step = 9;
 let counter = 0;
 
-function animate_cancel_draw(obj, a, k) {
+function animate_cancel_draw(obj, a, k) { //TODO preview max for all charts
     obj.clear_canvas();
     obj.draw_horizontal_grid();
     obj.clear_preview_canvas();
@@ -890,9 +971,9 @@ function animate_cancel_draw(obj, a, k) {
     }
 
     if (counter < step) {
-        setTimeout(function () {
-            animate_cancel_draw(obj, a, k);
-        }, 9);
+        requestAnimationFrame(function () {
+            animate_cancel_draw(obj, a, k)
+        });
         counter++;
     } else {
         counter = 0;

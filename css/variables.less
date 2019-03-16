@@ -1,5 +1,3 @@
-@header_height: 63px;
-
 @border_grey: #e6ecf0;
 @grey: #96a2aa;
 
@@ -8,36 +6,28 @@
 @lightblue: #e6eaffe0;
         //#f8f9ff;
 
-// default theme
-@primary: #4158D0;
+@grid_colour_default: #eef0f4;
 
-// dark theme
-@dark-bg: #1d105b;
-@dark-primary: #51ffac;
-
-@background: white;
-@accent: @primary;
-
-//-----
-
-
-.theme-classic{
-  --accent: @primary;
-  --background: white;
-  --foreground: @lightblue;
-}
-
-.theme-light{
+.day-mode{
   //--accent: white;
+  --contrast: black;
   --background: white;
+  --background-lighter: white;
+  --background-darker: #f1f6f9de;
+          //rgba(0, 0, 0, 0.1);
+
+  --muted: #a1acb3;
+  --border-grey: #e6ecf0;
   //--foreground: @primary;
-  //@accent: 'white';
 }
 
-.theme-dark{
-  //--accent: @primary;
-  --background: darken(@dark-bg, 10%);
+.night-mode{
+  --contrast: white;
+  --background: #242f3e;
+  --background-lighter: #253241; // TODO lighten
+  --background-darker: rgba(0, 0, 0, 0.14);
+
+  --border-grey: #465768;
+  --muted: #465768;
   //--foreground: @dark-bg;
 }
-
-
