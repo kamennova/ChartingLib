@@ -37,7 +37,7 @@ class Chart {
     draw_chart(canvas_selector = this.config.canvas_selector) {
         let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + canvas_selector);
 
-        if (canvas && canvas.getContext && this.config.draw) {
+        if (canvas && canvas.getContext) {
             let ctx = canvas.getContext('2d');
             if (this.config.chart_data.length > 0) {
 
@@ -50,6 +50,7 @@ class Chart {
                 ctx.shadowOffsetY = this.config.shadow_offset_y;
                 ctx.lineJoin = 'round';
                 ctx.lineCap = 'round';
+                ctx.globalAlpha = this.config.opacity;
 
                 ctx.beginPath();
 
