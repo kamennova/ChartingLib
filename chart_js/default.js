@@ -1,10 +1,6 @@
 let Default_config = {
     // chart_name: "My super chart",
     chart_type: 'line_chart',
-    // chart_data: [0, 5, 3, 9, 6, 2, 9, 4, 0],
-    // chart_breakpoints: [],
-    // default_data: 0,
-    // show_since_steps_ago: 9,
 
     // vertical axis parameters
     // vertical_axis_value_step: 1,
@@ -16,7 +12,6 @@ let Default_config = {
     // timeflow_step: 1,
     // timeflow_measure: 'day',
     // timeflow_axis_labels_step: 2,
-    // timeflow_axis_labels_measure: 'day',
 
     /* ====================
         Style parameters
@@ -42,10 +37,6 @@ let Default_config = {
     point_radius: 3,
     point_border_colour: '#4158D0',
     point_fill_colour: '#4158D0',
-
-    // bar chart
-    bar_width: 44,
-    bar_border_radius: 5,
 
     // curve chart
     smoothing: 2,
