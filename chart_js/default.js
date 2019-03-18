@@ -42,7 +42,7 @@ let Default_config = {
     smoothing: 2,
 
     // colours
-    background_color: 'white',
+    // bg_color: 'white',
     line_colour: '#3cc23f',
     fill_colour: 'rgba(0, 0, 0, 0)',
 

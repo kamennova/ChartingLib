@@ -15,11 +15,19 @@ class Chart {
         let list_option = '<li style="color:' + this.config.line_colour + '"><span class="point-value"></span><br><span class="point-chart-name">' + this.config.chart_name + '</span></li>';
         point_modal_list.insertAdjacentHTML('beforeend', list_option);
 
+        this.insert_chart_label();
+    }
+
+    insert_chart_label(){
         let charts_labels_list = document.querySelector(this.config.chart_wrapper_selector + ' .charts-labels-list');
         let input_name = this.config.chart_name.replace(/ /, '-');
         let label = '<li><label class="chart-label">' +
             '<input type="checkbox" class="visually-hidden chart-draw-checkbox" name="' + input_name + '" checked>' +
-            '<span style="background-color: ' + this.config.line_colour + '; border-color: ' + this.config.line_colour + '" class="checkbox-indicator"></span>'
+            '<span style="background-color: ' + this.config.line_colour + '; border-color: ' + this.config.line_colour + '" class="checkbox-indicator">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 10"><path fill-rule="evenodd"  fill="white" ' +
+            'd="M13.605,2.186 L5.993,9.618 C5.477,10.119 4.640,10.119 4.123,9.618 L0.382,5.996 C-0.135,5.496 -0.135, 4.685 0.382,4.186 C0.898,3.684' +
+            ' 1.736,3.684 2.252,4.186 L5.058,6.902 L11.735,0.373 C12.252,-0.126 13.089,-0.126 13.605,0.373 C14.122,0.874 14.122,1.685 13.605,2.186 Z"/></svg>' +
+            '</span>'
             + this.config.chart_name + '</label></li>';
 
         charts_labels_list.insertAdjacentHTML('beforeend', label);
@@ -77,7 +85,7 @@ class Chart {
                 y0 = this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing;
 
 
-            ctx.fillStyle = this.config.background_color;
+            ctx.fillStyle = this.config.bg_color;
             ctx.strokeStyle = this.config.line_colour;
             ctx.lineWidth = this.config.line_width;
 
@@ -200,9 +208,6 @@ class Chart {
         index++;
 
         for (let i = 0; i < count; i++, index++) {
-            if(!this.config.chart_data[index]){
-                console.log(index);
-            }
             x += this.config.point_dist;
             y = y0 - this.config.chart_sizing * this.config.chart_data[index];
 
