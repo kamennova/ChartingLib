@@ -68,6 +68,15 @@ body {
   flex-shrink: 0;
 }
 
+.canvas-layer{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  margin: 0 auto;
+}
+
 .chart-preview-wrapper {
   position: relative;
 
@@ -137,22 +146,34 @@ body {
 
     cursor: pointer;
 
-    &.active::after { // TODO
+    &::after { // TODO
       content: "";
 
       position: absolute;
-      top: 50%;
+      top: 0;
       bottom: 0;
-      right: 0;
-      left: 50%;
+      right: -50%;
+      left: -50%;
 
-      display: block;
-      height: 40px;
-      width: 40px;
-      margin: -20px 0 0 -20px;
+     display: none;
+      //display: block;
+      height: 0;
+      width: 0;
+      margin: 0;
 
       background-color: inherit;
       border-radius: 50%;
+      opacity: 0.4;
+
+      transition: 0.2s linear height, 0.2s linear width, 0.1s linear opacity, 0.2s linear margin ;
+    }
+
+    &.active::after {
+      width: 66px;
+      height: 66px;
+      margin: 0 -33px  ;
+
+      opacity: 0.7;
     }
 
     .layer {
@@ -446,7 +467,8 @@ body {
 
   display: none;
   flex-direction: column;
-  flex-shrink: 0; // TODO modal width absolute
+  flex-shrink: 0;
+  max-width: 200px;
   padding: 5px 12px 7px 10px;
 
   background-color: var(--background-lighter);
