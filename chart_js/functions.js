@@ -64,7 +64,6 @@ function date_to_str(date) {
 }
 
 function loadJSON(callback) {
-
     let xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', 'chart_js/CHART_DATA.json', true); // Replace 'my_data' with the path to your file
@@ -76,4 +75,3 @@ function loadJSON(callback) {
     };
     xobj.send(null);
 }
-

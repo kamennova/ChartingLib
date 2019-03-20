@@ -1,32 +1,30 @@
-class Chart_container {
-    constructor(container_selector, container_config, timeflow_data, charts) {
+class ChartContainer {
+    constructor(container_selector, container_config) {
         this.container_selector = container_selector;
         this.config = container_config;
-        this.charts = charts;
-        this.timeflow_data = timeflow_data;
+        this.charts = container_config.data.charts;
+        this.timeflow_data = container_config.data.timeflow;
 
-        this.container = document.querySelector(container_selector);
-        this.data_len = this.timeflow_data.length;
+        this.data_len = this.timeflow_data.length; // Todo
 
         this.init();
     }
 
-    init() {
+    init() {//todo
         this.fill();
         this.insert_HTML();
         this.theme_switch_init();
-
+        // todo fading timeflow fix
         this.charts_init();
         this.preview_chart_init();
         this.preview_box_init();
         this.update_main_chart();
 
-        // this.update_all();
         this.charts_toggle_draw_init();
         this.init_point_details_show();
     }
 
-    update_all() {
+    update_all() {//todo
         this.preview_chart_init();
         this.update_main_chart();
     }
@@ -76,11 +74,15 @@ class Chart_container {
 
     // ---
 
+    get_data_len() {
+        return this.timeflow_data.length;
+    }
+
     theme_switch_init() {
         this.config.theme_colors = theme_colors;
         this.set_colours();
 
-        this.theme_btn.querySelector('.mode-name').textContent = Chart_container.get_other_mode(this.config.mode);
+        this.theme_btn.querySelector('.mode-name').textContent = ChartContainer.get_other_mode(this.config.mode);
 
         this.theme_btn.addEventListener('click', function () {
             document.body.classList.remove(this.config.mode + '-mode');
@@ -90,7 +92,6 @@ class Chart_container {
 
             this.set_colours();
             this.update_main_chart_canvas(); // TODO optimize
-
         }.bind(this));
     }
 
@@ -107,7 +108,7 @@ class Chart_container {
     }
 
     static get_other_mode(mode) {
-        return (mode === 'day' ? 'night' : 'day');
+        return mode === 'day' ? 'night' : 'day';
     }
 
     // --- Set vertical chart step ---
@@ -118,31 +119,30 @@ class Chart_container {
 
         let max = -10000,
             start_point = config.start_index;
+        let has_charts = false;
         if (config.start_index !== 0) {
             start_point--;
         }
 
         for (let a = 0; a < this.charts.length; a++) {
             if (this.charts[a].config.draw) {
+                has_charts = true; // todo
                 for (let i = 0; i < config.points_count; i++) {
                     if (this.charts[a].config.chart_data[start_point + i] > max) {
                         max = this.charts[a].config.chart_data[start_point + i];
+
                     }
                 }
             }
         }
 
-        if (max > 0) {
+        if (has_charts) {
             this.config.chart_max = max;
         } else {
             max = this.config.chart_max;
         }
 
-        if (!is_preview) {
-            // console.log(max);
-        }
-
-        let canvas_content_height = config.content_height;
+        const canvas_content_height = config.content_height;
         config.chart_sizing = (canvas_content_height - this.config.max_line_width / 2) / max;
     }
 
@@ -151,39 +151,14 @@ class Chart_container {
         let config = this[prefix + 'chart_config'];
 
         for (let i = 0; i < this.charts.length; i++) {
-            for (const key in config) {
+            /*            for (const key in config) {
                 this.charts[i].config[key] = config[key];
-            }
+            }*/
+            this.charts[i].config = Object.assign(this.charts[i].config, config);// assign
         }
     }
 
     // --- Display axises ---
-
-    /*display_timeflow_axis() {
-        this.destroy_old_labels('timeflow');
-
-        let steps_count = Math.floor(this.config.canvas_width / this.chart_config.point_dist);
-        // console.log(steps_count);
-        let k = 1;
-
-        if (steps_count > this.config.timeflow_steps_count) {
-            k = Math.ceil(steps_count / this.config.timeflow_steps_count);
-        }
-
-        for (let i = 0; i < steps_count; i++) {
-            let left_pos = this.get_point_x_coord(this.chart_config.start_index + i);
-
-            let full_date = new Date(this.timeflow_data[this.chart_config.start_index + i] * 1000);
-            // let date =this.get_timeflow_date(lab);
-
-            let class_list = 'axis-label timeflow-axis-label ';
-            class_list += (i % k === 0 ? '' : 'to-fade');
-            let style = 'left: ' + left_pos + 'px';
-            let label = "<span class='" + class_list + "' style='" + style + "' >" + date + "</span>";
-
-            this.timeflow_axis.insertAdjacentHTML('beforeend', label);
-        }
-    }*/
 
     resize_timeflow_axis() {
         this.destroy_old_labels('timeflow');
@@ -221,7 +196,9 @@ class Chart_container {
 
             if (i % this.config.curr_timeflow_step !== 0) {
                 class_list += ' faded';
-                style += ' opacity: ' + ((this.chart_config.point_dist * this.config.curr_timeflow_step - label_width - labels_min_dist) / 100);
+
+                let opacity = (this.chart_config.point_dist * this.config.curr_timeflow_step - label_width - labels_min_dist) / 100;
+                style += ' opacity: ' + opacity;
             }
 
             labels_list += "<span class='" + class_list + "' style='" + style + "' >" + date + "</span>";
@@ -266,60 +243,26 @@ class Chart_container {
         this.timeflow_axis.insertAdjacentHTML('beforeend', labels_list);
     }
 
-    get_timeflow_date(index) {
+    get_timeflow_date(index) {//todo
         let full_date = new Date(this.timeflow_data[index] * 1000);
         return full_date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
     }
 
-    /*
-
-        move_timeflow_axis() {
-            this.destroy_old_labels('timeflow');
-
-            let steps_count = Math.floor(this.config.canvas_width / this.chart_config.point_dist);
-            let k = 1;
-
-            if (steps_count > this.config.timeflow_steps_count) {
-                k = Math.ceil(steps_count / this.config.timeflow_steps_count);
-            }
-
-            let labels_start_index = this.chart_config.start_index;
-
-            while (labels_start_index % k !== 0) {
-                labels_start_index++;
-            }
-
-            for (let i = 0; i < steps_count; i += k) {
-                let left_pos = this.get_point_x_coord(labels_start_index + i);
-
-                // let full_date = new Date(this.timeflow_data[labels_start_index + i] * 1000);
-                // let date = full_date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
-
-                let class_list = 'axis-label timeflow-axis-label ';
-                let style = 'left: ' + left_pos + 'px';
-                let label = "<span class='" + class_list + "' style='" + style + "' >" + this.timeflow_data[labels_start_index + i] + "</span>";
-
-                this.timeflow_axis.insertAdjacentHTML('beforeend', label);
-            }
-        }*/
-
     display_vertical_axis() {
         this.destroy_old_labels('vertical');
 
-        let label_margin = 0;
-        let vertical_axis_labels_container = this.container.querySelector(' .vertical-axis-labels-container');
         let vertical_axis_labels = '';
-        let step = this.get_vertical_axis_step();
+        this.set_vertical_axis_step(); // todo make prop??
 
-        console.log(step);
         for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
-            let bottom_pos = this.chart_config.chart_sizing * i * step + label_margin;
+            let val = i * this.chart_config.vertical_axis_val_step;
+            let bottom_pos = this.chart_config.chart_sizing * val;
 
             vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px'>" +
-                step * i + "</span>";
+                Math.round(val) + "</span>";
         }
 
-        vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
+        this.vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
     }
 
     destroy_old_labels(axis_type) {
@@ -332,30 +275,42 @@ class Chart_container {
         }
     }
 
-    get_vertical_axis_step() {
-        return Math.round(this.config.chart_max * 0.95 / (this.config.vertical_axis_steps_count - 1));
+    set_vertical_axis_step(chart_sizing = this.chart_config.chart_sizing) { // TODO call 2 times ???
+        let grid_padding_top = 15;
+        this.chart_config.vertical_axis_val_step = (this.chart_config.content_height - grid_padding_top) /
+            (this.config.vertical_axis_steps_count - 1) / chart_sizing;
+    }
+
+    get_vertical_axis_step(chart_sizing = this.chart_config.chart_sizing) { // TODO call 2 times ???
+        let grid_padding_top = 15;
+        return (this.chart_config.content_height - grid_padding_top) / (this.config.vertical_axis_steps_count - 1) / chart_sizing;
     }
 
     get_grid_steps_count() {
         let label_offset_height = 10;
-        return Math.floor((this.chart_config.content_height - label_offset_height) / (this.chart_config.chart_sizing * this.config.vertical_axis_labels_step));
+        return Math.floor((this.chart_config.content_height - label_offset_height) /
+            (this.chart_config.chart_sizing * this.config.vertical_axis_labels_step));
     }
 
     // --- Drawing additional canvas elements ---
 
+    /**
+     * bla bla blah
+     *
+     *
+     */
     draw_horizontal_grid() {
         let ctx = this.canvas.getContext('2d');
-        let gridlines_count = this.get_grid_steps_count();
-        let step = this.get_vertical_axis_step();
+        this.set_vertical_axis_step();
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.config.grid_colour;
         ctx.globalAlpha = 1;
 
-        let y0 = this.config.canvas_height + this.chart_config.chart_sizing * step - 1;
+        let y0 = this.config.canvas_height + this.chart_config.chart_sizing * this.chart_config.vertical_axis_val_step - 1;
 
         for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
-            y0 -= this.chart_config.chart_sizing * step;
+            y0 -= this.chart_config.chart_sizing * this.chart_config.vertical_axis_val_step;
             y0 = ~~y0 + 0.5;
 
             ctx.beginPath();
@@ -369,32 +324,25 @@ class Chart_container {
     // ----
 
     fill() {
-        for (const key in Default_container_config) {
-            if (!this.config.hasOwnProperty(key) || this.config[key] == null) {
-                this.config[key] = Default_container_config[key];
-            }
-        }
+        this.config = Object.assign(this.config, Default_container_config); // fill empty config fields with default vals
 
         this.assign_max_line_width();
 
+        this.container = document.querySelector(this.container_selector);
         this.content_width = this.config.canvas_width - 2 * this.config.side_padding;
         this.config.preview_canvas_width = this.content_width;
-        this.config.mode = 'day';
 
         this.set_chart_config();
         this.set_preview_chart_config();
         this.bind_event_listeners();
     }
 
-    bind_event_listeners() {
-        this.move_show_area = move_show_area.bind(this);
-        this.cancel_move_show_area = cancel_move_show_area.bind(this);
+    bind_event_listeners() { // TODO ???
+        this.move_show_area = this.move_show_area.bind(this);
+        this.cancel_move_show_area = this.cancel_move_show_area.bind(this);
 
-        this.chart_preview_resize = chart_preview_resize.bind(this);
-        this.cancel_chart_preview_resize = cancel_chart_preview_resize.bind(this);
-
-        this.point_details_show = point_details_show.bind(this);
-        this.cancel_point_details_show = cancel_point_details_show.bind(this);
+        this.chart_preview_resize = this.chart_preview_resize.bind(this);
+        this.cancel_chart_preview_resize = this.cancel_chart_preview_resize.bind(this);
     }
 
     set_preview_chart_config() {
@@ -422,7 +370,6 @@ class Chart_container {
             side_padding: this.config.side_padding,
             padding_top: 18,
         };
-
     }
 
     // ----
@@ -452,17 +399,13 @@ class Chart_container {
         this.insert_chart_labels();
         this.insert_theme_button();
 
-        this.canvas = this.container.querySelector('.chart-canvas');
-
-        this.preview_canvas = this.container.querySelector('.chart-preview-canvas');
-        this.show_area_container = this.container.querySelector('.show-area-container');
-        this.layer_left = this.container.querySelector('.area-border-left .layer'); // TODO ???
+        this.show_area_box = this.container.querySelector('.show-area-container');
+        this.layer_left = this.container.querySelector('.area-border-left .layer');
         this.layer_right = this.container.querySelector('.area-border-right .layer');
-        this.modal = this.container.querySelector('.point-details-modal');
-
         this.timeflow_axis = this.container.querySelector('.timeflow-axis-labels-container');
-
+        this.vertical_axis_labels_container = this.container.querySelector(' .vertical-axis-labels-container');
         this.theme_btn = this.container.querySelector('.theme-btn');
+        this.ctx = this.get_ctx();
     }
 
     // --- Point details modal ---
@@ -470,8 +413,8 @@ class Chart_container {
     init_point_details_show() { // TODO modal bug fix large offset
         let canvas_layer = this.container.querySelector('.canvas-layer');
 
-        canvas_layer.addEventListener('mousemove', this.point_details_show);
-        canvas_layer.addEventListener('mouseout', this.cancel_point_details_show);
+        canvas_layer.addEventListener('mousemove', this.point_details_show.bind(this));
+        canvas_layer.addEventListener('mouseout', this.cancel_point_details_show.bind(this));
     }
 
     highlight_line(x0) {
@@ -488,16 +431,16 @@ class Chart_container {
     }
 
     get_point_x_coord(index) {
-        return ~~((index - this.chart_config.start_index) * this.chart_config.point_dist + this.chart_config.offset_left) + 0.5
+        return ~~((index - this.chart_config.start_index) * this.chart_config.point_dist + this.chart_config.offset_left) + 0.5;
     }
 
     show_point_modal(index) {
-        this.modal.style.left = (this.get_point_x_coord(document.curr_point_index) - 32) + 'px';
+        this.point_modal.style.left = (this.get_point_x_coord(document.curr_point_index) - 32) + 'px';
 
         let full_date = new Date(this.timeflow_data[document.curr_point_index] * 1000);
         let date = full_date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'});
 
-        let point_values = this.modal.querySelectorAll('.point-value');
+        let point_values = this.point_modal.querySelectorAll('.point-value');
 
         for (let i = 0; i < this.charts.length; i++) {
             if (this.charts[i].config.draw) {
@@ -505,7 +448,7 @@ class Chart_container {
             }
         }
 
-        this.modal.querySelector('.breakpoint-date').textContent = date;
+        this.point_modal.querySelector('.breakpoint-date').textContent = date;
     }
 
     // ---
@@ -530,7 +473,7 @@ class Chart_container {
         let inputs = this.container.querySelectorAll('.chart-draw-checkbox');
 
         for (let i = 0; i < inputs.length; i++) {
-            inputs[i].addEventListener('change', toggle_chart_draw.bind(this, i));
+            inputs[i].addEventListener('change', this.toggle_chart_draw.bind(this, i));
         }
     }
 
@@ -558,7 +501,6 @@ class Chart_container {
 
         this.preview_chart_config.content_height = this.config.preview_canvas_height - this.preview_chart_config.padding_top;
         this.chart_config.content_height = this.config.canvas_height - this.chart_config.padding_top;
-        // this.charts_koef = this.chart_config.content_height / this.preview_chart_config.content_height; TODO ???
     }
 
     init_chart(i) {
@@ -579,8 +521,8 @@ class Chart_container {
         let canvas_layer = this.new_canvas_layer();
         wrapper.appendChild(canvas_layer);
 
-        let canvas = this.new_canvas();
-        wrapper.appendChild(canvas);
+        this.canvas = this.new_canvas();
+        wrapper.appendChild(this.canvas);
 
         let vertical_axis = this.new_vertical_axis();
         wrapper.insertAdjacentHTML('beforeend', vertical_axis);
@@ -588,26 +530,25 @@ class Chart_container {
         let timeflow_axis = this.new_timeflow_axis();
         wrapper.insertAdjacentHTML('beforeend', timeflow_axis);
 
-        let point_modal = this.new_point_modal();
-        canvas_layer.appendChild(point_modal);
+        this.point_modal = this.new_point_modal();
+        canvas_layer.appendChild(this.point_modal);
 
-        point_modal.insertAdjacentHTML('afterbegin', '<p class="breakpoint-date"></p>');
-        point_modal.insertAdjacentHTML('beforeend', '<ul class="points"></ul>');
+        this.point_modal.insertAdjacentHTML('afterbegin', '<p class="breakpoint-date"></p>');
+        this.point_modal.insertAdjacentHTML('beforeend', '<ul class="points"></ul>');
     }
 
     insert_preview_chart_content() {
         let preview_wrapper = this.insert_chart_wrapper(true);
 
-        let preview_canvas = this.new_canvas(true);
-        preview_wrapper.appendChild(preview_canvas);
+        this.preview_canvas = this.new_canvas(true);
+        preview_wrapper.appendChild(this.preview_canvas);
 
         let show_area_box = this.new_show_area_box();
         preview_wrapper.insertAdjacentHTML('beforeend', show_area_box);
-        // this.show_area_container = this.container.querySelector('.show-area-container');
     }
 
     insert_chart_labels() {
-        let list = Chart_container.new_labels_list();
+        let list = ChartContainer.new_labels_list();
         this.container.appendChild(list);
     }
 
@@ -629,7 +570,6 @@ class Chart_container {
         wrapper.classList.add(class_name);
         return this.container.appendChild(wrapper);
     }
-
 
     new_canvas_layer() {
         let layer = document.createElement('div');
@@ -732,33 +672,35 @@ class Chart_container {
         let area_borders = this.container.querySelectorAll('.area-border');
 
         for (let i = 0; i < 2; i++) {
-            area_borders[i].addEventListener("mousedown", function (obj, e) {
-                obj.classList.add('active');
-
-                document.curr_area_border = this.get_border_side(obj);
-                document.show_area_move = false;
-
-                let rect = this.show_area_container.getBoundingClientRect(),
-                    other_side = Chart_container.other_side(document.curr_area_border);
-                let k = (other_side === 'left' ? -1 : 1);
-
-                let old_pos = k * (this['x_pos_' + other_side] - rect[other_side]);
-
-                document.border_cursor_pos = k * (e.pageX - rect[document.curr_area_border]); // dist btw mouse and border edge ~ [1px, 5px]
-
-                this.show_area_container.style[other_side] = old_pos + 'px';
-                this.show_area_container.style[document.curr_area_border] = 'auto';
-
-                document.addEventListener("mousemove", this.chart_preview_resize);
-                document.addEventListener("mouseup", this.cancel_chart_preview_resize);
-            }.bind(this, area_borders[i]));
+            area_borders[i].addEventListener("mousedown", this.resize_on_mousedown.bind(this, area_borders[i]));
         }
     }
 
+    resize_on_mousedown(obj, e) {
+        obj.classList.add('active');
+
+        document.curr_area_border = this.get_border_side(obj);
+        document.show_area_move = false;
+
+        let rect = this.show_area_box.getBoundingClientRect(),
+            other_side = ChartContainer.other_side(document.curr_area_border);
+        let k = (other_side === 'left' ? -1 : 1);
+
+        let old_pos = k * (this['x_pos_' + other_side] - rect[other_side]);
+
+        document.border_cursor_pos = k * (e.pageX - rect[document.curr_area_border]); // dist btw mouse and border edge ~ [1px, 5px]
+
+        this.show_area_box.style[other_side] = old_pos + 'px';
+        this.show_area_box.style[document.curr_area_border] = 'auto';
+
+        document.addEventListener("mousemove", this.chart_preview_resize);
+        obj.addEventListener("mouseup", this.cancel_chart_preview_resize);
+    }
+
     preview_box_move_init() {
-        this.show_area_container.addEventListener("mousedown", function (e) {
+        this.show_area_box.addEventListener("mousedown", function (e) {
             e = e || window.event;
-            let rect = this.show_area_container.getBoundingClientRect();
+            let rect = this.show_area_box.getBoundingClientRect();
 
             document.curr_preview_box_pos = rect.right - e.pageX;
             document.curr_show_area_width = rect.width;
@@ -767,26 +709,6 @@ class Chart_container {
             document.addEventListener("mouseup", this.cancel_move_show_area);
         }.bind(this));
     }
-
-    /*move_show_area(e) {
-        if (document.show_area_move) {
-            e = e || window.event;
-            let mouse_x = e.pageX;
-
-            if (mouse_x - document.curr_show_area_width + document.curr_preview_box_pos >= this.x_pos_left &&
-                mouse_x + document.curr_preview_box_pos <= this.x_pos_right) {
-                let new_pos_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
-                this.show_area_container.style.right = new_pos_right + 'px';
-                this.show_area_container.style.left = 'auto';
-                // console.log(this.layer_right);
-                this.layer_right.style.width = new_pos_right + 'px';
-
-                // this.layer_left.style.width =
-                this.get_data_range();
-                this.update_main_chart();
-            }
-        }
-    }*/
 
     get_data_range() {
         this.set_point_dist();
@@ -797,13 +719,13 @@ class Chart_container {
     }
 
     set_point_dist() {
-        this.config.data_show_percentage = this.show_area_container.offsetWidth / this.config.preview_canvas_width;
+        this.config.data_show_percentage = this.show_area_box.offsetWidth / this.config.preview_canvas_width;
         let precise_point_distances_count = this.config.data_show_percentage * (this.data_len - 1);
         this.chart_config.point_dist = this.content_width / precise_point_distances_count; // horizontal distance btw points
     }
 
     set_data_show_percentage() {
-        this.chart_config.data_start = this.show_area_container.offsetLeft / this.config.preview_canvas_width; // TODO optimize
+        this.chart_config.data_start = this.show_area_box.offsetLeft / this.config.preview_canvas_width; // TODO optimize
         this.chart_config.data_end = this.chart_config.data_start + this.config.data_show_percentage;
     }
 
@@ -869,7 +791,7 @@ class Chart_container {
     }
 
     static other_side(side) {
-        return (side === 'left' ? 'right' : 'left');
+        return side === 'left' ? 'right' : 'left';
     }
 
     // ---
@@ -879,149 +801,260 @@ class Chart_container {
         this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
 
         let k = this.charts[i].config.draw ? 1 : -1;
-        animate_cancel_draw(this, i, k);
-    }
-}
-
-// ----
-
-let point_details_show = function (e) {
-    e = e || window.event;
-
-    let rect = this.canvas.getBoundingClientRect();
-
-    let canvas_pos = e.pageX - rect.left;
-    let point_index = this.chart_config.start_index +
-        Math.round((canvas_pos - this.chart_config.offset_left) / this.chart_config.point_dist);
-    let point_coord = this.get_point_x_coord(point_index);
-
-    if (point_coord < this.chart_config.side_padding || point_coord > this.chart_config.side_padding + this.content_width) {
-        return;
+        this.animate_cancel_draw(i, k);
     }
 
-    this.modal.classList.add('show');
+    animate_vertical_axis(new_chart_sizing) { // todo blinking non changing vertical size
+        this.destroy_old_labels('vertical');
+        this.prepare_grid_animation();
 
-    if (document.curr_point_index !== point_index) {
-        document.curr_point_index = point_index;
+        let vertical_axis_labels = '';
+        let step = this.get_vertical_axis_step(); // new labels step
+        let stage = this.config.animation_step / animation_steps_num;
 
+        // display new labels
+        for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
+            let bottom_pos = new_chart_sizing * i * step;
+            if (bottom_pos > this.chart_config.content_height) {
+                break;
+            }
+
+            this.ctx.globalAlpha = stage;
+            this.draw_gridline(new_chart_sizing * i * step);
+
+            vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px; opacity: " + stage + "'>" +
+                Math.round(step * i) + "</span>";
+        }
+
+        // display old labels
+        for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
+            let bottom_pos = new_chart_sizing * i * this.chart_config.vertical_axis_val_step;
+            if (bottom_pos > this.chart_config.content_height) {
+                break;
+            }
+
+            let opacity = 1 - stage;
+
+            this.ctx.globalAlpha = opacity;
+            this.draw_gridline(new_chart_sizing * i * this.chart_config.vertical_axis_val_step);
+
+            vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px; opacity: " + opacity + "'>" +
+                Math.round(this.chart_config.vertical_axis_val_step * i) + "</span>";
+        }
+
+        this.vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
+    }
+
+    prepare_grid_animation(){
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = this.config.grid_colour;
+    }
+
+    draw_gridline(y) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.config.side_padding, this.config.canvas_height - y);
+        this.ctx.lineTo(this.content_width + this.config.side_padding, this.config.canvas_height - y);
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+
+
+    animate_cancel_draw(a, k) { //todo optimize if chart sizing not changed, timing
         this.clear_canvas();
-        this.draw_horizontal_grid();
-        this.highlight_line(point_coord);
+        this.clear_preview_canvas();
+
+        this.charts[a].config.opacity += k * (1 / (animation_steps_num + 1));
+        let new_chart_sizing = this.chart_config.chart_sizing -
+            this.config.chart_sizing_diff * (animation_steps_num - counter) / animation_steps_num;
+
+        this.animate_vertical_axis(new_chart_sizing);
 
         for (let i = 0; i < this.charts.length; i++) {
-            if (this.charts[i].config.draw) {
+
+            // -- redraw preview ---
+
+            for (const key in this.preview_chart_config) {
+                if (key !== 'chart_sizing') {
+                    this.charts[i].config[key] = this.preview_chart_config[key];
+                }
+            }
+
+            this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
+                - this.config.preview_chart_sizing_diff * (animation_steps_num - counter) / animation_steps_num;
+
+            if (this.charts[i].config.draw || i === a) {
+                this.charts[i].draw_chart('.chart-preview-canvas');
+            }
+
+            // -- redraw main chart --
+
+            this.charts[i].config.chart_sizing = new_chart_sizing;
+
+            for (const key in this.chart_config) {
+                if (key !== 'chart_sizing') {
+                    this.charts[i].config[key] = this.chart_config[key];
+                }
+            }
+
+            if (this.charts[i].config.draw || i === a) {
                 this.charts[i].draw_chart();
-                this.charts[i].highlight_point(point_index);
             }
         }
 
-        this.show_point_modal(point_index);
-    }
-};
-
-let cancel_point_details_show = function (e) {
-    document.curr_point_index = -1;
-    this.modal.classList.remove('show');
-
-    this.clear_canvas();
-    this.draw_horizontal_grid();
-    for (let i = 0; i < this.charts.length; i++) {
-        if (this.charts[i].config.draw) {
-            this.charts[i].draw_chart();
+        if (counter < animation_steps_num) {
+            requestAnimationFrame(this.animate_cancel_draw.bind(this, a, k));
+            this.config.animation_step++;
+            counter++;
+        } else {
+            this.display_vertical_axis(); // todo ???
+            counter = 0;
+            this.set_vertical_axis_step();
+            this.config.animation_step = 0;
         }
     }
-};
+
+    point_details_show(e) {
+        e = e || window.event;
+
+        let rect = this.canvas.getBoundingClientRect();
+
+        let canvas_pos = e.pageX - rect.left;
+        let point_index = this.chart_config.start_index +
+            Math.round((canvas_pos - this.chart_config.offset_left) / this.chart_config.point_dist);
+        let point_coord = this.get_point_x_coord(point_index);
+
+        if (point_coord < this.chart_config.side_padding || point_coord > this.chart_config.side_padding + this.content_width) {
+            return;
+        }
+
+        this.point_modal.classList.add('show');
+
+        if (document.curr_point_index !== point_index) {
+            document.curr_point_index = point_index;
+
+            this.clear_canvas();
+            this.draw_horizontal_grid();
+            this.highlight_line(point_coord);
+
+            for (let i = 0; i < this.charts.length; i++) {
+                if (this.charts[i].config.draw) {
+                    this.charts[i].draw_chart();
+                    this.charts[i].highlight_point(point_index);
+                }
+            }
+
+            this.show_point_modal(point_index);
+        }
+    }
+
+    cancel_point_details_show() {
+        document.curr_point_index = -1;
+        this.point_modal.classList.remove('show');
+
+        this.clear_canvas();
+        this.draw_horizontal_grid();
+        for (let i = 0; i < this.charts.length; i++) {
+            if (this.charts[i].config.draw) {
+                this.charts[i].draw_chart();
+            }
+        }
+    }
+
+    // ---
+
+    move_show_area(e) {
+        if (!document.show_area_move) {
+            return;
+        }
+
+        e = e || window.event;
+        let mouse_x = e.pageX;
+
+        let dist_to_left = mouse_x - document.curr_show_area_width + document.curr_preview_box_pos - this.x_pos_left;
+        let dist_to_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
+
+        if (dist_to_left >= 0 && dist_to_right >= 0) {
+            let new_pos_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
+
+            this.show_area_box.style.right = this.layer_right.style.width = new_pos_right + 'px';
+            this.show_area_box.style.left = 'auto';
+            this.layer_left.style.width = dist_to_left + 'px';
+
+            this.get_data_range();
+            this.autosize();
+            this.display_vertical_axis();
+            this.update_main_chart_canvas();
+            this.move_timeflow_axis();
+            // this.update_main_chart();
+        }
+    }
+
+    cancel_move_show_area() {
+        document.removeEventListener("mousemove", this.move_show_area);
+    };
+
+    // ---
+
+    chart_preview_resize(e) {
+        let rect = this.show_area_box.getBoundingClientRect(); // TODO 2 rects
+        e = e || window.event;
+        let mouse_x = e.pageX;
+
+        let other = ChartContainer.other_side(document.curr_area_border);
+        let k = other === 'left' ? -1 : 1;
+
+        let dist_to_side = k * (mouse_x - this['x_pos_' + document.curr_area_border]) - document.border_cursor_pos;
+        let dist_to_other_border = k * (rect[other] - mouse_x) - this.area_border_width;
+
+        if (dist_to_side >= 0 && dist_to_other_border >= 0) {
+            let new_width = k * (rect[other] - mouse_x) + document.border_cursor_pos;
+            this.show_area_box.style.width = new_width + 'px';
+            this['layer_' + document.curr_area_border].style.width = dist_to_side + 'px';
+
+            this.get_data_range(); // TODO func optimiztaion + right border
+            // this.config.data_start = (mouse_x - this.x_pos_left) / preview_box_width;
+            // this.config.start_index = Math.floor(this.config.data_start * this.charts[0].config.chart_data.length); // percentage
+
+
+            this.autosize(); // get chart sizing
+            this.display_vertical_axis();
+            this.update_main_chart_canvas();
+            this.resize_timeflow_axis();
+            // this.move_timeflow_axis();
+
+            // this.update_main_chart();
+        }
+    };
+
+    cancel_chart_preview_resize() {
+        this.container.querySelector('.area-border.active').classList.remove('active');
+        document.removeEventListener("mousemove", this.chart_preview_resize);
+        document.show_area_move = true;
+
+        let labels = this.container.querySelectorAll('.timeflow-axis-label.to-fade');
+        for (let i = 0; i < labels.length; i++) {
+            labels[i].classList.add('faded');
+        }
+    };
 
 // ---
 
-let move_show_area = function (e) { // TODO fix moving large box
-    if (!document.show_area_move) {
-        return;
-    }
+    toggle_chart_draw(i) {
+        let temp = this.preview_chart_config.chart_sizing;
+        this.charts[i].config.draw = !this.charts[i].config.draw;
 
-    e = e || window.event;
-    let mouse_x = e.pageX;
+        this.autosize(true);
+        this.config.preview_chart_sizing_diff = this.preview_chart_config.chart_sizing - temp;
 
-    let dist_to_left = mouse_x - document.curr_show_area_width + document.curr_preview_box_pos - this.x_pos_left;
-    let dist_to_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
+        this.point_modal.querySelectorAll('li')[i].classList.toggle('hidden');
 
-    if (dist_to_left >= 0 && dist_to_right >= 0) {
-        let new_pos_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
+        this.animate_toggle_chart_draw(i);
 
-        this.show_area_container.style.right = this.layer_right.style.width = new_pos_right + 'px';
-        this.show_area_container.style.left = 'auto';
-        this.layer_left.style.width = dist_to_left + 'px';
+        // console.log(this.chart_config.vertical_axis_val_step);
+    };
+}
 
-        this.get_data_range();
-        this.autosize();
-        this.display_vertical_axis();
-        this.update_main_chart_canvas();
-        this.move_timeflow_axis();
-        // this.update_main_chart();
-    }
-};
-
-let cancel_move_show_area = function () {
-    document.removeEventListener("mousemove", this.move_show_area);
-};
-
-// ---
-
-let chart_preview_resize = function (e) {
-    let rect = this.show_area_container.getBoundingClientRect(); // TODO 2 rects
-    e = e || window.event;
-    let mouse_x = e.pageX;
-
-    let other = Chart_container.other_side(document.curr_area_border);
-    let k = other === 'left' ? -1 : 1;
-
-    let dist_to_side = k * (mouse_x - this['x_pos_' + document.curr_area_border]) - document.border_cursor_pos;
-    let dist_to_other_border = k * (rect[other] - mouse_x) - this.area_border_width;
-
-    if (dist_to_side >= 0 && dist_to_other_border >= 0) {
-        let new_width = k * (rect[other] - mouse_x) + document.border_cursor_pos;
-        this.show_area_container.style.width = new_width + 'px';
-        this['layer_' + document.curr_area_border].style.width = dist_to_side + 'px';
-
-        this.get_data_range(); // TODO func optimiztaion + right border
-        // this.config.data_start = (mouse_x - this.x_pos_left) / preview_box_width;
-        // this.config.start_index = Math.floor(this.config.data_start * this.charts[0].config.chart_data.length); // percentage
-
-
-        this.autosize(); // get chart sizing
-        this.display_vertical_axis();
-        this.update_main_chart_canvas();
-        this.resize_timeflow_axis();
-        // this.move_timeflow_axis();
-
-        // this.update_main_chart();
-    }
-};
-
-let cancel_chart_preview_resize = function () {
-    this.container.querySelector('.area-border.active').classList.remove('active'); // TODO not add active on
-    document.removeEventListener("mousemove", this.chart_preview_resize);
-    document.show_area_move = true;
-
-    let labels = this.container.querySelectorAll('.timeflow-axis-label.to-fade');
-    for (let i = 0; i < labels.length; i++) {
-        labels[i].classList.add('faded');
-    }
-};
-
-// ---
-
-let toggle_chart_draw = function (i) {
-    let temp = this.preview_chart_config.chart_sizing;
-    this.charts[i].config.draw = !this.charts[i].config.draw;
-
-    this.autosize(true);
-    this.config.preview_chart_sizing_diff = this.preview_chart_config.chart_sizing - temp;
-
-    this.modal.querySelectorAll('li')[i].classList.toggle('hidden');
-
-    this.animate_toggle_chart_draw(i);
-};
+// ----
 
 theme_colors = {
     night: {
@@ -1052,86 +1085,11 @@ Default_container_config = {
     vertical_axis_steps_count: 6,
     timeflow_steps_count: 6,
     timeflow_labels_step: 1,
+
+    mode: 'day',
+
+    animation_step: 0,
 };
 
-const step = 9;
+const animation_steps_num = 9; // as prop ???
 let counter = 0;
-
-function animate_cancel_draw(obj, a, k) { //TODO preview max for all charts
-    obj.clear_canvas();
-    obj.draw_horizontal_grid();
-    obj.clear_preview_canvas();
-
-    obj.charts[a].config.opacity += k * (1 / (step + 1));
-
-    for (let i = 0; i < obj.charts.length; i++) {
-
-        // -- redraw preview ---
-
-        for (const key in obj.preview_chart_config) {
-            if (key !== 'chart_sizing') {
-                obj.charts[i].config[key] = obj.preview_chart_config[key];
-            }
-        }
-
-        obj.charts[i].config.chart_sizing = obj.preview_chart_config.chart_sizing
-            - obj.config.preview_chart_sizing_diff * (step - counter) / step;
-
-        if (obj.charts[i].config.draw || i === a) {
-            obj.charts[i].draw_chart('.chart-preview-canvas');
-        }
-
-        // -- redraw main chart --
-
-        obj.charts[i].config.chart_sizing = obj.chart_config.chart_sizing -
-            obj.config.chart_sizing_diff * (step - counter) / step;
-
-        console.log(obj.config.chart_sizing);
-
-        for (const key in obj.chart_config) {
-            if (key !== 'chart_sizing') {
-                obj.charts[i].config[key] = obj.chart_config[key];
-            }
-        }
-
-        obj.display_vertical_axis();
-        if (obj.charts[i].config.draw || i === a) {
-            obj.charts[i].draw_chart();
-        }
-    }
-
-    if (counter < step) {
-        requestAnimationFrame(function () {
-            animate_cancel_draw(obj, a, k)
-        });
-        counter++;
-    } else {
-        counter = 0;
-    }
-}
-
-function animate_vertical_axis(){
-    let vertical_axis_labels_container = this.container.querySelector(' .vertical-axis-labels-container');
-    let vertical_axis_labels = '';
-    let step = this.get_vertical_axis_step();
-
-    // display new labels
-    for(let i= 0; i < this.config.vertical_axis_steps_count; i++){
-        let bottom_pos = this.chart_config.chart_sizing * i * step;
-
-        vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px'>" +
-            step * i + "</span>";
-    }
-
-
-    for(let i= 0; i < this.config.vertical_axis_steps_count; i++){
-        // display old labels
-        let bottom_pos = this.chart_config.chart_sizing * i * step;
-
-        // let opacity =
-        vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px'>" +
-            step * i + "</span>";
-    }
-
-    vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
-}
