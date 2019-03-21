@@ -18,7 +18,26 @@ class Chart {
         this.insert_chart_label();
     }
 
-    insert_chart_label(){
+    set_default_config() {
+        this.Default_config = {
+            chart_type: 'line_chart',
+            point_dist: 60,
+            line_width: 2,
+            shadow_colour: 'rgba(0, 0, 0, 0)',
+            shadow_blur: 7,
+            shadow_offset_x: 0,
+            shadow_offset_y: 0,
+
+            point_radius: 3,
+            smoothing: 2,
+            line_colour: '#3cc23f',
+            fill_colour: 'rgba(0, 0, 0, 0)',
+
+            offset_left: 0,
+        };
+    }
+
+    insert_chart_label() {
         let charts_labels_list = document.querySelector(this.config.chart_wrapper_selector + ' .charts-labels-list');
         let input_name = this.config.chart_name.replace(/ /, '-');
         let label = '<li><label class="chart-label">' +
@@ -34,12 +53,8 @@ class Chart {
     }
 
     fill() {
-        for (const key in Default_config) {
-            let value = Default_config[key];
-            if (!this.config.hasOwnProperty(key) || this.config[key] == null) {
-                this.config[key] = Default_config[key];
-            }
-        }
+        this.set_default_config();
+        this.config = Object.assign({}, this.Default_config, this.config);
     }
 
     draw_chart(canvas_selector = this.config.canvas_selector) {
@@ -62,17 +77,7 @@ class Chart {
 
                 ctx.beginPath();
 
-                switch (this.config.chart_type) {
-                    case 'line_chart':
-                        this.draw_line_chart(ctx);
-                        break;
-                    /*case 'curve_chart':
-                        draw_curve_chart.bind(this)(ctx);
-                        break;
-                    case 'point_chart':
-                        draw_point_chart.bind(this)(ctx);
-                        break;*/
-                }
+                this.draw_line_chart(ctx);
             }
         }
     }
@@ -94,99 +99,6 @@ class Chart {
             ctx.fill();
             ctx.stroke();
             ctx.closePath();
-        }
-    }
-
-    /* =========================
-        Drawing
-========================= */
-
-    draw_curve_chart(ctx, start_index, days_diff, k = 2 /* smoothness coefficient */) {
-        let x0 = this.config.offset_left + -1 * this.config.point_dist,
-            y0 = ctx.canvas.clientHeight;
-
-        let x1 = x0,
-            y1 = y0 - this.config.chart_data[start_index] * this.config.chart_sizing;
-        ctx.moveTo(x1, y0);
-        ctx.lineTo(x1, y1);
-
-        let x = x0,
-            y,
-            index = start_index + 1;
-
-        ctx.strokeStyle = this.config.line_colour;
-
-        for (let i = 1, points_count = this.points_to_show_num(start_index); i < points_count; i++, index++) {
-            x += this.config.point_dist;
-            y = y0 - this.config.chart_data[index] * this.config.chart_sizing;
-            let cpt_x = x - this.config.point_dist / 2;
-            let cpt_y1 = y0 - this.config.chart_data[index - 1] * this.config.chart_sizing;
-            let cpt_y2 = y0 - this.config.chart_data[index] * this.config.chart_sizing;
-
-            ctx.bezierCurveTo(~~(cpt_x - k) + 0.5, ~~(cpt_y1) + 0.5, ~~(cpt_x + k) + 0.5, ~~(cpt_y2) + 0.5, (~~x) + 0.5, ~~y + 0.5);
-        }
-
-        ctx.lineTo(x, y0);
-
-        ctx.fill();
-        ctx.stroke();
-
-        // --- redrawing the last line ---
-        ctx.strokeStyle = 'white'; // setting non-transparent bg
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x, y0);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.strokeStyle = ctx.fillStyle;
-        ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x, y0);
-        ctx.stroke();
-        ctx.closePath();
-
-        // --- redrawing the first line ---
-        ctx.strokeStyle = 'white'; // setting non-transparent bg
-        ctx.beginPath();
-        ctx.moveTo(x0, y0);
-        ctx.lineTo(x0, y0 - this.config.chart_data[start_index] * this.config.chart_sizing);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.strokeStyle = this.config.fill_colour; // redrawing the line with fill colour
-        ctx.beginPath();
-        ctx.moveTo(x0, y0);
-        ctx.lineTo(x0, y0 - this.config.chart_data[start_index] * this.config.chart_sizing);
-        ctx.stroke();
-        ctx.closePath();
-
-        // console.log('---');
-    }
-
-    draw_point_chart(ctx, start_index, days_diff) {
-        let x0 = this.config.offset_left + this.config.point_dist * days_diff,
-            y0 = this.config.canvas_height;
-
-        let x = x0 - this.config.point_dist,
-            y,
-            index = start_index;
-
-        for (let i = 0, points_count = this.points_to_show_num(start_index); i < points_count; i++, index++) {
-            x += this.config.point_dist;
-            y = y0 - this.config.chart_sizing * this.config.chart_data[index];
-
-            ctx.beginPath();
-            ctx.arc(x, y, this.config.point_radius, 0, Math.PI * 2, true);
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
-
-            // --- additional circle ---
-            /* ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-            ctx.arc(this.config.point_dist * i + this.config.offset_left - 10, this.config.canvas_height - this.config.chart_sizing * item, 5, 0, Math.PI * 2, true);
-            ctx.fill(); */
         }
     }
 
