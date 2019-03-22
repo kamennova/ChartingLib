@@ -16,17 +16,20 @@ body {
   margin: 0;
   padding: 0;
 
-  font-family: "Open Sans", "Arial", sans-serif;
+  font-family: "Helvetica", "Arial", sans-serif;
   font-size: 15px;
   line-height: 1.4;
   font-weight: 400;
   color: black;
   letter-spacing: 0.01em;
+
+  background-color: var(--background);
+
+  transition: @theme_transition_time linear background-color;
 }
 
 .visually-hidden:not(:focus):not(:active),
-input[type="checkbox"].visually-hidden,
-input[type="radio"].visually-hidden {
+input[type="checkbox"].visually-hidden {
   position: absolute;
 
   width: 1px;
@@ -48,28 +51,18 @@ input[type="radio"].visually-hidden {
   display: none;
 }
 
-.site-wrapper {
+.container {
   display: flex;
   flex-direction: column;
-
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
   min-height: 100vh;
-}
 
-.container,
-.inner-container,
-.smaller-container {
   max-width: 100%;
+  padding: 0 5px;
   margin: 0 auto;
-}
-
-.container {
-  //width: 1200px;
-  padding: 0 15px;
-}
-
-main {
-  display: flex;
-  flex-grow: 1;
 }
 
 /*----------------------*/
@@ -84,9 +77,5 @@ main {
 }
 
 @media (min-width: 1024px) {
-  .container {
-    width: 100%;
-    padding-left: 40px;
-    padding-right: 40px;
-  }
+
 }

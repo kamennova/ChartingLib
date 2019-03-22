@@ -1,3 +1,5 @@
+let theme_switcher = new ThemeSwitcher();
+
 // --- loading JSON file ---
 
 loadJSON(function (response) {
@@ -43,7 +45,8 @@ loadJSON(function (response) {
         }
 
         let chart_container_input_selector = '.chart-container-wrapper-' + (i + 1);
-        new ChartContainer(chart_container_input_selector, config);
+        // new ChartContainer(chart_container_input_selector, config);
+        theme_switcher.chart_containers.push(new ChartContainer(chart_container_input_selector, config)); // todo ???
     }
 });
 

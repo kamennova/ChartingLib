@@ -41,7 +41,7 @@ class Chart {
         let charts_labels_list = document.querySelector(this.config.chart_wrapper_selector + ' .charts-labels-list');
         let input_name = this.config.chart_name.replace(/ /, '-');
         let label = '<li><label class="chart-label">' +
-            '<input type="checkbox" class="visually-hidden chart-draw-checkbox" name="' + input_name + '" checked>' +
+            '<input type="checkbox" class="visually-hidden active chart-draw-checkbox" name="' + input_name + '" checked>' +
             '<span style="background-color: ' + this.config.line_colour + '; border-color: ' + this.config.line_colour + '" class="checkbox-indicator">' +
             '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 10"><path fill-rule="evenodd"  fill="white" ' +
             'd="M13.605,2.186 L5.993,9.618 C5.477,10.119 4.640,10.119 4.123,9.618 L0.382,5.996 C-0.135,5.496 -0.135, 4.685 0.382,4.186 C0.898,3.684' +
