@@ -2,7 +2,7 @@
   --contrast: black;
   --background: white;
   --background-lighter: white;
-  --background-darker: #f1f6f9de;
+  --background-darker: rgba(241, 246, 249, 0.87);
   --muted: #a1acb3;
   --border-grey: #e6ecf0;
 }

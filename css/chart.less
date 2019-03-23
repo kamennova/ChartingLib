@@ -1,54 +1,9 @@
 @import "variables";
 
-.chart-container-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  flex-grow: 0;
-
-  .chart-container-name {
-    margin-bottom: 0;
-
-    font-size: 25px;
-    font-weight: bold;
-    color: var(--contrast);
-    line-height: 1.2;
-  }
-}
-
-.chart-canvas-wrapper {
-  z-index: 5;
-}
-
-.chart-wrapper {
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  align-content: flex-start;
-  margin-bottom: 20px;
-
-  z-index: 10;
-}
-
-.canvas-layer {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-
-  margin: 0 auto;
-
-  background-image: linear-gradient(to bottom, var(--background) 0px, transparent 15px);
-}
-
 .touch-indicator() {
-
   position: absolute;
 
   display: block;
-
   height: 0;
   width: 0;
   margin: 0;
@@ -59,249 +14,272 @@
   transition: 0.2s linear height, 0.2s linear width, 0.1s linear opacity, 0.2s linear margin;
 }
 
-.chart-preview-wrapper {
-  position: relative;
-
+.chart-container-wrapper {
   display: flex;
-  //background-color:  #e9f0f3d6;
+  flex-direction: column;
+  align-items: center;
 
-  .chart-preview-canvas {
-    z-index: 10;
+  .chart-container-name {
+    margin-bottom: 0;
+
+    font-size: 25px;
+    font-weight: bold;
+    color: var(--contrast);
+    line-height: 1.2;
   }
 
-  .show-area-container {
+  .chart-wrapper {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .canvas-layer {
     position: absolute;
-    top: 0;
-    right: 0;
-
-    height: 100%;
-    overflow-y: visible;
-
-    z-index: 20;
-
-    &::before, &::after {
-      content: "";
-
-      position: absolute;
-      left: 5px;
-
-      display: block;
-
-      width: -webkit-calc(100% - 10px);
-      width: -moz-calc(100% - 10px);
-      width: -o-calc(100% - 10px);
-      width: calc(100% - 10px);
-
-      height: 2px;
-
-      background-color: #a0b5c375;
-    }
-
-    &::after {
-      bottom: 0;
-    }
-
-    .show-area-touch {
-      .touch-indicator();
-      left: 50%;
-      top: 50%;
-
-      margin: 0;
-
-      background-color: #a0b5c375;
-
-      z-index: 1;
-    }
-
-    &.active .show-area-touch {
-      width: 66px;
-      height: 66px;
-      margin: -33px 0 0 -33px;
-
-      opacity: 0.7;
-    }
-  }
-
-  .area-border {
-    position: absolute;
-    overflow-y: visible;
-
-    height: 100%;
-    width: 5px;
-
-    background-color: #a0b5c375;
-
-    cursor: pointer;
-    z-index: -1;
-
-    &::after {
-      content: "";
-
-      .touch-indicator();
-
-      top: 50%;
-      left: 50%;
-
-      background-color: inherit;
-    }
-
-    &.active::after {
-      width: 66px;
-      height: 66px;
-      margin: -33px 0 0 -33px;
-
-      opacity: 0.7;
-    }
-
-    .layer {
-      position: absolute;
-      top: 0;
-
-      display: block;
-      height: 100%;
-
-      background-color: var(--background-darker);
-      //#e9f0f3d6;
-
-      cursor: default;
-
-      transition: @theme_transition_time linear background-color;
-    }
-
-    &-left {
-      left: 0;
-
-      .layer {
-        right: 5px;
-      }
-    }
-
-    &-right {
-      right: 0;
-
-      .layer {
-        left: 5px;
-      }
-    }
-  }
-}
-
-.no-data-message {
-  position: absolute;
-  left: 0;
-  top: 40%;
-
-  width: 100%;
-  margin: 0 auto;
-
-  color: var(--muted);
-  text-align: center;
-
-  transition: opacity 10s linear;
-
-  &.hidden{
-    opacity: 0;
-  }
-
-  &:not(.hidden){
-    opacity: 1;
-  }
-}
-
-//----
-
-.axis-label {
-  position: absolute;
-
-  display: inline-block;
-
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-
-  border-color: inherit;
-
-  &::after {
-    content: "";
-
-    position: absolute;
-
-    display: none;
-    border-color: inherit;
-  }
-}
-
-/* ===================
-    Vertical axis
-==================== */
-
-.vertical-axis-labels-container {
-  position: absolute;
-  left: 0;
-  top: -3px;
-
-  min-width: 75px;
-
-  overflow: hidden;
-  z-index: -1;
-
-  .vertical-axis-label {
-    left: 0;
-  }
-}
-
-/* ===================
-    Horizontal axis
-==================== */
-
-.timeflow-axis {
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.timeflow-axis-labels-container {
-  position: relative;
-
-  height: 20px;
-  margin-top: 5px;
-
-  overflow-x: hidden;
-
-  .timeflow-axis-label {
-    top: 0;
-
-    width: 42px;
-    margin-top: 4px;
-    margin-left: -42px;
-
-    text-align: center;
-    white-space: nowrap;
-
-    //opacity: 1 !important;
-    overflow: visible;
-    transition: opacity 0.2s linear;
-  }
-
-  .timeflow-axis-label.faded {
-    animation-name: fadeOut;
-    animation-timing-function: linear;
-    animation-delay: 0.1s;
-    animation-duration: 0.4s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-  }
-
-  .timeflow-axis-label::after {
-    top: -4px;
     left: 0;
     right: 0;
+    top: 0;
 
-    width: 1px;
-    height: 4px;
     margin: 0 auto;
 
-    border-right: 1px solid;
+    background-image: linear-gradient(to bottom, var(--background) 0px, rgba(0, 0, 0, 0) 15px);
+  }
+
+  .chart-preview-wrapper {
+    position: relative;
+
+    display: flex;//todo
+
+    .chart-preview-canvas {
+      z-index: 10;
+    }
+
+    .show-area-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      height: 100%;
+      overflow-y: visible;
+
+      z-index: 20;
+
+      &::before, &::after {
+        content: "";
+
+        position: absolute;
+        left: 5px;
+
+        display: block;
+
+        width: -webkit-calc(100% - 10px);
+        width: -moz-calc(100% - 10px);
+        width: -o-calc(100% - 10px);
+        width: calc(100% - 10px);
+
+        height: 2px;
+
+        background-color: rgba(160, 181, 195, 0.46);
+      }
+
+      &::after {
+        bottom: 0;
+      }
+
+      .show-area-touch {
+        .touch-indicator();
+        left: 50%;
+        top: 50%;
+
+        margin: 0;
+
+        background-color: #a0b5c375;
+
+        z-index: 1;
+      }
+
+      &.active .show-area-touch {
+        width: 66px;
+        height: 66px;
+        margin: -33px 0 0 -33px;
+
+        opacity: 0.7;
+      }
+    }
+
+    .area-border {
+      position: absolute;
+      overflow-y: visible;
+
+      height: 100%;
+      width: 5px;
+
+      background-color: #a0b5c375;
+
+      cursor: pointer;
+      z-index: -1;
+
+      &::after {
+        content: "";
+
+        .touch-indicator();
+
+        top: 50%;
+        left: 50%;
+
+        background-color: inherit;
+      }
+
+      &.active::after {
+        width: 66px;
+        height: 66px;
+        margin: -33px 0 0 -33px;
+
+        opacity: 0.7;
+      }
+
+      .layer {
+        position: absolute;
+        top: 0;
+
+        display: block;
+        height: 100%;
+
+        background-color: var(--background-darker);
+
+        cursor: default;
+
+        transition: @theme_transition_time linear background-color;
+      }
+
+      &-left {
+        left: 0;
+
+        .layer {
+          right: 5px;
+        }
+      }
+
+      &-right {
+        right: 0;
+
+        .layer {
+          left: 5px;
+        }
+      }
+    }
+  }
+
+  .no-data-message {
+    position: absolute;
+    left: 0;
+    top: 40%;
+
+    width: 100%;
+    margin: 0 auto;
+
+    color: var(--muted);
+    text-align: center;
+  }
+
+  //----
+
+  .axis-label {
+    position: absolute;
+
+    display: inline-block;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+
     border-color: inherit;
+    user-select: none;
+
+    &::after {
+      content: "";
+
+      position: absolute;
+
+      display: none;
+      border-color: inherit;
+    }
+  }
+
+  /* ===================
+      Vertical axis
+  ==================== */
+
+  .vertical-axis-labels-container {
+    position: absolute;
+    left: 0;
+    top: -3px;
+
+    min-width: 75px;
+
+    overflow: hidden;
+    z-index: -1;
+
+    .vertical-axis-label {
+      left: 0;
+    }
+  }
+
+  /* ===================
+      Horizontal axis
+  ==================== */
+
+  .timeflow-axis {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .timeflow-axis-labels-container {
+    position: relative;
+
+    height: 20px;
+    margin-top: 5px;
+
+    overflow: hidden;
+
+    .timeflow-axis-label {
+      top: 0;
+
+      width: 42px;
+      margin-top: 4px;
+      margin-left: -42px;
+
+      text-align: center;
+      white-space: nowrap;
+
+      overflow: visible;
+      transition: opacity 0.2s linear;
+    }
+
+    .timeflow-axis-label.faded {
+      animation-name: fadeOut;
+      animation-timing-function: linear;
+      animation-delay: 0.1s;
+      animation-duration: 0.4s;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+    }
+
+    .timeflow-axis-label::after {
+      top: -4px;
+      left: 0;
+      right: 0;
+
+      width: 1px;
+      height: 4px;
+      margin: 0 auto;
+
+      border-right: 1px solid;
+      border-color: inherit;
+    }
   }
 }
 
@@ -385,6 +363,7 @@
 
     overflow: hidden;
     cursor: pointer;
+    user-select: none;
 
     .checkbox-indicator {
       position: relative;

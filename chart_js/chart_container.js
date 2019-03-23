@@ -31,14 +31,25 @@ class ChartContainer {
         }.bind(this), 100);
     }
 
-
     get_size() {
         if (this.config.hasOwnProperty('adjustable') && !this.config.adjustable) {
             return;
         }
 
-        this.config.canvas_width = this.container.clientWidth < 320 ? 320 : this.container.clientWidth;
+        /*if (this.container.clientWidth <= this.max_adjust_width) {
+            this.container.style.width = this.container.clientWidth < 320 ? 320 + 'px' : '100%';
+        } else {
+            console.log(this.container.style.width);
+        }*/
+
+        if (this.container.clientWidth <= this.max_adjust_width) {
+            this.container.style.width = this.container.clientWidth < 320 ? 320 + 'px' : '100%';
+        }
+
+        this.config.canvas_width = this.container.clientWidth;
+        // console.log(this.config.canvas_width);
         this.content_width = this.config.canvas_width - 2 * this.config.side_padding;
+        // console.log(this.content_width);
         this.config.preview_canvas_width = this.content_width;
     }
 
@@ -72,6 +83,7 @@ class ChartContainer {
         if (this.config.adjustable) {
             this.adjust_widths();
         } else {
+            console.log('no');
             this.get_preview_coords();
         }
 
@@ -611,7 +623,7 @@ class ChartContainer {
         this.point_modal = this.new_point_modal();
         canvas_layer.appendChild(this.point_modal);
 
-        wrapper.insertAdjacentHTML('beforeend', '<p class="hidden no-data-message">No data to show</p>');
+        wrapper.insertAdjacentHTML('beforeend', '<p class="hidden no-data-message">' + this.config.no_data_message + '</p>');
 
         this.point_modal.insertAdjacentHTML('afterbegin', '<p class="breakpoint-date"></p>');
         this.point_modal.insertAdjacentHTML('beforeend', '<ul class="points"></ul>');
@@ -1105,7 +1117,7 @@ class ChartContainer {
     }
 
     prepare_autosize_animation(draw_preview = false) {
-        if(draw_preview){
+        if (draw_preview) {
             let temp = 0;
             this.autosize(true);
 
@@ -1205,7 +1217,7 @@ class ChartContainer {
 
     animate_autosize(draw_preview = false) {
         this.clear_canvas();
-        if(draw_preview){
+        if (draw_preview) {
             this.clear_preview_canvas();
         }
 
@@ -1292,6 +1304,7 @@ ChartContainer.prototype.Default_container_config = {
     autosize_animation_steps_num: 5,
 
     no_data: false,
+    no_data_message: 'No data to display',
 
     timeflow_labels_date_func: (timestamp) => {
         let full_date = new Date(timestamp * 1000);
@@ -1303,3 +1316,5 @@ ChartContainer.prototype.Default_container_config = {
             .toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'});
     }
 };
+
+ChartContainer.prototype.max_adjust_width = 425;
