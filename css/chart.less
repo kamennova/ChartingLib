@@ -63,7 +63,7 @@
   display: flex;
   //background-color:  #e9f0f3d6;
 
-  .chart-preview-canvas{
+  .chart-preview-canvas {
     z-index: 10;
   }
 
@@ -108,10 +108,10 @@
 
       background-color: #a0b5c375;
 
-      z-index: -1;
+      z-index: 1;
     }
 
-    &.active .show-area-touch{
+    &.active .show-area-touch {
       width: 66px;
       height: 66px;
       margin: -33px 0 0 -33px;
@@ -184,15 +184,26 @@
   }
 }
 
-.no-data-message { // TODO display
+.no-data-message {
   position: absolute;
   left: 0;
   top: 40%;
 
   width: 100%;
-  margin: 0;
+  margin: 0 auto;
 
+  color: var(--muted);
   text-align: center;
+
+  transition: opacity 10s linear;
+
+  &.hidden{
+    opacity: 0;
+  }
+
+  &:not(.hidden){
+    opacity: 1;
+  }
 }
 
 //----
@@ -228,31 +239,12 @@
   top: -3px;
 
   min-width: 75px;
-  //padding-bottom: 9px;
-
-  border-right: 1px solid @grid_colour_default;
 
   overflow: hidden;
   z-index: -1;
 
   .vertical-axis-label {
     left: 0;
-
-    margin-right: 7px;
-    //margin-bottom: -9px;
-  }
-
-  .vertical-axis-label::after {
-    top: 0;
-    bottom: 0;
-    right: -7px;
-
-    width: 4px;
-    height: 1px;
-    margin: auto 0;
-
-    border-top: 1px solid;
-    border-color: inherit;
   }
 }
 
@@ -332,12 +324,52 @@
 .charts-labels-list {
   display: flex;
   flex-wrap: wrap;
-  margin: 20px 0; // TODO
+  margin: 20px 0;
   padding-left: 0;
 
   list-style: none;
 
+  li {
+    position: relative;
+  }
+
+  li::after,
+  .checkbox-indicator::after,
+  .checkbox-indicator::before {
+    content: "";
+
+    position: absolute;
+
+    display: block;
+    margin: auto;
+
+    border-radius: 50%;
+  }
+
+  li::after {
+    left: 17px;
+    top: 17px;
+
+    margin-left: 0;
+    margin-top: 0;
+
+    border-width: 0;
+    background-color: transparent;
+    border-color: var(--background-darker); //todo
+    border-style: solid;
+  }
+
+  li.active .checkbox-indicator::after {
+    .animated_bg();
+  }
+
+  li.active::after {
+    .animated();
+  }
+
   .chart-label {
+    position: relative;
+
     display: flex;
     align-items: center;
     margin: 0 15px 10px 0;
@@ -346,23 +378,11 @@
     font-size: 14px;
     color: var(--contrast);
 
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='15' cy='15' r='10' /></svg>");
-    background-position: left 17px center;
-    background-repeat: no-repeat;
-
-    background-size: 0;
     border: 1px solid var(--border-grey);
     border-radius: 18px;
 
+    overflow: hidden;
     cursor: pointer;
-
-    &.active {
-      .animated_bg();
-
-      .checkbox-indicator::after {
-        .animated();
-      }
-    }
 
     .checkbox-indicator {
       position: relative;
@@ -370,35 +390,25 @@
       display: block;
       width: 22px;
       height: 22px;
-      margin-right: 10px;
+      margin-right: 8px;
 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 14 10'%3E%3Cpath fill-rule='evenodd' fill='white' d='M13.605,2.186 L5.993,9.618 C5.477,10.119 4.640,10.119 4.123,9.618 L0.382,5.996 C-0.135,5.496 -0.135, 4.685 0.382,4.186 C0.898,3.684 1.736,3.684 2.252,4.186 L5.058,6.902 L11.735,0.373 C12.252,-0.126 13.089,-0.126 13.605,0.373 C14.122,0.874 14.122,1.685 13.605,2.186 Z'/%3E%3C/svg%3E");
+      background-size: 10px;
+      background-repeat: no-repeat;
+      background-position: center center;
       border: 1px solid;
       border-radius: 50%;
 
-      overflow: visible;
-
-      svg {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-
-        width: 10px;
-        height: 8px;
-
-        margin: auto;
+      &::after, &::before {
+        transition: 0.3s linear all;
       }
 
-      &::after, &::before {
-        content: "";
+      &:after {
+        left: 50%;
+        top: 50%;
 
-        position: absolute;
-
-        display: block;
-        margin: auto;
-
-        border-radius: 50%;
+        background-color: var(--background-darker);
+        z-index: -1;
       }
 
       &::before {
@@ -408,21 +418,6 @@
         top: 0;
 
         background-color: var(--background);
-
-        transition: 0.3s linear all;
-      }
-
-      &::after {
-        left: 50%;
-        top: 50%;
-
-        margin-left: 0;
-        margin-top: 0;
-
-        border-width: 0;
-        background-color: transparent;
-        border-color: var(--background-darker); //todo
-        border-style: solid;
       }
     }
 
@@ -434,13 +429,11 @@
     }
 
     input:not(:checked) + .checkbox-indicator {
+      background-image: none;
+
       &::before {
         height: 100%;
         width: 100%;
-      }
-
-      svg {
-        display: none;
       }
     }
   }
@@ -484,21 +477,30 @@
     margin-top: -40px;
 
     border-width: 8px;
-    opacity: 0;
+    opacity: 1;
   }
 }
 
 @keyframes toggle_draw_label {
   0% {
-    background-size: 0;
+    height: 0;
+    width: 0;
+    margin: 0;
+
+    opacity: 1;
   }
 
-  50% {
-
+  80% {
+    opacity: 0.8;
   }
 
   100% {
-    background-size: 100px;
+    width: 130px;
+    height: 130px;
+    margin-left: -65px;
+    margin-top: -65px;
+
+    opacity: 0;
   }
 }
 
@@ -591,46 +593,5 @@
 
   .mode-name {
     text-transform: capitalize;
-  }
-}
-
-.test {
-  display: none;
-  flex-shrink: 10;
-  //display: flex;
-  //flex-wrap: wrap;
-  //width: 400px;
-  min-width: 400px;
-  flex-basis: 400px;
-
-  border: 1px solid red;
-  //flex-basis: 100px;
-  //fl
-
-  //align-self: flex-start;
-  align-items: flex-start;
-  align-content: flex-start;
-  justify-content: flex-start;
-  justify-items: flex-start;
-
-  .list {
-    flex-shrink: 10;
-    display: flex;
-    padding-left: 0;
-    flex-wrap: wrap;
-    list-style: none;
-
-    align-self: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
-    justify-content: flex-start;
-    justify-items: flex-start;
-
-    li {
-      align-self: flex-start;
-      border: 1px solid green;
-      width: 120px;
-      height: 20px;
-    }
   }
 }
