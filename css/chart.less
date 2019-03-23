@@ -82,7 +82,7 @@
 
         height: 2px;
 
-        background-color: rgba(160, 181, 195, 0.46);
+        background-color: @preview_border;
       }
 
       &::after {
@@ -96,9 +96,9 @@
 
         margin: 0;
 
-        background-color: #a0b5c375;
+        background-color: @preview_border;
 
-        z-index: 1;
+        z-index: 10;
       }
 
       &.active .show-area-touch {
@@ -115,12 +115,12 @@
       overflow-y: visible;
 
       height: 100%;
-      width: 5px;
+      width: 6px;
 
-      background-color: #a0b5c375;
+      background-color: @preview_border;
 
       cursor: pointer;
-      z-index: -1;
+      z-index: 5;
 
       &::after {
         content: "";
@@ -159,7 +159,7 @@
         left: 0;
 
         .layer {
-          right: 5px;
+          right: 6px;
         }
       }
 
@@ -167,7 +167,7 @@
         right: 0;
 
         .layer {
-          left: 5px;
+          left: 6px;
         }
       }
     }

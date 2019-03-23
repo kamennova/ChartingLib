@@ -42,11 +42,11 @@ class ChartContainer {
             console.log(this.container.style.width);
         }*/
 
-        if (this.container.clientWidth <= this.max_adjust_width) {
-            this.container.style.width = this.container.clientWidth < 320 ? 320 + 'px' : '100%';
-        }
-
-        this.config.canvas_width = this.container.clientWidth;
+        // if (this.container.clientWidth <= this.max_adjust_width) {
+        //     this.container.style.width = this.container.clientWidth < 320 ? 320 + 'px' : '100%';
+        // }
+        this.config.canvas_width = this.container.clientWidth < 320 ? 320 : this.container.clientWidth;
+        // this.config.canvas_width = this.container.clientWidth;
         // console.log(this.config.canvas_width);
         this.content_width = this.config.canvas_width - 2 * this.config.side_padding;
         // console.log(this.content_width);
@@ -83,7 +83,6 @@ class ChartContainer {
         if (this.config.adjustable) {
             this.adjust_widths();
         } else {
-            console.log('no');
             this.get_preview_coords();
         }
 
@@ -617,8 +616,8 @@ class ChartContainer {
         let vertical_axis = this.new_vertical_axis();
         wrapper.insertAdjacentHTML('beforeend', vertical_axis);
 
-        let timeflow_axis = this.new_timeflow_axis();
-        wrapper.insertAdjacentHTML('beforeend', timeflow_axis);
+        wrapper.insertAdjacentHTML('beforeend', '<div id="timeflow-axis-labels-container"' +
+            ' class="timeflow-axis-labels-container axis-labels-container"></div>');
 
         this.point_modal = this.new_point_modal();
         canvas_layer.appendChild(this.point_modal);
@@ -687,10 +686,6 @@ class ChartContainer {
             + this.config.canvas_height + "px; left: " + this.config.side_padding + "px;'></div>";
     }
 
-    new_timeflow_axis() {
-        return '<div id="timeflow-axis-labels-container" class="timeflow-axis-labels-container horizontal-axis-labels-container axis-labels-container"></div>';
-    }
-
     new_point_modal() {
         let point_modal = document.createElement('div');
         point_modal.classList.add('point-details-modal');
@@ -738,7 +733,7 @@ class ChartContainer {
     }
 
     preview_box_init() {
-        this.area_border_width = 5 + 2; // border width +  dist btw borders
+        this.area_border_width = 7 + 2; // border width +  dist btw borders
         this.get_preview_coords();
 
         this.preview_box_resize_init();
@@ -918,47 +913,6 @@ class ChartContainer {
 
 // ---
 
-    animate_vertical_axis(new_chart_sizing) { // todo blinking non changing vertical size
-        this.destroy_old_labels('vertical');
-        this.prepare_grid_animation();
-
-        let vertical_axis_labels = '';
-        let step = this.get_vertical_axis_step(); // new labels step
-        let stage = this.config.animation_step / this.config.cancel_animation_steps_num;
-
-        // display new labels
-        for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
-            let bottom_pos = new_chart_sizing * i * step;
-            if (bottom_pos > this.chart_config.content_height) {
-                break;
-            }
-
-            this.ctx.globalAlpha = stage;
-            this.draw_gridline(new_chart_sizing * i * step);
-
-            vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px; opacity: " + stage + "'>" +
-                Math.round(step * i) + "</span>";
-        }
-
-        // display old labels
-        for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
-            let bottom_pos = new_chart_sizing * i * this.chart_config.vertical_axis_val_step;
-            if (bottom_pos > this.chart_config.content_height) {
-                break;
-            }
-
-            let opacity = 1 - stage;
-
-            this.ctx.globalAlpha = opacity;
-            this.draw_gridline(new_chart_sizing * i * this.chart_config.vertical_axis_val_step);
-
-            vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px; opacity: " + opacity + "'>" +
-                Math.round(this.chart_config.vertical_axis_val_step * i) + "</span>";
-        }
-
-        this.vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
-    }
-
     prepare_grid_animation() {
         this.ctx.lineWidth = 1;
         this.ctx.strokeStyle = this.config.grid_colour;
@@ -972,62 +926,26 @@ class ChartContainer {
         this.ctx.closePath();
     }
 
+    // animate({
+    //             duration: 1000,
+    //             timing: function(timeFraction) {
+    // return timeFraction;
+// },
+// draw: function(progress) {
+//     elem.style.width = progress * 100 + '%';
+// }
+// });
 
-    animate_cancel_draw(a, k) { //todo optimize if chart sizing not changed
-        this.clear_canvas();
-        this.clear_preview_canvas();
-
-        this.charts[a].config.opacity += k * (1 / (this.config.animation_steps_num + 1));
-
-        let new_chart_sizing_stage = (this.config.animation_steps_num - this.config.animation_step) / this.config.animation_steps_num
-        let new_chart_sizing = this.chart_config.chart_sizing - this.config.chart_sizing_diff * new_chart_sizing_stage;
-
-        this.animate_vertical_axis(new_chart_sizing);
-
-        for (let i = 0; i < this.charts.length; i++) {
-
-            // -- redraw preview ---
-
-            for (const key in this.preview_chart_config) {
-                if (key !== 'chart_sizing') {
-                    this.charts[i].config[key] = this.preview_chart_config[key];
-                }
-            }
-
-            this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
-                - this.config.preview_chart_sizing_diff * new_chart_sizing_stage;
-
-            if (this.charts[i].config.draw || i === a) {
-                this.charts[i].draw_chart('.chart-preview-canvas');
-            }
-
-            // -- redraw main chart --
-
-            this.charts[i].config.chart_sizing = new_chart_sizing;
-
-            for (const key in this.chart_config) {
-                if (key !== 'chart_sizing') {
-                    this.charts[i].config[key] = this.chart_config[key];
-                }
-            }
-
-            if (this.charts[i].config.draw || i === a) {
-                this.charts[i].draw_chart();
-            }
-        }
-
-        if (this.config.animation_step < this.config.animation_steps_num) {
-            requestAnimationFrame(this.animate_cancel_draw.bind(this, a, k));
-            this.config.animation_step++;
-        } else {
-            this.config.animation_step = 0;
-            this.set_vertical_axis_step();
-
-            if (this.config.no_data) {
-                this.container.querySelector('.no-data-message').classList.remove('hidden');
-            }
+    /*function step(timestamp) {
+        if (!start) start = timestamp;
+        var progress = timestamp - start;
+        element.style.transform = 'translateX(' + Math.min(progress / 10, 200) + 'px)';
+        if (progress < 2000) {
+            window.requestAnimationFrame(step);
         }
     }
+
+    window.requestAnimationFrame(step);*/
 
     point_details_show(e) {
         e = e || window.event;
@@ -1067,6 +985,7 @@ class ChartContainer {
     cancel_point_details_show(e) {
         e = e || window.event;
         e.preventDefault();
+
         document.curr_point_index = -1;
         this.point_modal.classList.remove('show');
 
@@ -1088,13 +1007,9 @@ class ChartContainer {
 
         e = e || window.event;
         let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
-        let mouse_y = e.touches ? e.touches[0].clientY : e.pageY; // todo
 
         let dist_to_left = mouse_x - document.curr_show_area_width + document.curr_preview_box_pos - this.x_pos_left;
         let dist_to_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
-
-        // this.show_box_touch_indicator.style.left = (mouse_x - this.x_pos_left) + 'px';
-        // this.show_box_touch_indicator.style.top = (mouse_y - 200) + 'px';
 
         if (dist_to_left >= 0 && dist_to_right >= 0) {
             let new_pos_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
@@ -1132,7 +1047,7 @@ class ChartContainer {
         this.set_vertical_axis_step();
         this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
         this.config.animation_steps_num = this.config.autosize_animation_steps_num;
-        this.animate_autosize(draw_preview);
+        window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
     }
 
 // ---
@@ -1157,10 +1072,11 @@ class ChartContainer {
             // this.config.data_start = (mouse_x - this.x_pos_left) / preview_box_width;
             // this.config.start_index = Math.floor(this.config.data_start * this.charts[0].config.chart_data.length); // percentage
 
-            this.autosize();
-            this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
-            this.config.animation_steps_num = this.config.autosize_animation_steps_num;
-            this.animate_autosize();
+            this.prepare_autosize_animation();
+            // this.autosize();
+            // this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
+            // this.config.animation_steps_num = this.config.autosize_animation_steps_num;
+            // window.requestAnimationFrame(this.animate_autosize.bind(this));
 
             this.resize_timeflow_axis();
         }
@@ -1212,18 +1128,122 @@ class ChartContainer {
 
         let k = this.charts[i].config.draw ? 1 : -1;
         this.config.animation_steps_num = this.config.cancel_animation_steps_num;
-        this.animate_cancel_draw(i, k);
+        window.requestAnimationFrame(this.animate_cancel_draw.bind(this, i, k));
     }
 
-    animate_autosize(draw_preview = false) {
+    animate_vertical_axis(new_chart_sizing) { // todo blinking non changing vertical size
+        this.destroy_old_labels('vertical');
+        this.prepare_grid_animation();
+
+        let vertical_axis_labels = '';
+        let step = this.get_vertical_axis_step(); // new labels step
+
+        // display new labels
+        for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
+            let bottom_pos = new_chart_sizing * i * step;
+            if (bottom_pos > this.chart_config.content_height) {
+                break;
+            }
+
+            this.ctx.globalAlpha = this.config.stage;
+            this.draw_gridline(new_chart_sizing * i * step);
+
+            vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px; opacity: " + this.config.stage + "'>" +
+                Math.round(step * i) + "</span>";
+        }
+
+        // display old labels
+        for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
+            let bottom_pos = new_chart_sizing * i * this.chart_config.vertical_axis_val_step;
+            if (bottom_pos > this.chart_config.content_height) {
+                break;
+            }
+
+            let opacity = 1 - this.config.stage;
+
+            this.ctx.globalAlpha = opacity;
+            this.draw_gridline(new_chart_sizing * i * this.chart_config.vertical_axis_val_step);
+
+            vertical_axis_labels += "<span class='axis-label vertical-axis-label' style='bottom: " + bottom_pos + "px; opacity: " + opacity + "'>" +
+                Math.round(this.chart_config.vertical_axis_val_step * i) + "</span>";
+        }
+
+        this.vertical_axis_labels_container.insertAdjacentHTML('afterbegin', vertical_axis_labels);
+    }
+
+    animate_cancel_draw(a, k, time) { //todo optimize if chart sizing not changed
+        if (!this.config.start) this.config.start = time;
+        this.config.progress = time - this.config.start;
+        this.config.stage = (time - this.config.start) / this.config.duration;
+        if (this.config.stage > 1) this.config.stage = 1;
+
+        this.clear_canvas();
+        this.clear_preview_canvas();
+
+        this.charts[a].config.opacity = k === 1 ? this.config.stage : 1 - this.config.stage;
+
+        let new_chart_sizing = this.chart_config.chart_sizing - this.config.chart_sizing_diff * (1 - this.config.stage);
+
+        this.animate_vertical_axis(new_chart_sizing);
+
+        for (let i = 0; i < this.charts.length; i++) {
+
+            // -- redraw preview ---
+
+            for (const key in this.preview_chart_config) {
+                if (key !== 'chart_sizing') {
+                    this.charts[i].config[key] = this.preview_chart_config[key];
+                }
+            }
+
+            this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
+                - this.config.preview_chart_sizing_diff * (1 - this.config.stage);
+
+            if (this.charts[i].config.draw || i === a) {
+                this.charts[i].draw_chart('.chart-preview-canvas');
+            }
+
+            // -- redraw main chart --
+
+            this.charts[i].config.chart_sizing = new_chart_sizing;
+
+            for (const key in this.chart_config) {
+                if (key !== 'chart_sizing') {
+                    this.charts[i].config[key] = this.chart_config[key];
+                }
+            }
+
+            if (this.charts[i].config.draw || i === a) {
+                this.charts[i].draw_chart();
+            }
+        }
+
+        if (this.config.stage < 1) {
+            window.requestAnimationFrame(this.animate_cancel_draw.bind(this, a, k));
+        } else {
+            this.config.start = null;
+            this.set_vertical_axis_step();
+
+            if (this.config.no_data) {
+                this.container.querySelector('.no-data-message').classList.remove('hidden');
+            }
+        }
+    }
+
+    animate_autosize(draw_preview, time) {
+        if (!this.config.start) this.config.start = time;
+        this.config.stage = (time - this.config.start) / this.config.autosize_duration;
+        if (this.config.stage > 1) this.config.stage = 1;
+
+        console.log(time);
+
         this.clear_canvas();
         if (draw_preview) {
             this.clear_preview_canvas();
         }
 
-        let new_chart_sizing_stage = (this.config.animation_steps_num - this.config.animation_step) / this.config.animation_steps_num;
         let new_chart_sizing = this.chart_config.chart_sizing -
-            this.config.chart_sizing_diff * new_chart_sizing_stage;
+            this.config.chart_sizing_diff * (1 - this.config.stage);
 
         this.animate_vertical_axis(new_chart_sizing);
 
@@ -1238,7 +1258,7 @@ class ChartContainer {
                 }
 
                 this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
-                    - this.config.preview_chart_sizing_diff * new_chart_sizing_stage;
+                    - this.config.preview_chart_sizing_diff * (1 - this.config.stage);
 
                 if (this.charts[i].config.draw) {
                     this.charts[i].draw_chart('.chart-preview-canvas');
@@ -1260,11 +1280,11 @@ class ChartContainer {
             }
         }
 
-        if (this.config.animation_step < this.config.animation_steps_num) {
-            requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
-            this.config.animation_step++;
+        if (this.config.stage < 1) {
+            window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
         } else {
-            this.config.animation_step = 0;
+            console.log('-----');
+            this.config.start = false;
             this.set_vertical_axis_step();
         }
     }
@@ -1302,6 +1322,9 @@ ChartContainer.prototype.Default_container_config = {
     animation_step: 0,
     cancel_animation_steps_num: 9,
     autosize_animation_steps_num: 5,
+
+    duration: 200,
+    autosize_duration: 50,
 
     no_data: false,
     no_data_message: 'No data to display',
