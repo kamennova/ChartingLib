@@ -15,17 +15,20 @@ class ChartContainer {
         this.get_size();
         this.insert_HTML();
 
-        // setTimeout(function () {
-        this.theme_switch_init();
-        this.charts_init();
-        this.preview_chart_init();
-        this.preview_box_init();
-        this.update_main_chart();
+        setTimeout(function () {
+            this.theme_switch_init();
+            this.charts_init();
+            this.preview_box_init();
 
-        this.charts_toggle_draw_init();
-        this.init_point_details_show();
-        window.addEventListener('resize', this.resize);
-        // }.bind(this), 100);
+            this.prepare_autosize_animation(true);
+            this.config.curr_timeflow_step = 1;
+            this.get_curr_timeflow_step();
+            this.move_timeflow_axis();
+
+            this.charts_toggle_draw_init();
+            this.init_point_details_show();
+            window.addEventListener('resize', this.resize);
+        }.bind(this), 100);
     }
 
 
@@ -980,7 +983,7 @@ class ChartContainer {
             }
 
             this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
-                - this.config.preview_chart_sizing_diff * new_chart_sizing_stage
+                - this.config.preview_chart_sizing_diff * new_chart_sizing_stage;
 
             if (this.charts[i].config.draw || i === a) {
                 this.charts[i].draw_chart('.chart-preview-canvas');
@@ -1089,11 +1092,8 @@ class ChartContainer {
             this.layer_left.style.width = dist_to_left + 'px';
 
             this.get_data_range();
+            this.prepare_autosize_animation();
 
-            this.autosize();
-            this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
-            this.config.animation_steps_num = this.config.autosize_animation_steps_num;
-            this.animate_autosize();
             this.move_timeflow_axis();
         }
     }
@@ -1102,6 +1102,25 @@ class ChartContainer {
         this.show_area_box.classList.remove('active');
         document.removeEventListener("mousemove", this.move_show_area);
         document.removeEventListener("touchmove", this.move_show_area);
+    }
+
+    prepare_autosize_animation(draw_preview = false) {
+        if(draw_preview){
+            let temp = 0;
+            this.autosize(true);
+
+            for (let i = 0; i < this.charts.length; i++) {
+                this.set_chart_params(true);
+            }
+
+            this.config.preview_chart_sizing_diff = this.preview_chart_config.chart_sizing - temp;
+        }
+
+        this.autosize();
+        this.set_vertical_axis_step();
+        this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
+        this.config.animation_steps_num = this.config.autosize_animation_steps_num;
+        this.animate_autosize(draw_preview);
     }
 
 // ---
@@ -1154,7 +1173,6 @@ class ChartContainer {
 // ---
 
     toggle_chart_draw(i) {
-        let temp = this.preview_chart_config.chart_sizing;
         this.charts[i].config.draw = !this.charts[i].config.draw;
         if (!this.charts[i].config.draw) {
             this.config.no_data = true;
@@ -1171,6 +1189,7 @@ class ChartContainer {
             this.container.querySelector('.no-data-message').classList.add('hidden');
         }
 
+        let temp = this.preview_chart_config.chart_sizing;
         this.autosize(true);
         this.config.preview_chart_sizing_diff = this.preview_chart_config.chart_sizing - temp;
 
@@ -1182,18 +1201,39 @@ class ChartContainer {
         let k = this.charts[i].config.draw ? 1 : -1;
         this.config.animation_steps_num = this.config.cancel_animation_steps_num;
         this.animate_cancel_draw(i, k);
-
     }
 
-    animate_autosize() {
+    animate_autosize(draw_preview = false) {
         this.clear_canvas();
+        if(draw_preview){
+            this.clear_preview_canvas();
+        }
 
+        let new_chart_sizing_stage = (this.config.animation_steps_num - this.config.animation_step) / this.config.animation_steps_num;
         let new_chart_sizing = this.chart_config.chart_sizing -
-            this.config.chart_sizing_diff * (this.config.animation_steps_num - this.config.animation_step) / this.config.animation_steps_num;
+            this.config.chart_sizing_diff * new_chart_sizing_stage;
 
         this.animate_vertical_axis(new_chart_sizing);
 
         for (let i = 0; i < this.charts.length; i++) {
+
+            // --- draw preview ---
+            if (draw_preview) {
+                for (const key in this.preview_chart_config) {
+                    if (key !== 'chart_sizing') {
+                        this.charts[i].config[key] = this.preview_chart_config[key];
+                    }
+                }
+
+                this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
+                    - this.config.preview_chart_sizing_diff * new_chart_sizing_stage;
+
+                if (this.charts[i].config.draw) {
+                    this.charts[i].draw_chart('.chart-preview-canvas');
+                }
+            }
+
+            // --- draw main chart ---
 
             this.charts[i].config.chart_sizing = new_chart_sizing;
 
@@ -1209,7 +1249,7 @@ class ChartContainer {
         }
 
         if (this.config.animation_step < this.config.animation_steps_num) {
-            requestAnimationFrame(this.animate_autosize.bind(this));
+            requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
             this.config.animation_step++;
         } else {
             this.config.animation_step = 0;
