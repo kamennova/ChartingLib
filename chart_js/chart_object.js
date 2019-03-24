@@ -3,7 +3,7 @@
  ==========================*/
 
 class Chart {
-    constructor(element, config) {
+    constructor(config) {
         this.config = config;
     }
 
@@ -67,44 +67,44 @@ class Chart {
     }
 
     highlight_point(index) {
-        if (this.config.draw) {
-            let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
-            let ctx = canvas.getContext('2d');
-            let x0 = ((index - this.config.start_index) * this.config.point_dist + this.config.offset_left) *this.config.dpi,
-                y0 = (this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing)*this.config.dpi;
+        if (!this.config.draw) return;
 
-            ctx.fillStyle = this.config.bg_color;
-            ctx.strokeStyle = this.config.line_colour;
-            ctx.lineWidth = this.config.line_width;
+        let canvas = document.querySelector(this.config.chart_wrapper_selector + ' ' + this.config.canvas_selector);
+        let ctx = canvas.getContext('2d');
+        let x0 = ((index - this.config.start_index) * this.config.point_dist + this.config.offset_left) * this.config.dpi,
+            y0 = (this.config.canvas_height - this.config.chart_data[index] * this.config.chart_sizing) * this.config.dpi;
 
-            ctx.beginPath();
-            ctx.arc(~~(x0 + 0.5), ~~(y0 + 0.5), ~~(this.config.point_radius *this.config.dpi + 0.5), 0, Math.PI * 2, false);
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
-        }
+        ctx.fillStyle = this.config.bg_color;
+        ctx.strokeStyle = this.config.line_colour;
+        ctx.lineWidth = this.config.line_width;
+
+        ctx.beginPath();
+        ctx.arc(~~(x0 + 0.5), ~~(y0 + 0.5), ~~(this.config.point_radius * this.config.dpi + 0.5), 0, Math.PI * 2, false);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
     }
 
     draw_line_chart(ctx) {
         let x = this.config.offset_left * this.config.dpi,
-            y0 = ctx.canvas.clientHeight* this.config.dpi,
+            y0 = ctx.canvas.clientHeight * this.config.dpi,
             index = this.config.start_index,
             count = this.config.points_count; // number of all points (visible + max 2 outside ones)
 
         if (this.config.start_index !== 0) {
-            x -= this.config.point_dist *this.config.dpi;
+            x -= this.config.point_dist * this.config.dpi;
             index--;
         }
 
-        let y = y0 - this.config.chart_sizing * this.config.chart_data[index] *this.config.dpi;
+        let y = y0 - this.config.chart_sizing * this.config.chart_data[index] * this.config.dpi;
 
         ctx.moveTo(x, y);
         count--;
         index++;
 
         for (let i = 0; i < count; i++, index++) {
-            x += this.config.point_dist *this.config.dpi;
-            y = y0 - this.config.chart_sizing * this.config.chart_data[index] *this.config.dpi;
+            x += this.config.point_dist * this.config.dpi;
+            y = y0 - this.config.chart_sizing * this.config.chart_data[index] * this.config.dpi;
 
             ctx.lineTo(x, y);
         }

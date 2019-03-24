@@ -11,7 +11,7 @@ class ThemeSwitcher {
         let theme_btn = document.querySelector('.theme-btn');
         theme_btn.querySelector('.mode-name').textContent = this.modes[(this.mode + 1) % this.modes.length];
 
-        theme_btn.addEventListener('click', function () {
+        theme_btn.addEventListener('click', () => {
             document.body.classList.remove(this.modes[this.mode] + '-mode');
             this.toggle_mode();
             document.body.classList.add(this.modes[this.mode] + '-mode');
@@ -20,7 +20,7 @@ class ThemeSwitcher {
             for (let i = 0; i < this.chart_containers.length; i++) {
                 this.chart_containers[i].set_mode(this.modes[this.mode]);
             }
-        }.bind(this));
+        });
     }
 
     toggle_mode() {
