@@ -14,16 +14,14 @@ class ChartContainer {
         this.fill();
         this.get_size();
         this.insert_HTML();
+        this.theme_switch_init();
+        this.charts_init();
+        this.get_preview_coords();
+        this.get_data_range();
+        this.prepare_autosize_animation(true);
 
         setTimeout(function () {
-            this.theme_switch_init();
-            this.charts_init();
             this.preview_box_init();
-
-            // this.config.autosize_duration = 880;
-            this.prepare_autosize_animation(true);
-            // this.config.autosize_duration = 50;
-
             this.config.curr_timeflow_step = 1;
             this.get_curr_timeflow_step();
             this.move_timeflow_axis();
@@ -39,20 +37,8 @@ class ChartContainer {
             return;
         }
 
-        /*if (this.container.clientWidth <= this.max_adjust_width) {
-            this.container.style.width = this.container.clientWidth < 320 ? 320 + 'px' : '100%';
-        } else {
-            console.log(this.container.style.width);
-        }*/
-
-        // if (this.container.clientWidth <= this.max_adjust_width) {
-        //     this.container.style.width = this.container.clientWidth < 320 ? 320 + 'px' : '100%';
-        // }
         this.config.canvas_width = this.container.clientWidth < 320 ? 320 : this.container.clientWidth;
-        // this.config.canvas_width = this.container.clientWidth;
-        // console.log(this.config.canvas_width);
         this.content_width = this.config.canvas_width - 2 * this.config.side_padding;
-        // console.log(this.content_width);
         this.config.preview_canvas_width = this.content_width;
     }
 
@@ -108,6 +94,16 @@ class ChartContainer {
         this.update_main_chart();
     }
 
+    highlight_check() {
+        console.log(this.config.highlight);
+        if (this.config.highlight) {
+            this.curr_point_index = this.get_point_index(this.curr_mouse_pos);
+            this.show_point_modal(this.curr_point_index);
+            let point_coord = this.get_point_x_coord(this.curr_point_index);
+            this.highlight_line(point_coord);
+        }
+    }
+
     animate_chart_labels() {
         this.labels = this.container.querySelectorAll('.charts-labels-list li');
 
@@ -143,9 +139,6 @@ class ChartContainer {
         this.autosize(); // get chart sizing
         this.display_vertical_axis();
         this.update_main_chart_canvas();
-        // ---
-
-        // ---
         this.config.curr_timeflow_step = 1;
         this.get_curr_timeflow_step();
         this.move_timeflow_axis();
@@ -154,13 +147,7 @@ class ChartContainer {
     update_main_chart_canvas() {
         this.clear_canvas();
         this.draw_horizontal_grid();
-
-        if (this.config.highlight) {
-            this.curr_point_index = this.get_point_index(this.curr_mouse_pos);
-            this.show_point_modal(this.curr_point_index);
-            let point_coord = this.get_point_x_coord(this.curr_point_index);
-            this.highlight_line(point_coord);
-        }
+        this.highlight_check();
 
         for (let i = 0; i < this.charts.length; i++) {
             this.set_chart_params();
@@ -293,7 +280,6 @@ class ChartContainer {
         // -- making labels list --
 
         let labels_list = '';
-        let labels_min_dist = 5;
 
         for (let i = 0; i < this.chart_config.timeflow_points_count; i++) {
             if ((start_point - this.timeflow_start_offset + k * i) % iteration_step === 0) {
@@ -498,7 +484,6 @@ class ChartContainer {
         this.layer_right = this.container.querySelector('.area-border-right .layer');
         this.timeflow_axis = this.container.querySelector('.timeflow-axis-labels-container');
         this.vertical_axis_labels_container = this.container.querySelector(' .vertical-axis-labels-container');
-        this.show_box_touch_indicator = this.container.querySelector('.show-area-touch'); // todo
         this.ctx = this.get_ctx();
     }
 
@@ -507,6 +492,9 @@ class ChartContainer {
     init_point_details_show() {
         let canvas_layer = this.container.querySelector('.canvas-layer');
 
+        canvas_layer.addEventListener('mousedown', function () {
+            this.highlight = false;
+        });
         canvas_layer.addEventListener('mousemove', this.point_details_show.bind(this));
         canvas_layer.addEventListener('mouseout', this.cancel_point_details_show.bind(this));
 
@@ -760,12 +748,8 @@ class ChartContainer {
 
     preview_box_init() {
         this.area_border_width = 7 + 2; // border width +  dist btw borders
-        this.get_preview_coords();
-
         this.preview_box_resize_init();
         this.preview_box_move_init();
-
-        this.get_data_range();
     }
 
     preview_box_resize_init() {
@@ -952,28 +936,7 @@ class ChartContainer {
         this.ctx.closePath();
     }
 
-    // animate({
-    //             duration: 1000,
-    //             timing: function(timeFraction) {
-    // return timeFraction;
-// },
-// draw: function(progress) {
-//     elem.style.width = progress * 100 + '%';
-// }
-// });
-
-    /*function step(timestamp) {
-        if (!start) start = timestamp;
-        var progress = timestamp - start;
-        element.style.transform = 'translateX(' + Math.min(progress / 10, 200) + 'px)';
-        if (progress < 2000) {
-            window.requestAnimationFrame(step);
-        }
-    }
-
-    window.requestAnimationFrame(step);*/
-
-    get_point_index(mouse_x) {
+    get_point_index() {
         let canvas_pos = this.curr_mouse_pos - this.canvas.getBoundingClientRect().left;
         return this.chart_config.start_index +
             Math.round((canvas_pos - this.chart_config.offset_left) / this.chart_config.point_dist);
@@ -981,8 +944,7 @@ class ChartContainer {
 
     point_details_show(e) {
         e = e || window.event;
-        let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
-        this.curr_mouse_pos = mouse_x;
+        this.curr_mouse_pos = e.touches ? e.touches[0].clientX : e.pageX;
 
         let point_index = this.get_point_index();
         let point_coord = this.get_point_x_coord(point_index);
@@ -1016,10 +978,12 @@ class ChartContainer {
         e = e || window.event;
         e.preventDefault();
 
-        this.config.highlight = !this.config.highlight;
+        if (e.touches) {
+            this.config.highlight = !this.config.highlight;
 
-        if (e.touches && this.config.highlight) {
-            return;
+            if (this.config.highlight) {
+                return;
+            }
         }
 
         this.curr_point_index = -1;
@@ -1300,12 +1264,7 @@ class ChartContainer {
             this.config.chart_sizing_diff * (1 - this.config.stage));
 
         this.animate_vertical_axis(new_chart_sizing);
-
-        if (this.config.highlight) {
-            this.curr_point_index = this.get_point_index(this.curr_mouse_pos);
-            let point_coord = this.get_point_x_coord(this.curr_point_index);
-            this.highlight_line(point_coord);
-        }
+        this.highlight_check();
 
         for (let i = 0; i < this.charts.length; i++) {
 
@@ -1363,6 +1322,7 @@ ChartContainer.prototype.Default_container_config = {
     // canvas_width: 400,
 
     name: '',
+    is_mobile: false,
 
     preview_canvas_height: 55,
     preview_canvas_width: undefined,
