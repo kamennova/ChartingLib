@@ -17,20 +17,19 @@ class ChartContainer {
         this.theme_switch_init();
         this.charts_init();
 
+        this.get_data_range();
+        this.config.curr_timeflow_step = 1;
+        this.get_curr_timeflow_step();
+        this.move_timeflow_axis();
+        this.prepare_autosize_animation(true);
 
         setTimeout(function () {
             this.get_preview_coords();
-            this.get_data_range();
-            this.config.curr_timeflow_step = 1;
-            this.get_curr_timeflow_step();
-            this.move_timeflow_axis();
-            this.prepare_autosize_animation(true);
-
             this.preview_box_init();
             this.charts_toggle_draw_init();
             this.init_point_details_show();
             window.addEventListener('resize', this.resize);
-        }.bind(this), 1200);
+        }.bind(this), 1);
     }
 
     get_size() {
@@ -57,7 +56,6 @@ class ChartContainer {
         this.show_area_box.style.width = (width * this.content_width) + 'px';
 
         this.container.querySelector('.chart-preview-wrapper').style.width = this.content_width + 'px';
-
 
         this.canvas.style.width = this.config.canvas_width + 'px';
         this.canvas.style.height = this.config.canvas_height + 'px';
@@ -159,18 +157,7 @@ class ChartContainer {
         }
     }
 
-    add_chart(config) {
-        let new_chart_index = this.charts.length;
-        this.charts[new_chart_index] = config;
-        this.init_chart(new_chart_index);
-        this.update_all();
-    }
-
 // ---
-
-    get_data_len() {
-        return this.timeflow_data.length;
-    }
 
     set_theme_colors() {
         this.config.theme_colors = {
@@ -507,12 +494,7 @@ class ChartContainer {
     init_point_details_show() {
         let canvas_layer = this.container.querySelector('.canvas-layer');
 
-        canvas_layer.addEventListener('mousedown', function () {
-            console.log(this.config.highlight);
-            this.config.highlight = !this.config.highlight;
-            this.point_details_show.bind(this);
-        }.bind(this));
-
+        canvas_layer.addEventListener('mousedown', this.point_details_show.bind(this));
         canvas_layer.addEventListener('mousemove', this.point_details_show.bind(this));
         canvas_layer.addEventListener('mouseout', this.cancel_point_details_show.bind(this));
 
@@ -961,11 +943,11 @@ class ChartContainer {
     }
 
     point_details_show(e) {
-        if (this.config.highlight) {
+        if (e.type === 'mousedown' || e.type === 'touchstart') {
+            this.config.highlight = !this.config.highlight;
+        } else if (this.config.highlight && e.type !== 'touchmove') {
             return;
         }
-
-        this.config.highlight = false;
 
         e = e || window.event;
         this.curr_mouse_pos = e.touches ? e.touches[0].clientX : e.pageX;
@@ -985,7 +967,10 @@ class ChartContainer {
             this.clear_canvas();
             this.draw_horizontal_grid();
             this.highlight_line(point_coord);
-            if (e.touches) this.config.highlight = false;
+
+            if(e.type === 'mousedown' || e.type === 'touchstart'){
+                this.config.highlight = true;
+            }
 
             for (let i = 0; i < this.charts.length; i++) {
                 if (this.charts[i].config.draw) {
@@ -1002,15 +987,9 @@ class ChartContainer {
         e = e || window.event;
         e.preventDefault();
 
-        // if (e.touches) {
-        console.log(this.config.highlight);
-        // this.config.highlight = !this.config.highlight;
-
         if (this.config.highlight) {
-            this.config.highlight = !this.config.highlight;
             return;
         }
-        // }
 
         this.curr_point_index = -1;
         this.point_modal.classList.remove('show');
@@ -1076,8 +1055,6 @@ class ChartContainer {
         } else if (!this.autosize_animation_requested) {
             this.autosize_animation_requested = true;
             window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
-        } else {
-            // console.log('----');
         }
     }
 
@@ -1099,10 +1076,7 @@ class ChartContainer {
             this.show_area_box.style.width = new_width + 'px';
             this['layer_' + this.curr_area_border].style.width = dist_to_side + 'px';
 
-            this.get_data_range(); // TODO func optimiztaion + right border
-            // this.config.data_start = (mouse_x - this.x_pos_left) / preview_box_width;
-            // this.config.start_index = Math.floor(this.config.data_start * this.charts[0].config.chart_data.length); // percentage
-
+            this.get_data_range();
             this.prepare_autosize_animation();
             this.resize_timeflow_axis();
         }
@@ -1159,7 +1133,7 @@ class ChartContainer {
         }
     }
 
-    animate_vertical_axis(new_chart_sizing) { // todo blinking non changing vertical size
+    animate_vertical_axis(new_chart_sizing) {
         this.destroy_old_labels('vertical');
         this.prepare_grid_animation();
 
@@ -1331,7 +1305,6 @@ class ChartContainer {
 ChartContainer.prototype.Default_container_config = {
     adjustable: true,
     canvas_height: 400,
-    // canvas_width: 400,
 
     name: '',
     is_mobile: false,
