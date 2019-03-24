@@ -1,0 +1,586 @@
+@import "variables";
+
+.touch-indicator() {
+  position: absolute;
+
+  display: block;
+  height: 0;
+  width: 0;
+  margin: 0;
+
+  border-radius: 50%;
+  opacity: 0.4;
+
+  transition: 0.2s linear height, 0.2s linear width, 0.1s linear opacity, 0.2s linear margin;
+}
+
+.chart-container-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .chart-container-name {
+    margin-bottom: 0;
+
+    font-size: 25px;
+    font-weight: bold;
+    color: var(--contrast);
+    line-height: 1.2;
+  }
+
+  .chart-wrapper {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .canvas-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+
+    margin: 0 auto;
+
+    background-image: linear-gradient(to bottom, var(--background) 0px, rgba(0, 0, 0, 0) 15px);
+  }
+
+  .chart-preview-wrapper {
+    position: relative;
+
+    display: flex;
+
+    .chart-preview-canvas {
+      z-index: 10;
+    }
+
+    .show-area-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      height: 100%;
+      overflow-y: visible;
+
+      z-index: 20;
+
+      &::before, &::after {
+        content: "";
+
+        position: absolute;
+        left: 6px;
+
+        display: block;
+
+        width: -webkit-calc(100% - 12px);
+        width: -moz-calc(100% - 12px);
+        width: -o-calc(100% - 12px);
+        width: calc(100% - 12px);
+
+        height: 2px;
+
+        background-color: @preview_border;
+      }
+
+      &::after {
+        bottom: 0;
+      }
+
+      .show-area-touch {
+        .touch-indicator();
+        left: 50%;
+        top: 50%;
+
+        margin: 0;
+
+        background-color: @preview_border;
+
+        z-index: 10;
+      }
+
+      &.active .show-area-touch {
+        width: 66px;
+        height: 66px;
+        margin: -33px 0 0 -33px;
+
+        opacity: 0.7;
+      }
+    }
+
+    .area-border {
+      position: absolute;
+      overflow-y: visible;
+
+      height: 100%;
+      width: 6px;
+
+      background-color: @preview_border;
+
+      cursor: pointer;
+      z-index: 5;
+
+      &::after {
+        content: "";
+
+        .touch-indicator();
+
+        top: 50%;
+        left: 50%;
+
+        background-color: inherit;
+      }
+
+      &.active::after {
+        width: 66px;
+        height: 66px;
+        margin: -33px 0 0 -33px;
+
+        opacity: 0.7;
+      }
+
+      .layer {
+        position: absolute;
+        top: 0;
+
+        display: block;
+        height: 100%;
+
+        background-color: var(--background-darker);
+
+        cursor: default;
+
+        transition: @theme_transition_time linear background-color;
+      }
+
+      &-left {
+        left: 0;
+
+        .layer {
+          right: 6px;
+        }
+      }
+
+      &-right {
+        right: 0;
+
+        .layer {
+          left: 6px;
+        }
+      }
+    }
+  }
+
+  .no-data-message {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40%;
+
+    width: auto;
+    margin: 0 auto;
+
+    color: var(--muted);
+    text-align: center;
+
+    span {
+      padding: 0 10px;
+      background-color: var(--background);
+    }
+  }
+
+  //----
+
+  .axis-label {
+    position: absolute;
+
+    display: inline-block;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+
+    border-color: inherit;
+    user-select: none;
+
+    &::after {
+      content: "";
+
+      position: absolute;
+
+      display: none;
+      border-color: inherit;
+    }
+  }
+
+  /* ===================
+      Vertical axis
+  ==================== */
+
+  .vertical-axis-labels-container {
+    position: absolute;
+    left: 0;
+    top: -3px;
+
+    min-width: 75px;
+
+    overflow: hidden;
+    z-index: -1;
+
+    .vertical-axis-label {
+      left: 0;
+    }
+  }
+
+  /* ===================
+      Horizontal axis
+  ==================== */
+
+  .timeflow-axis {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .timeflow-axis-labels-container {
+    position: relative;
+
+    height: 20px;
+    margin-top: 5px;
+
+    overflow: hidden;
+
+    .timeflow-axis-label {
+      top: 0;
+
+      width: 42px;
+      margin-top: 4px;
+      margin-left: -42px;
+
+      text-align: center;
+      white-space: nowrap;
+
+      overflow: visible;
+      transition: opacity 0.2s linear;
+    }
+
+    .timeflow-axis-label.faded {
+      animation-name: fadeOut;
+      animation-timing-function: linear;
+      animation-delay: 0.1s;
+      animation-duration: 0.4s;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+    }
+
+    .timeflow-axis-label::after {
+      top: -4px;
+      left: 0;
+      right: 0;
+
+      width: 1px;
+      height: 4px;
+      margin: 0 auto;
+
+      border-right: 1px solid;
+      border-color: inherit;
+    }
+  }
+}
+
+@keyframes fadeOut {
+  100% {
+    opacity: 0;
+  }
+}
+
+.axis-labels-container.no-line {
+  border: 0;
+}
+
+.axis-labels-container.no-ticks .axis-label::after {
+  display: none;
+}
+
+/* ====================
+     Chart labels
+==================== */
+
+.charts-labels-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  padding-left: 0;
+
+  list-style: none;
+
+  li {
+    position: relative;
+  }
+
+  li::after,
+  .checkbox-indicator::after,
+  .checkbox-indicator::before {
+    content: "";
+
+    position: absolute;
+
+    display: block;
+    margin: auto;
+
+    border-radius: 50%;
+  }
+
+  li::after {
+    left: 17px;
+    top: 17px;
+
+    margin-left: 0;
+    margin-top: 0;
+
+    border-width: 0;
+    background-color: transparent;
+    border-color: var(--background-darker); //todo
+    border-style: solid;
+  }
+
+  li.active .checkbox-indicator::after {
+    .animated_bg();
+  }
+
+  li.active::after {
+    .animated();
+  }
+
+  .chart-label {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    margin: 0 15px 10px 0;
+    padding: 6px 12px 6px 6px;
+
+    font-size: 14px;
+    color: var(--contrast);
+
+    border: 1px solid var(--border-grey);
+    border-radius: 18px;
+
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+
+    transition: @theme_transition_time linear border-color;
+
+    .checkbox-indicator {
+      position: relative;
+
+      display: block;
+      width: 22px;
+      height: 22px;
+      margin-right: 8px;
+
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 14 10'%3E%3Cpath fill-rule='evenodd' fill='white' d='M13.605,2.186 L5.993,9.618 C5.477,10.119 4.640,10.119 4.123,9.618 L0.382,5.996 C-0.135,5.496 -0.135, 4.685 0.382,4.186 C0.898,3.684 1.736,3.684 2.252,4.186 L5.058,6.902 L11.735,0.373 C12.252,-0.126 13.089,-0.126 13.605,0.373 C14.122,0.874 14.122,1.685 13.605,2.186 Z'/%3E%3C/svg%3E");
+      background-size: 10px;
+      background-repeat: no-repeat;
+      background-position: center center;
+      border: 1px solid;
+      border-radius: 50%;
+
+      &::after, &::before {
+        transition: 0.3s linear all;
+      }
+
+      &:after {
+        left: 50%;
+        top: 50%;
+
+        background-color: var(--background-darker);
+        z-index: -1;
+      }
+
+      &::before {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+
+        background-color: var(--background);
+      }
+    }
+
+    input:checked + .checkbox-indicator {
+      &::before {
+        height: 0;
+        width: 0;
+      }
+    }
+
+    input:not(:checked) + .checkbox-indicator {
+      background-image: none;
+
+      &::before {
+        height: 100%;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.animated() {
+  animation: toggle_draw_after;
+  animation-duration: 0.35s;
+  animation-fill-mode: initial;
+  animation-timing-function: linear;
+}
+
+.animated_bg() {
+  animation: toggle_draw_label;
+  animation-duration: 0.35s;
+  animation-fill-mode: initial;
+  animation-timing-function: linear;
+}
+
+@keyframes toggle_draw_after {
+  0% {
+    height: 0;
+    width: 0;
+    margin-left: 0;
+    margin-top: 0;
+
+    border-width: 0;
+    opacity: 1;
+  }
+
+  50% {
+    border-width: 10px;
+
+    opacity: 0.8;
+  }
+
+  100% {
+    width: 80px;
+    height: 80px;
+    margin-left: -40px;
+    margin-top: -40px;
+
+    border-width: 8px;
+    opacity: 1;
+  }
+}
+
+@keyframes toggle_draw_label {
+  0% {
+    height: 0;
+    width: 0;
+    margin: 0;
+
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0.8;
+  }
+
+  100% {
+    width: 130px;
+    height: 130px;
+    margin-left: -65px;
+    margin-top: -65px;
+
+    opacity: 0;
+  }
+}
+
+/* ====================
+     Point details
+==================== */
+
+.point-details-modal {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  display: none;
+  flex-direction: column;
+  //flex-shrink: 1;
+  align-items: flex-start;
+  align-content: flex-start;
+  justify-content: flex-start;
+  justify-items: flex-start;
+
+  flex-grow: 0;
+  padding: 5px 12px 7px 10px;
+
+  background-color: var(--background-lighter);
+  border: 1px solid var(--background-darker);
+  //#ececec;
+  border-radius: 7px;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+
+  z-index: 10;
+
+  .breakpoint-date {
+    margin: 3px 0 5px;
+
+    font-size: 15px;
+    color: var(--contrast);
+    white-space: nowrap;
+  }
+
+  .points { // todo
+    display: flex;
+    align-self: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    justify-content: flex-start;
+    justify-items: flex-start;
+    //width: auto;
+    flex-basis: auto;
+    flex-wrap: wrap;
+    margin: 0;
+    padding-left: 0;
+
+    list-style: none;
+
+    li {
+      margin-right: 16px;
+
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    li:last-of-type {
+      margin-right: 0;
+    }
+
+    .point-value {
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
+
+  &.show {
+    display: flex;
+  }
+}
+
+//---
+
+.theme-btn {
+  display: block;
+  margin: auto auto 55px;
+  padding: 15px 10px;
+  align-self: flex-end;
+
+  font-size: 18px;
+  color: #34a0e5;
+  text-align: center;
+
+  cursor: pointer;
+
+  .mode-name {
+    text-transform: capitalize;
+  }
+}
