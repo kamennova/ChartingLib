@@ -51,7 +51,7 @@
   .chart-preview-wrapper {
     position: relative;
 
-    display: flex;//todo
+    display: flex;
 
     .chart-preview-canvas {
       z-index: 10;
@@ -71,14 +71,14 @@
         content: "";
 
         position: absolute;
-        left: 5px;
+        left: 6px;
 
         display: block;
 
-        width: -webkit-calc(100% - 10px);
-        width: -moz-calc(100% - 10px);
-        width: -o-calc(100% - 10px);
-        width: calc(100% - 10px);
+        width: -webkit-calc(100% - 12px);
+        width: -moz-calc(100% - 12px);
+        width: -o-calc(100% - 12px);
+        width: calc(100% - 12px);
 
         height: 2px;
 
@@ -176,13 +176,19 @@
   .no-data-message {
     position: absolute;
     left: 0;
+    right: 0;
     top: 40%;
 
-    width: 100%;
+    width: auto;
     margin: 0 auto;
 
     color: var(--muted);
     text-align: center;
+
+    span {
+      padding: 0 10px;
+      background-color: var(--background);
+    }
   }
 
   //----
@@ -364,6 +370,8 @@
     overflow: hidden;
     cursor: pointer;
     user-select: none;
+
+    transition: @theme_transition_time linear border-color;
 
     .checkbox-indicator {
       position: relative;

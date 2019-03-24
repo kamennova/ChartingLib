@@ -20,7 +20,10 @@ class ChartContainer {
             this.charts_init();
             this.preview_box_init();
 
+            // this.config.autosize_duration = 880;
             this.prepare_autosize_animation(true);
+            // this.config.autosize_duration = 50;
+
             this.config.curr_timeflow_step = 1;
             this.get_curr_timeflow_step();
             this.move_timeflow_axis();
@@ -68,8 +71,14 @@ class ChartContainer {
 
         this.container.querySelector('.chart-preview-wrapper').style.width = this.content_width + 'px';
 
-        this.canvas.setAttribute('width', this.config.canvas_width + 'px');
-        this.preview_canvas.setAttribute('width', this.content_width + 'px');
+
+        this.canvas.style.width = this.config.canvas_width + 'px';
+        this.canvas.style.height = this.config.canvas_height + 'px';
+        this.canvas.setAttribute('width', this.config.canvas_width * this.config.dpi + 'px');
+        this.canvas.setAttribute('height', this.config.canvas_height * this.config.dpi + 'px');
+
+        this.preview_canvas.style.width = this.content_width + 'px';
+        this.preview_canvas.setAttribute('width', this.content_width * this.config.dpi + 'px');
 
         this.container.querySelector('.charts-labels-list').style.width = this.content_width + 'px';
 
@@ -370,31 +379,36 @@ class ChartContainer {
 // --- Drawing additional canvas elements ---
 
     draw_horizontal_grid() {
-        let ctx = this.canvas.getContext('2d');
+
         this.set_vertical_axis_step();
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.config.grid_colour;
-        ctx.globalAlpha = 1;
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = this.config.grid_colour;
+        this.ctx.globalAlpha = 1;
 
-        let y0 = this.config.canvas_height + this.chart_config.chart_sizing * this.chart_config.vertical_axis_val_step - 1;
+        let y0 = -this.chart_config.chart_sizing * this.chart_config.vertical_axis_val_step + 1;
 
         for (let i = 0; i < this.config.vertical_axis_steps_count; i++) {
-            y0 -= this.chart_config.chart_sizing * this.chart_config.vertical_axis_val_step;
+            y0 += this.chart_config.chart_sizing * this.chart_config.vertical_axis_val_step;
             y0 = ~~y0 + 0.5;
 
-            ctx.beginPath();
-            ctx.moveTo(this.config.side_padding, y0);
-            ctx.lineTo(this.content_width + this.config.side_padding, y0);
-            ctx.stroke();
-            ctx.closePath();
+            this.draw_gridline(y0);
         }
+    }
+
+    draw_gridline(y) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.config.side_padding * this.config.dpi, (this.config.canvas_height - y) * this.config.dpi);
+        this.ctx.lineTo((this.content_width + this.config.side_padding) * this.config.dpi, (this.config.canvas_height - y) * this.config.dpi);
+        this.ctx.stroke();
+        this.ctx.closePath();
     }
 
 // ----
 
     fill() {
         this.config = Object.assign({}, this.Default_container_config, this.config); // fill empty config fields with default vals
+        this.config.dpi = window.devicePixelRatio;
         this.timeflow_start_offset = (this.data_len - 1 % 2) === 0 ? 0 : 1;
 
         this.get_size();
@@ -499,8 +513,8 @@ class ChartContainer {
         ctx.strokeStyle = this.config.grid_accent_colour;
 
         ctx.beginPath();
-        ctx.moveTo(x0, this.chart_config.padding_top);
-        ctx.lineTo(x0, this.config.canvas_height);
+        ctx.moveTo(x0 * this.config.dpi, this.chart_config.padding_top * this.config.dpi);
+        ctx.lineTo(x0 * this.config.dpi, this.config.canvas_height * this.config.dpi);
         ctx.stroke();
         ctx.closePath();
     }
@@ -539,12 +553,12 @@ class ChartContainer {
 
     clear_canvas() {
         let ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.config.canvas_width, this.config.canvas_height);
+        ctx.clearRect(0, 0, this.config.canvas_width * this.config.dpi, this.config.canvas_height * this.config.dpi);
     }
 
     clear_preview_canvas() {
         let ctx = this.preview_canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.config.preview_canvas_width, this.config.preview_canvas_height);
+        ctx.clearRect(0, 0, this.config.preview_canvas_width * this.config.dpi, this.config.preview_canvas_height * this.config.dpi);
     }
 
     get_ctx() {
@@ -583,6 +597,8 @@ class ChartContainer {
 
         for (let i = 0; i < this.charts.length; i++) {
             this.init_chart(i);
+            this.charts[i].config.dpi = this.config.dpi;
+            this.charts[i].config.line_width *= this.charts[i].config.dpi;
         }
 
         this.preview_chart_config.content_height = this.config.preview_canvas_height - this.preview_chart_config.padding_top;
@@ -622,7 +638,7 @@ class ChartContainer {
         this.point_modal = this.new_point_modal();
         canvas_layer.appendChild(this.point_modal);
 
-        wrapper.insertAdjacentHTML('beforeend', '<p class="hidden no-data-message">' + this.config.no_data_message + '</p>');
+        wrapper.insertAdjacentHTML('beforeend', '<p class="hidden no-data-message"><span>' + this.config.no_data_message + '</span></p>');
 
         this.point_modal.insertAdjacentHTML('afterbegin', '<p class="breakpoint-date"></p>');
         this.point_modal.insertAdjacentHTML('beforeend', '<ul class="points"></ul>');
@@ -675,8 +691,10 @@ class ChartContainer {
         let width = is_preview ? this.config.preview_canvas_width : this.config.canvas_width;
 
         canvas.classList.add(class_name);
-        canvas.setAttribute('height', height);
-        canvas.setAttribute('width', width);
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        canvas.setAttribute('height', height * this.config.dpi);
+        canvas.setAttribute('width', width * this.config.dpi);
 
         return canvas;
     }
@@ -920,8 +938,8 @@ class ChartContainer {
 
     draw_gridline(y) {
         this.ctx.beginPath();
-        this.ctx.moveTo(this.config.side_padding, this.config.canvas_height - y);
-        this.ctx.lineTo(this.content_width + this.config.side_padding, this.config.canvas_height - y);
+        this.ctx.moveTo(this.config.side_padding * this.config.dpi, (this.config.canvas_height - y) * this.config.dpi);
+        this.ctx.lineTo((this.content_width + this.config.side_padding) * this.config.dpi, (this.config.canvas_height - y) * this.config.dpi);
         this.ctx.stroke();
         this.ctx.closePath();
     }
@@ -1233,17 +1251,16 @@ class ChartContainer {
     animate_autosize(draw_preview, time) {
         if (!this.config.start) this.config.start = time;
         this.config.stage = (time - this.config.start) / this.config.autosize_duration;
-        if (this.config.stage > 1) this.config.stage = 1;
 
-        console.log(time);
+        if (this.config.stage > 1) this.config.stage = 1;
 
         this.clear_canvas();
         if (draw_preview) {
             this.clear_preview_canvas();
         }
 
-        let new_chart_sizing = this.chart_config.chart_sizing -
-            this.config.chart_sizing_diff * (1 - this.config.stage);
+        let new_chart_sizing = (this.chart_config.chart_sizing -
+            this.config.chart_sizing_diff * (1 - this.config.stage));
 
         this.animate_vertical_axis(new_chart_sizing);
 
@@ -1257,8 +1274,8 @@ class ChartContainer {
                     }
                 }
 
-                this.charts[i].config.chart_sizing = this.preview_chart_config.chart_sizing
-                    - this.config.preview_chart_sizing_diff * (1 - this.config.stage);
+                this.charts[i].config.chart_sizing = (this.preview_chart_config.chart_sizing
+                    - this.config.preview_chart_sizing_diff * (1 - this.config.stage));
 
                 if (this.charts[i].config.draw) {
                     this.charts[i].draw_chart('.chart-preview-canvas');
@@ -1283,7 +1300,6 @@ class ChartContainer {
         if (this.config.stage < 1) {
             window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
         } else {
-            console.log('-----');
             this.config.start = false;
             this.set_vertical_axis_step();
         }
@@ -1323,7 +1339,7 @@ ChartContainer.prototype.Default_container_config = {
     cancel_animation_steps_num: 9,
     autosize_animation_steps_num: 5,
 
-    duration: 200,
+    duration: 180,
     autosize_duration: 50,
 
     no_data: false,
