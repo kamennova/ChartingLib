@@ -226,13 +226,7 @@ class ChartContainer {
 // --- Display axises ---
 
     get_curr_timeflow_step() {
-        let step = 1;
-
-        while (this.chart_config.points_count / step > this.config.timeflow_steps_count) {
-            step *= 2;
-        }
-
-        this.curr_timeflow_step = step;
+        this.curr_timeflow_step = 2 ** Math.ceil(Math.log2(this.chart_config.points_count / this.config.timeflow_steps_count));
     }
 
     resize_timeflow_axis() {
