@@ -31,7 +31,7 @@ class ChartContainer {
             this.charts_toggle_draw_init();
             this.init_point_details_show();
             window.addEventListener('resize', this.resize);
-        }.bind(this), 100);
+        }.bind(this), 1000);
     }
 
     get_size() {
@@ -143,6 +143,7 @@ class ChartContainer {
         this.autosize(); // get chart sizing
         this.display_vertical_axis();
         this.update_main_chart_canvas();
+        // ---
 
         // ---
         this.config.curr_timeflow_step = 1;
@@ -154,11 +155,19 @@ class ChartContainer {
         this.clear_canvas();
         this.draw_horizontal_grid();
 
+        if (this.config.highlight) {
+            this.curr_point_index = this.get_point_index(this.curr_mouse_pos);
+            this.show_point_modal(this.curr_point_index);
+            let point_coord = this.get_point_x_coord(this.curr_point_index);
+            this.highlight_line(point_coord);
+        }
+
         for (let i = 0; i < this.charts.length; i++) {
             this.set_chart_params();
 
             if (this.charts[i].config.draw) {
                 this.charts[i].draw_chart();
+                if (this.config.highlight) this.charts[i].highlight_point(this.curr_point_index);
             }
         }
     }
@@ -267,12 +276,12 @@ class ChartContainer {
     resize_timeflow_axis() {
         this.destroy_old_labels('timeflow');
 
-        let k = document.curr_area_border === 'right' ? 1 : -1;
+        let k = this.curr_area_border === 'right' ? 1 : -1;
 
         this.get_curr_timeflow_step();
 
         // -- getting start point --
-        let start_point = document.curr_area_border === 'right' ? this.chart_config.start_index :
+        let start_point = this.curr_area_border === 'right' ? this.chart_config.start_index :
             this.chart_config.end_index;
         let iteration_step = (this.config.curr_timeflow_step > 1 ? this.config.curr_timeflow_step / 2 : 1);
 
@@ -507,16 +516,15 @@ class ChartContainer {
     }
 
     highlight_line(x0) {
-        let ctx = this.get_ctx();
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = this.config.grid_accent_colour;
+        this.ctx.globalAlpha = 1;
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.config.grid_accent_colour;
-
-        ctx.beginPath();
-        ctx.moveTo(x0 * this.config.dpi, this.chart_config.padding_top * this.config.dpi);
-        ctx.lineTo(x0 * this.config.dpi, this.config.canvas_height * this.config.dpi);
-        ctx.stroke();
-        ctx.closePath();
+        this.ctx.beginPath();
+        this.ctx.moveTo(~~(x0 * this.config.dpi) + 0.5, this.chart_config.padding_top * this.config.dpi);
+        this.ctx.lineTo(~~(x0 * this.config.dpi) + 0.5, this.config.canvas_height * this.config.dpi);
+        this.ctx.stroke();
+        this.ctx.closePath();
     }
 
     get_point_x_coord(index) {
@@ -524,7 +532,7 @@ class ChartContainer {
     }
 
     show_point_modal(index) {
-        let date = this.config.point_modal_date_func(this.timeflow_data[document.curr_point_index]);
+        let date = this.config.point_modal_date_func(this.timeflow_data[index]);
         let point_values = this.point_modal.querySelectorAll('.point-value');
 
         for (let i = 0; i < this.charts.length; i++) {
@@ -536,7 +544,7 @@ class ChartContainer {
         this.point_modal.querySelector('.breakpoint-date').textContent = date;
 
         let modal_margin = -32;
-        let modal_pos = this.get_point_x_coord(document.curr_point_index);
+        let modal_pos = this.get_point_x_coord(index);
 
         if (modal_margin > this.content_width + this.config.side_padding - this.point_modal.offsetWidth - modal_pos) {
             modal_margin = this.content_width + this.config.side_padding - this.point_modal.offsetWidth - modal_pos;
@@ -761,7 +769,7 @@ class ChartContainer {
     }
 
     preview_box_resize_init() {
-        document.show_area_move = true;
+        this.show_area_move = true;
 
         let area_borders = this.container.querySelectorAll('.area-border');
 
@@ -779,20 +787,20 @@ class ChartContainer {
 
         obj.classList.add('active');
 
-        document.curr_area_border = ChartContainer.get_border_side(i);
-        document.show_area_move = false;
+        this.curr_area_border = ChartContainer.get_border_side(i);
+        this.show_area_move = false;
 
         let rect = this.show_area_box.getBoundingClientRect(),
-            other_side = ChartContainer.other_side(document.curr_area_border);
+            other_side = ChartContainer.other_side(this.curr_area_border);
         let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
 
         let k = (other_side === 'left' ? -1 : 1);
         let old_pos = k * (this['x_pos_' + other_side] - rect[other_side]);
 
-        document.border_cursor_pos = k * (mouse_x - rect[document.curr_area_border]); // dist btw mouse and border edge ~ [1px, 5px]
+        this.border_cursor_pos = k * (mouse_x - rect[this.curr_area_border]); // dist btw mouse and border edge ~ [1px, 5px]
 
         this.show_area_box.style[other_side] = old_pos + 'px';
-        this.show_area_box.style[document.curr_area_border] = 'auto';
+        this.show_area_box.style[this.curr_area_border] = 'auto';
 
         document.addEventListener("mousemove", this.chart_preview_resize);
         obj.addEventListener("mouseup", this.cancel_chart_preview_resize);
@@ -816,8 +824,8 @@ class ChartContainer {
         let rect = this.show_area_box.getBoundingClientRect();
         let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
 
-        document.curr_preview_box_pos = rect.right - mouse_x;
-        document.curr_show_area_width = rect.width;
+        this.curr_preview_box_pos = rect.right - mouse_x;
+        this.curr_show_area_width = rect.width;
 
         this.show_area_box.classList.add('active');
 
@@ -965,15 +973,18 @@ class ChartContainer {
 
     window.requestAnimationFrame(step);*/
 
+    get_point_index(mouse_x) {
+        let canvas_pos = this.curr_mouse_pos - this.canvas.getBoundingClientRect().left;
+        return this.chart_config.start_index +
+            Math.round((canvas_pos - this.chart_config.offset_left) / this.chart_config.point_dist);
+    }
+
     point_details_show(e) {
         e = e || window.event;
         let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
+        this.curr_mouse_pos = mouse_x;
 
-        let rect = this.canvas.getBoundingClientRect();
-
-        let canvas_pos = mouse_x - rect.left;
-        let point_index = this.chart_config.start_index +
-            Math.round((canvas_pos - this.chart_config.offset_left) / this.chart_config.point_dist);
+        let point_index = this.get_point_index();
         let point_coord = this.get_point_x_coord(point_index);
 
         if (point_coord < this.chart_config.side_padding || point_coord > this.chart_config.side_padding + this.content_width) {
@@ -982,12 +993,13 @@ class ChartContainer {
 
         this.point_modal.classList.add('show');
 
-        if (document.curr_point_index !== point_index) {
-            document.curr_point_index = point_index;
+        if (this.curr_point_index !== point_index) {
+            this.curr_point_index = point_index;
 
             this.clear_canvas();
             this.draw_horizontal_grid();
             this.highlight_line(point_coord);
+            if (e.touches) this.config.highlight = false;
 
             for (let i = 0; i < this.charts.length; i++) {
                 if (this.charts[i].config.draw) {
@@ -1004,7 +1016,13 @@ class ChartContainer {
         e = e || window.event;
         e.preventDefault();
 
-        document.curr_point_index = -1;
+        this.config.highlight = !this.config.highlight;
+
+        if (e.touches && this.config.highlight) {
+            return;
+        }
+
+        this.curr_point_index = -1;
         this.point_modal.classList.remove('show');
 
         this.clear_canvas();
@@ -1019,18 +1037,18 @@ class ChartContainer {
 // ---
 
     move_show_area(e) {
-        if (!document.show_area_move) {
+        if (!this.show_area_move) {
             return;
         }
 
         e = e || window.event;
         let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
 
-        let dist_to_left = mouse_x - document.curr_show_area_width + document.curr_preview_box_pos - this.x_pos_left;
-        let dist_to_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
+        let dist_to_left = mouse_x - this.curr_show_area_width + this.curr_preview_box_pos - this.x_pos_left;
+        let dist_to_right = this.x_pos_right - mouse_x - this.curr_preview_box_pos;
 
         if (dist_to_left >= 0 && dist_to_right >= 0) {
-            let new_pos_right = this.x_pos_right - mouse_x - document.curr_preview_box_pos;
+            let new_pos_right = this.x_pos_right - mouse_x - this.curr_preview_box_pos;
 
             this.show_area_box.style.right = this.layer_right.style.width = new_pos_right + 'px';
             this.show_area_box.style.left = 'auto';
@@ -1064,8 +1082,25 @@ class ChartContainer {
         this.autosize();
         this.set_vertical_axis_step();
         this.config.chart_sizing_diff = this.chart_config.chart_sizing - this.charts[0].config.chart_sizing;
-        this.config.animation_steps_num = this.config.autosize_animation_steps_num;
-        window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
+        if (this.config.chart_sizing_diff === 0) {
+            this.update_main_chart();
+        } else {
+
+            // console.log(this.config.chart_sizing_diff);
+            // console.log('---');
+
+            // if(this.config.chart_sizing_diff > 0){
+            //     setTimeout(window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview)), 100);
+            // } else {
+
+            this.config.animation_steps_num = this.config.autosize_animation_steps_num;
+            window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
+            // }
+        }
+    }
+
+    check_diff() {
+        // if(this.config.chart_sizing_diff)
     }
 
 // ---
@@ -1075,16 +1110,16 @@ class ChartContainer {
         e = e || window.event;
         let mouse_x = e.touches ? e.touches[0].clientX : e.pageX;
 
-        let other = ChartContainer.other_side(document.curr_area_border);
+        let other = ChartContainer.other_side(this.curr_area_border);
         let k = other === 'left' ? -1 : 1;
 
-        let dist_to_side = k * (mouse_x - this['x_pos_' + document.curr_area_border]) - document.border_cursor_pos;
+        let dist_to_side = k * (mouse_x - this['x_pos_' + this.curr_area_border]) - this.border_cursor_pos;
         let dist_to_other_border = k * (rect[other] - mouse_x) - this.area_border_width;
 
         if (dist_to_side >= 0 && dist_to_other_border >= 0) {
-            let new_width = k * (rect[other] - mouse_x) + document.border_cursor_pos;
+            let new_width = k * (rect[other] - mouse_x) + this.border_cursor_pos;
             this.show_area_box.style.width = new_width + 'px';
-            this['layer_' + document.curr_area_border].style.width = dist_to_side + 'px';
+            this['layer_' + this.curr_area_border].style.width = dist_to_side + 'px';
 
             this.get_data_range(); // TODO func optimiztaion + right border
             // this.config.data_start = (mouse_x - this.x_pos_left) / preview_box_width;
@@ -1101,14 +1136,14 @@ class ChartContainer {
     }
 
     cancel_chart_preview_resize() {
-        if (document.show_area_move) {
+        if (this.show_area_move) {
             return;
         }
 
         this.container.querySelector('.area-border.active').classList.remove('active');
         document.removeEventListener("mousemove", this.chart_preview_resize);
         document.removeEventListener("touchmove", this.chart_preview_resize);
-        document.show_area_move = true;
+        this.show_area_move = true;
 
         let labels = this.container.querySelectorAll('.timeflow-axis-label.to-fade');
         for (let i = 0; i < labels.length; i++) {
@@ -1202,7 +1237,9 @@ class ChartContainer {
 
         let new_chart_sizing = this.chart_config.chart_sizing - this.config.chart_sizing_diff * (1 - this.config.stage);
 
-        this.animate_vertical_axis(new_chart_sizing);
+        if (this.config.chart_sizing_diff !== 0) {
+            this.animate_vertical_axis(new_chart_sizing);
+        }
 
         for (let i = 0; i < this.charts.length; i++) {
 
@@ -1249,8 +1286,8 @@ class ChartContainer {
     }
 
     animate_autosize(draw_preview, time) {
-        if (!this.config.start) this.config.start = time;
-        this.config.stage = (time - this.config.start) / this.config.autosize_duration;
+        if (!this.config.counter) this.config.counter = 1;
+        this.config.stage = this.config.counter / this.config.animation_steps_num;
 
         if (this.config.stage > 1) this.config.stage = 1;
 
@@ -1263,6 +1300,12 @@ class ChartContainer {
             this.config.chart_sizing_diff * (1 - this.config.stage));
 
         this.animate_vertical_axis(new_chart_sizing);
+
+        if (this.config.highlight) {
+            this.curr_point_index = this.get_point_index(this.curr_mouse_pos);
+            let point_coord = this.get_point_x_coord(this.curr_point_index);
+            this.highlight_line(point_coord);
+        }
 
         for (let i = 0; i < this.charts.length; i++) {
 
@@ -1294,13 +1337,19 @@ class ChartContainer {
 
             if (this.charts[i].config.draw) {
                 this.charts[i].draw_chart();
+                if (this.config.highlight) this.charts[i].highlight_point(this.curr_point_index);
             }
         }
 
+        if (this.config.highlight) {
+            this.show_point_modal(this.curr_point_index);
+        }
+
         if (this.config.stage < 1) {
+            this.config.counter++;
             window.requestAnimationFrame(this.animate_autosize.bind(this, draw_preview));
         } else {
-            this.config.start = false;
+            this.config.counter = false;
             this.set_vertical_axis_step();
         }
     }
@@ -1334,13 +1383,13 @@ ChartContainer.prototype.Default_container_config = {
 
     highlight: false, // todo
 
-    animation_steps_num: 9,
+    animation_steps_num: 4,
     animation_step: 0,
     cancel_animation_steps_num: 9,
     autosize_animation_steps_num: 5,
 
     duration: 180,
-    autosize_duration: 50,
+    autosize_duration: 100,
 
     no_data: false,
     no_data_message: 'No data to display',
