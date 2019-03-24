@@ -288,11 +288,9 @@ class ChartContainer {
             start_point--;
         }
 
-        while ((start_point - this.timeflow_start_offset) % step !== 0) { // todo
-            let offset = (start_point - this.timeflow_start_offset) % step;
-
-            start_point+=offset;
-            steps_count-=offset;
+        while ((start_point - this.timeflow_start_offset) % step !== 0) {
+            start_point++;
+            steps_count--;
         }
 
         let labels_list = '';
