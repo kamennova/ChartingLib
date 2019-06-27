@@ -14,7 +14,7 @@ class ChartLine {
         // filling point detail modal list
         let point_modal_list = document.querySelector(this.config.chart_wrapper_selector + ' .point-details-modal ul');
         let list_option = '<li style="color:' + this.config.line_colour + '">' +
-            '<span class="point-value"></span><br><span class="point-chart-name">' + this.config.chart_name + '</span></li>';
+            '<span class="point-value"></span><br><span class="point-chart-name">' + this.config.line_name + '</span></li>';
         point_modal_list.insertAdjacentHTML('beforeend', list_option);
 
         if (this.config.show_label)
@@ -28,7 +28,7 @@ class ChartLine {
     insert_chart_label() {
         let charts_labels_list = document.querySelector(this.config.chart_wrapper_selector + ' .charts-labels-list');
 
-        let input_name = this.config.chart_name.replace(/ /, '-');
+        let input_name = this.config.line_name.replace(/ /, '-');
         let label = '<li><label class="chart-label">' +
             '<input type="checkbox" class="visually-hidden active chart-draw-checkbox" name="' + input_name + '" checked>' +
             '<span style="background-color: ' +
