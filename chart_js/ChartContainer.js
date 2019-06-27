@@ -11,7 +11,7 @@ class ChartContainer {
 
     init() {
         this.container = document.querySelector(this.container_selector);
-        this.config.container_width = this.container.style.width || 0;
+        this.config.container_width = this.config.canvas_width || this.container.style.width || 0;
 
         this.fill();
         this.insert_HTML();
@@ -35,7 +35,7 @@ class ChartContainer {
             }
 
             if (this.config.show_labels) {
-                this.charts_toggle_draw_init(); // todo other funcs disable
+                this.charts_toggle_draw_init();
             }
 
             this.init_point_details_show();
@@ -48,7 +48,8 @@ class ChartContainer {
             this.config.show_labels = false;
         }
 
-        this.config = Object.assign({}, this.Default_container_config, this.config); // fill empty config fields with default vals
+        // fill empty config fields with default vals
+        this.config = Object.assign({}, this.Default_container_config, this.config);
         this.dpi = window.devicePixelRatio;
         this.timeflow_start_offset = (this.data_len - 1) % 2;
 
@@ -88,8 +89,6 @@ class ChartContainer {
     }
 
     set_preview_chart_config() {
-        // let
-
         this.preview_chart_config = {
             chart_sizing: this.config.chart_sizing, // changable
 
@@ -153,14 +152,19 @@ class ChartContainer {
 
         this.preview_chart_config.content_height = this.config.preview_canvas_height - this.preview_chart_config.padding_top;
         this.chart_config.content_height = this.config.canvas_height - this.chart_config.padding_top;
-        this.assign_max_line_width();
+        this.get_max_line_width();
+    }
+
+    init_line(config){
+        let chart_config = Object.assign({}, this.basic_chart_config, config);
+        this.charts.push(new ChartLine(chart_config));
     }
 
     update_point_dist() {
         this.preview_chart_config.point_dist = this.config.preview_canvas_width / (this.data_len - 1);
     }
 
-    assign_max_line_width() {
+    get_max_line_width() {
         let max = 0;
 
         for (let chart of this.charts) {
@@ -409,9 +413,6 @@ class ChartContainer {
             }
         }
 
-        // console.log(this.charts[0].config.chart_data);
-        // console.log(max);
-
         if (!this.no_data && max !== 0) {
             this.config.chart_max = max;
         } else {
@@ -419,9 +420,6 @@ class ChartContainer {
         }
 
         config.chart_sizing = (config.content_height - this.config.max_line_width / 2) / max;
-        // console.log(max);
-        // console.log(config.chart_sizing);
-        // console.log('----');
     }
 
 
@@ -796,25 +794,3 @@ ChartContainer.prototype.Default_container_config = {
 ChartContainer.prototype.no_data = false;
 ChartContainer.prototype.timeflow_data_cahce = [];
 ChartContainer.prototype.point_modal_date_cahce = [];
-
-// todo change font color with line color
-// todo last point show point modal
-// todo different side padding values
-// todo first last lines redraw fix
-// todo preview box resize bug
-// todo update breakpoints data cash
-
-/*
-* - number
-* - average
-* - no data
-*
-* 1) Prefill array
-*
-* -- fill timeflow
-*
-* - num: just fill all numbers
-* - average: count+fill all numbers
-* - no data:
-**
-* */
