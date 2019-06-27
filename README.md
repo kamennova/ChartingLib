@@ -2,7 +2,7 @@
 
 Displaying customizable timeflow charts.
 
-Chart types:
+#### Chart types:
 * line 
 
 ![Alt text](examples/line_chart.png "Line chart with preview")
