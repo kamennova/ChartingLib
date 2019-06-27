@@ -1,4 +1,4 @@
-ChartContainer.prototype.init_point_details_show = function() {
+ChartContainer.prototype.init_point_details_show = function () {
     let canvas_layer = this.container.querySelector('.canvas-layer');
 
     canvas_layer.addEventListener('mousedown', this.point_details_show.bind(this));
@@ -10,13 +10,14 @@ ChartContainer.prototype.init_point_details_show = function() {
     canvas_layer.addEventListener('touchend', this.cancel_point_details_show.bind(this));
 };
 
-ChartContainer.prototype.show_point_modal = function(index) {
+ChartContainer.prototype.show_point_modal = function (index) {
     let date = this.point_modal_date_wrapper(this.timeflow_data[index]);
     let point_values = this.point_modal.querySelectorAll('.point-value');
 
     for (let i = 0; i < this.charts.length; i++) {
         if (this.charts[i].config.draw) {
-            point_values[i].textContent = this.charts[i].config.chart_data[index];
+            let val = this.charts[i].config.chart_data[index];
+            point_values[i].textContent = ChartLine.isset_data(val) ? val : 'No data';
         }
     }
 
@@ -37,7 +38,7 @@ ChartContainer.prototype.show_point_modal = function(index) {
     this.point_modal.style.left = modal_pos + 'px';
 };
 
-ChartContainer.prototype.point_details_show = function(e) {
+ChartContainer.prototype.point_details_show = function (e) {
     if (e.type === 'mousedown' || e.type === 'touchstart') {
         this.highlight = !this.highlight;
     } else if (this.highlight && e.type !== 'touchmove') {
@@ -78,7 +79,7 @@ ChartContainer.prototype.point_details_show = function(e) {
     }
 };
 
-ChartContainer.prototype.cancel_point_details_show = function(e) {
+ChartContainer.prototype.cancel_point_details_show = function (e) {
     e = e || window.event;
     e.preventDefault();
 
@@ -98,7 +99,7 @@ ChartContainer.prototype.cancel_point_details_show = function(e) {
     }
 };
 
-ChartContainer.prototype.point_modal_date_wrapper = function(timestamp) {
+ChartContainer.prototype.point_modal_date_wrapper = function (timestamp) {
     if (this.point_modal_date_cahce[timestamp] == undefined) {
         this.point_modal_date_cahce[timestamp] = this.config.point_modal_date_func(timestamp);
     }
