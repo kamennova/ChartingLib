@@ -40,6 +40,7 @@ class ChartLine {
 
     fill() {
         let Default_config = {
+            line_name: '',
             chart_type: 'line_chart',
             point_dist: 60,
             line_width: 2,
